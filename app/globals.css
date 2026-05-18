@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --orange: #FF4D00;
+  --orange-dim: rgba(255, 77, 0, 0.15);
+  --dark: #0A0A0A;
+  --dark2: #111111;
+  --dark3: #181818;
+  --dark4: #222222;
+  --text: #F0EEE8;
+  --muted: #888888;
+  --muted2: #555555;
+  --font-display: var(--font-bebas), Impact, sans-serif;
+  --font-body: var(--font-barlow), sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
