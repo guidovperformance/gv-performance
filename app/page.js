@@ -74,7 +74,7 @@ function ContactSection() {
             <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Interesse in</label>
             <select value={form.dienst} onChange={e => setForm({...form, dienst: e.target.value})} style={inputStyle}>
               <option value="">Selecteer een dienst...</option>
-              {['1-op-1 Coaching', 'Tactical Athlete Voorbereiding', 'Topsport Begeleiding', 'Hyrox Voorbereiding', 'Team & Groepsvorming', 'Groepslessen & Sportschool Inhuur', 'Anders'].map(o => <option key={o}>{o}</option>)}
+              {['— Pakketten —', 'Pakket: Starter (Online · €119/mnd)', 'Pakket: Performance (Hybrid · €229/mnd)', 'Pakket: Elite (Full Service · €399/mnd)', '— Individueel —', '1-op-1 Coaching', 'Tactical Athlete Voorbereiding', 'Topsport Begeleiding', 'Hyrox Voorbereiding', 'Loopcoaching', '— Groepen & Bedrijven —', 'Team & Groepsvorming', 'Bootcamp', 'Bedrijfstraining / Fit op het werk', 'Sportschool Inhuur (Spinning, Boxing, S&C)', '— Overig —', 'Anders / Vraag'].map(o => <option key={o} disabled={o.startsWith('—')} style={o.startsWith('—') ? {color: 'var(--muted)', fontWeight: 700} : {}}>{o}</option>)}
             </select>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
