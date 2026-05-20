@@ -1,14 +1,14 @@
-import { Bebas_Neue, Barlow_Condensed } from 'next/font/google'
+import { Oswald, Barlow_Condensed } from 'next/font/google'
 import './globals.css'
 
-const bebas = Bebas_Neue({
-  weight: '400',
+const oswald = Oswald({
+  weight: ['400', '600', '700'],
   subsets: ['latin'],
-  variable: '--font-bebas',
+  variable: '--font-oswald',
 })
 
 const barlow = Barlow_Condensed({
-  weight: ['400', '700'],
+  weight: ['400', '500', '700'],
   subsets: ['latin'],
   variable: '--font-barlow',
 })
@@ -21,7 +21,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="nl">
-      <body className={`${bebas.variable} ${barlow.variable}`}>
+      <body className={`${oswald.variable} ${barlow.variable}`}>
         {children}
       </body>
     </html>

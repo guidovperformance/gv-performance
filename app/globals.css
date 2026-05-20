@@ -12,12 +12,20 @@
   --text: #F0EEE8;
   --muted: #888888;
   --muted2: #555555;
-  --font-display: var(--font-bebas), Impact, sans-serif;
+  --font-display: var(--font-oswald), Impact, sans-serif;
   --font-body: var(--font-barlow), sans-serif;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--dark);
   color: var(--text);
@@ -25,4 +33,12 @@ body {
   font-size: 17px;
   line-height: 1.65;
   overflow-x: hidden;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
 }
