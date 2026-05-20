@@ -1,9 +1,99 @@
 'use client'
 
+import React from 'react'
 import Image from 'next/image'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
+
+function ContactSection() {
+  const [form, setForm] = React.useState({ voornaam: '', achternaam: '', email: '', dienst: '', bericht: '' })
+  const [status, setStatus] = React.useState('idle')
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setStatus('loading')
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setStatus('success')
+        setForm({ voornaam: '', achternaam: '', email: '', dienst: '', bericht: '' })
+      } else { setStatus('error') }
+    } catch { setStatus('error') }
+  }
+
+  const inputStyle = { background: 'var(--dark3)', border: '1px solid var(--dark4)', color: 'var(--text)', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 15, padding: '14px 16px', outline: 'none', width: '100%' }
+
+  return (
+    <section id="contact" style={{ padding: '100px 60px', background: 'var(--dark2)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
+      <div>
+        <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ display: 'block', width: 24, height: 2, background: 'var(--orange)' }} />Kennismaking
+        </div>
+        <h2 style={{ ...D, fontSize: 'clamp(42px, 5vw, 68px)', letterSpacing: 1, lineHeight: 1, marginBottom: 24, fontWeight: 700 }}>KLAAR OM TE STARTEN?</h2>
+        <p style={{ ...B, fontSize: 16, color: '#aaa', lineHeight: 1.8, marginBottom: 36 }}>Stuur een bericht en ik neem binnen 24 uur contact op voor een vrijblijvend kennismakingsgesprek.</p>
+        {[['📍', 'Locatie', 'Den Haag & omgeving · Online beschikbaar'], ['⚡', 'Reactietijd', 'Binnen 24 uur op werkdagen'], ['🎯', 'Eerste stap', 'Gratis kennismakingsgesprek van 30 min']].map(([icon, label, text]) => (
+          <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 24 }}>
+            <div style={{ width: 36, height: 36, background: 'var(--orange-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{icon}</div>
+            <div>
+              <div style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 2 }}>{label}</div>
+              <div style={{ ...B, fontSize: 14, color: 'var(--muted)', lineHeight: 1.6 }}>{text}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      {status === 'success' ? (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, gap: 16, background: 'var(--dark3)', padding: 40 }}>
+          <div style={{ fontSize: 48 }}>✅</div>
+          <div style={{ ...D, fontSize: 28, fontWeight: 700, letterSpacing: 2 }}>BERICHT VERSTUURD!</div>
+          <div style={{ ...B, fontSize: 15, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.6 }}>Bedankt voor je bericht. Ik neem binnen 24 uur contact met je op.</div>
+          <button onClick={() => setStatus('idle')} style={{ marginTop: 16, background: 'transparent', border: '1px solid var(--orange)', color: 'var(--orange)', ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', padding: '10px 24px', cursor: 'pointer' }}>Nieuw bericht sturen</button>
+        </div>
+      ) : (
+        <form style={{ display: 'flex', flexDirection: 'column', gap: 14 }} onSubmit={handleSubmit}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Voornaam *</label>
+              <input required type="text" placeholder="Voornaam" value={form.voornaam} onChange={e => setForm({...form, voornaam: e.target.value})} style={inputStyle} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Achternaam</label>
+              <input type="text" placeholder="Achternaam" value={form.achternaam} onChange={e => setForm({...form, achternaam: e.target.value})} style={inputStyle} />
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>E-mailadres *</label>
+            <input required type="email" placeholder="jouw@email.nl" value={form.email} onChange={e => setForm({...form, email: e.target.value})} style={inputStyle} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Interesse in</label>
+            <select value={form.dienst} onChange={e => setForm({...form, dienst: e.target.value})} style={inputStyle}>
+              <option value="">Selecteer een dienst...</option>
+              {['1-op-1 Coaching', 'Tactical Athlete Voorbereiding', 'Topsport Begeleiding', 'Hyrox Voorbereiding', 'Team & Groepsvorming', 'Groepslessen & Sportschool Inhuur', 'Anders'].map(o => <option key={o}>{o}</option>)}
+            </select>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Jouw bericht *</label>
+            <textarea required placeholder="Vertel kort over je doel of situatie..." rows={5} value={form.bericht} onChange={e => setForm({...form, bericht: e.target.value})} style={{ ...inputStyle, resize: 'vertical' }} />
+          </div>
+          {status === 'error' && (
+            <div style={{ ...B, fontSize: 13, color: '#ff6b6b', padding: '12px 16px', background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)' }}>
+              Er ging iets mis. Probeer het opnieuw of mail direct naar guidovperformance@gmail.com
+            </div>
+          )}
+          <button type="submit" disabled={status === 'loading'} style={{ background: status === 'loading' ? 'var(--muted2)' : 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 14, letterSpacing: 2, textTransform: 'uppercase', padding: 16, border: 'none', cursor: status === 'loading' ? 'not-allowed' : 'pointer', width: '100%' }}>
+            {status === 'loading' ? 'VERSTUREN...' : 'VERSTUUR BERICHT'}
+          </button>
+        </form>
+      )}
+    </section>
+  )
+}
 
 export default function Home() {
   return (
@@ -202,50 +292,7 @@ export default function Home() {
       </section>
 
       {/* CONTACT */}
-      <section id="contact" style={{ padding: '100px 60px', background: 'var(--dark2)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
-        <div>
-          <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ display: 'block', width: 24, height: 2, background: 'var(--orange)' }} />Kennismaking
-          </div>
-          <h2 style={{ ...D, fontSize: 'clamp(42px, 5vw, 68px)', letterSpacing: 1, lineHeight: 1, marginBottom: 24, fontWeight: 700 }}>KLAAR OM TE STARTEN?</h2>
-          <p style={{ ...B, fontSize: 16, color: '#aaa', lineHeight: 1.8, marginBottom: 36 }}>Stuur een bericht en ik neem binnen 24 uur contact op voor een vrijblijvend kennismakingsgesprek.</p>
-          {[['📍', 'Locatie', 'Den Haag & omgeving · Online beschikbaar'], ['⚡', 'Reactietijd', 'Binnen 24 uur op werkdagen'], ['🎯', 'Eerste stap', 'Gratis kennismakingsgesprek van 30 min']].map(([icon, label, text]) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 24 }}>
-              <div style={{ width: 36, height: 36, background: 'var(--orange-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{icon}</div>
-              <div>
-                <div style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 2 }}>{label}</div>
-                <div style={{ ...B, fontSize: 14, color: 'var(--muted)', lineHeight: 1.6 }}>{text}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <form style={{ display: 'flex', flexDirection: 'column', gap: 14 }} onSubmit={(e) => e.preventDefault()}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            {['Voornaam', 'Achternaam'].map((p) => (
-              <div key={p} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>{p}</label>
-                <input type="text" placeholder={p} style={{ background: 'var(--dark3)', border: '1px solid var(--dark4)', color: 'var(--text)', ...B, fontSize: 15, padding: '14px 16px', outline: 'none', width: '100%' }} />
-              </div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>E-mailadres</label>
-            <input type="email" placeholder="jouw@email.nl" style={{ background: 'var(--dark3)', border: '1px solid var(--dark4)', color: 'var(--text)', ...B, fontSize: 15, padding: '14px 16px', outline: 'none', width: '100%' }} />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Interesse in</label>
-            <select style={{ background: 'var(--dark3)', border: '1px solid var(--dark4)', color: 'var(--text)', ...B, fontSize: 15, padding: '14px 16px', outline: 'none', width: '100%' }}>
-              <option value="">Selecteer een dienst...</option>
-              {['1-op-1 Coaching', 'Tactical Athlete Voorbereiding', 'Topsport Begeleiding', 'Hyrox Voorbereiding', 'Team & Groepsvorming', 'Groepslessen & Sportschool Inhuur', 'Anders'].map((o) => <option key={o}>{o}</option>)}
-            </select>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Jouw bericht</label>
-            <textarea placeholder="Vertel kort over je doel of situatie..." rows={5} style={{ background: 'var(--dark3)', border: '1px solid var(--dark4)', color: 'var(--text)', ...B, fontSize: 15, padding: '14px 16px', outline: 'none', width: '100%', resize: 'vertical' }} />
-          </div>
-          <button type="submit" style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 14, letterSpacing: 2, textTransform: 'uppercase', padding: 16, border: 'none', cursor: 'pointer', width: '100%' }}>VERSTUUR BERICHT</button>
-        </form>
-      </section>
+      <ContactSection />
 
       {/* FOOTER */}
       <footer style={{ background: 'var(--dark)', borderTop: '1px solid rgba(255,77,0,0.1)', padding: '40px 60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
