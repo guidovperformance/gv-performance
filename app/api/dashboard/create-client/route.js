@@ -16,11 +16,11 @@ export async function POST(request) {
     const { naam, email, sport, doel, geboortedatum, notities } = await request.json()
     if (!naam || !email) return Response.json({ error: 'Naam en email zijn verplicht.' }, { status: 400 })
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gvperformance.nl'
+    const siteUrl = 'https://gvperformance.nl'
 
     const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
       data: { full_name: naam, role: 'client' },
-      redirectTo: `${siteUrl}/auth/callback?next=/auth/set-password`,
+      redirectTo: `${siteUrl}/auth/confirm`,
     })
 
     if (inviteError) return Response.json({ error: inviteError.message }, { status: 400 })
