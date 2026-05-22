@@ -35,10 +35,75 @@ body {
   overflow-x: hidden;
 }
 
-.font-display {
-  font-family: var(--font-display);
-}
+.font-display { font-family: var(--font-display); }
+.font-body { font-family: var(--font-body); }
 
-.font-body {
-  font-family: var(--font-body);
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .site-nav {
+    padding: 16px 20px !important;
+  }
+  .nav-links {
+    display: none !important;
+  }
+  .hero-content {
+    padding: 40px 24px !important;
+    max-width: 100% !important;
+  }
+  .hero-buttons {
+    flex-direction: column !important;
+  }
+  .hero-buttons a {
+    text-align: center;
+  }
+  .site-ribbon {
+    padding: 12px 20px !important;
+    gap: 10px !important;
+  }
+  .section-about {
+    grid-template-columns: 1fr !important;
+    padding: 60px 24px !important;
+    gap: 32px !important;
+  }
+  .about-photo {
+    aspect-ratio: 4/3 !important;
+  }
+  .section-padding {
+    padding: 60px 24px !important;
+  }
+  .diensten-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .process-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .milestones-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .section-contact {
+    grid-template-columns: 1fr !important;
+    padding: 60px 24px !important;
+    gap: 40px !important;
+  }
+  .form-row {
+    grid-template-columns: 1fr !important;
+  }
+  .site-footer {
+    padding: 30px 20px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 20px !important;
+  }
+  .footer-links {
+    gap: 16px !important;
+  }
+  .pakketten-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .addons-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .bedrijven-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
