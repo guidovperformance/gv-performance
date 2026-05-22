@@ -16,51 +16,31 @@ export async function POST(request) {
     const { naam, email, sport, doel, geboortedatum, notities } = await request.json()
     if (!naam || !email) return Response.json({ error: 'Naam en email zijn verplicht.' }, { status: 400 })
 
-    // Stuur uitnodiging
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gvperformance.nl'
+
     const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
       data: { full_name: naam, role: 'client' },
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://gvperformance.nl'}/dashboard`,
+      redirectTo: `${siteUrl}/auth/callback?next=/auth/set-password`,
     })
 
     if (inviteError) return Response.json({ error: inviteError.message }, { status: 400 })
 
     const userId = inviteData.user.id
 
-    // Maak profiel aan (of update als trigger het al aangemaakt heeft)
-    const { error: profileUpsertError } = await supabaseAdmin
-      .from('profiles')
-      .upsert({
-        id: userId,
-        full_name: naam,
-        role: 'client',
-        email: email,
-      }, { onConflict: 'id' })
+    await supabaseAdmin.from('profiles').upsert({
+      id: userId, full_name: naam, role: 'client', email,
+    }, { onConflict: 'id' })
 
-    if (profileUpsertError) {
-      console.error('Profile upsert error:', profileUpsertError)
-    }
+    const { error: profileError } = await supabaseAdmin.from('client_profiles').insert({
+      user_id: userId, coach_id: user.id,
+      sport: sport || null, goal: doel || null,
+      date_of_birth: geboortedatum || null, notes: notities || null,
+    })
 
-    // Maak klantprofiel aan
-    const { error: clientProfileError } = await supabaseAdmin
-      .from('client_profiles')
-      .insert({
-        user_id: userId,
-        coach_id: user.id,
-        sport: sport || null,
-        goal: doel || null,
-        date_of_birth: geboortedatum || null,
-        notes: notities || null,
-      })
-
-    if (clientProfileError) {
-      console.error('Client profile error:', clientProfileError)
-      return Response.json({ error: `Profiel mislukt: ${clientProfileError.message}` }, { status: 500 })
-    }
+    if (profileError) return Response.json({ error: `Profiel mislukt: ${profileError.message}` }, { status: 500 })
 
     return Response.json({ success: true, userId })
-
   } catch (error) {
-    console.error('Create client error:', error)
     return Response.json({ error: 'Er ging iets mis.' }, { status: 500 })
   }
 }

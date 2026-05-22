@@ -7,8 +7,10 @@ const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
 
 function ContactSection() {
-  const [form, setForm] = React.useState({ voornaam: '', achternaam: '', email: '', dienst: '', bericht: '' })
+  const empty = { voornaam: '', achternaam: '', email: '', telefoon: '', dienst: '', fitnessniveau: '', blessures: '', beschikbaarheid: '', bericht: '' }
+  const [form, setForm] = React.useState(empty)
   const [status, setStatus] = React.useState('idle')
+  const set = f => e => setForm(p => ({ ...p, [f]: e.target.value }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -20,14 +22,14 @@ function ContactSection() {
         body: JSON.stringify(form),
       })
       const data = await res.json()
-      if (data.success) {
-        setStatus('success')
-        setForm({ voornaam: '', achternaam: '', email: '', dienst: '', bericht: '' })
-      } else { setStatus('error') }
+      if (data.success) { setStatus('success'); setForm(empty) }
+      else setStatus('error')
     } catch { setStatus('error') }
   }
 
-  const inputStyle = { background: 'var(--dark3)', border: '1px solid var(--dark4)', color: 'var(--text)', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 15, padding: '14px 16px', outline: 'none', width: '100%' }
+  const inp = { background: 'var(--dark3)', border: '1px solid var(--dark4)', color: 'var(--text)', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 15, padding: '14px 16px', outline: 'none', width: '100%' }
+  const lbl = { fontFamily: 'var(--font-barlow), sans-serif', fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', display: 'block', marginBottom: 6 }
+  const grp = (children) => ({ display: 'flex', flexDirection: 'column', gap: 6 })
 
   return (
     <section id="contact" className="section-contact" style={{ padding: '100px 60px', background: 'var(--dark2)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
@@ -36,7 +38,7 @@ function ContactSection() {
           <span style={{ display: 'block', width: 24, height: 2, background: 'var(--orange)' }} />Kennismaking
         </div>
         <h2 style={{ ...D, fontSize: 'clamp(42px, 5vw, 68px)', letterSpacing: 1, lineHeight: 1, marginBottom: 24, fontWeight: 700 }}>KLAAR OM TE STARTEN?</h2>
-        <p style={{ ...B, fontSize: 16, color: '#aaa', lineHeight: 1.8, marginBottom: 36 }}>Stuur een bericht en ik neem binnen 24 uur contact op voor een vrijblijvend kennismakingsgesprek.</p>
+        <p style={{ ...B, fontSize: 16, color: '#aaa', lineHeight: 1.8, marginBottom: 36 }}>Vul het formulier in en ik neem binnen 24 uur contact op voor een vrijblijvend kennismakingsgesprek. Hoe meer je invult, hoe gerichter ik je kan helpen.</p>
         {[['📍', 'Locatie', 'Den Haag & omgeving · Online beschikbaar'], ['⚡', 'Reactietijd', 'Binnen 24 uur op werkdagen'], ['🎯', 'Eerste stap', 'Gratis kennismakingsgesprek van 30 min']].map(([icon, label, text]) => (
           <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 24 }}>
             <div style={{ width: 36, height: 36, background: 'var(--orange-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{icon}</div>
@@ -51,35 +53,61 @@ function ContactSection() {
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, gap: 16, background: 'var(--dark3)', padding: 40 }}>
           <div style={{ fontSize: 48 }}>✅</div>
           <div style={{ ...D, fontSize: 28, fontWeight: 700, letterSpacing: 2 }}>BERICHT VERSTUURD!</div>
-          <div style={{ ...B, fontSize: 15, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.6 }}>Bedankt! Ik neem binnen 24 uur contact met je op.</div>
+          <div style={{ ...B, fontSize: 15, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.6 }}>Bedankt voor je aanvraag. Ik neem binnen 24 uur contact met je op.</div>
           <button onClick={() => setStatus('idle')} style={{ marginTop: 16, background: 'transparent', border: '1px solid var(--orange)', color: 'var(--orange)', ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', padding: '10px 24px', cursor: 'pointer' }}>Nieuw bericht sturen</button>
         </div>
       ) : (
         <form style={{ display: 'flex', flexDirection: 'column', gap: 14 }} onSubmit={handleSubmit}>
           <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Voornaam *</label>
-              <input required type="text" placeholder="Voornaam" value={form.voornaam} onChange={e => setForm({...form, voornaam: e.target.value})} style={inputStyle} />
+            <div style={grp()}>
+              <label style={lbl}>Voornaam *</label>
+              <input required type="text" placeholder="Voornaam" value={form.voornaam} onChange={set('voornaam')} style={inp} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Achternaam</label>
-              <input type="text" placeholder="Achternaam" value={form.achternaam} onChange={e => setForm({...form, achternaam: e.target.value})} style={inputStyle} />
+            <div style={grp()}>
+              <label style={lbl}>Achternaam</label>
+              <input type="text" placeholder="Achternaam" value={form.achternaam} onChange={set('achternaam')} style={inp} />
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>E-mailadres *</label>
-            <input required type="email" placeholder="jouw@email.nl" value={form.email} onChange={e => setForm({...form, email: e.target.value})} style={inputStyle} />
+          <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={grp()}>
+              <label style={lbl}>E-mailadres *</label>
+              <input required type="email" placeholder="jouw@email.nl" value={form.email} onChange={set('email')} style={inp} />
+            </div>
+            <div style={grp()}>
+              <label style={lbl}>Telefoonnummer</label>
+              <input type="tel" placeholder="+31 6 12345678" value={form.telefoon} onChange={set('telefoon')} style={inp} />
+            </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Interesse in</label>
-            <select value={form.dienst} onChange={e => setForm({...form, dienst: e.target.value})} style={inputStyle}>
+          <div style={grp()}>
+            <label style={lbl}>Interesse in</label>
+            <select value={form.dienst} onChange={set('dienst')} style={inp}>
               <option value="">Selecteer een dienst...</option>
               {['— Pakketten —', 'Pakket: Starter (Online · €119/mnd)', 'Pakket: Performance (Hybrid · €229/mnd)', 'Pakket: Elite (Full Service · €399/mnd)', '— Individueel —', '1-op-1 Coaching', 'Tactical Athlete Voorbereiding', 'Topsport Begeleiding', 'Hyrox Voorbereiding', 'Loopcoaching', '— Groepen & Bedrijven —', 'Team & Groepsvorming', 'Bootcamp', 'Bedrijfstraining / Fit op het werk', 'Sportschool Inhuur (Spinning, Boxing, S&C)', '— Overig —', 'Anders / Vraag'].map(o => <option key={o} disabled={o.startsWith('—')} style={o.startsWith('—') ? {fontWeight: 700} : {}}>{o}</option>)}
             </select>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase' }}>Jouw bericht *</label>
-            <textarea required placeholder="Vertel kort over je doel of situatie..." rows={5} value={form.bericht} onChange={e => setForm({...form, bericht: e.target.value})} style={{ ...inputStyle, resize: 'vertical' }} />
+          <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={grp()}>
+              <label style={lbl}>Huidig fitnessniveau</label>
+              <select value={form.fitnessniveau} onChange={set('fitnessniveau')} style={inp}>
+                <option value="">Selecteer niveau...</option>
+                <option>Beginner</option>
+                <option>Gemiddeld</option>
+                <option>Gevorderd</option>
+                <option>Topsport</option>
+              </select>
+            </div>
+            <div style={grp()}>
+              <label style={lbl}>Beschikbare dagen</label>
+              <input type="text" placeholder="Ma, Wo, Vr..." value={form.beschikbaarheid} onChange={set('beschikbaarheid')} style={inp} />
+            </div>
+          </div>
+          <div style={grp()}>
+            <label style={lbl}>Blessures of beperkingen</label>
+            <input type="text" placeholder="Bijv. knieblessure, rugklachten — of geen" value={form.blessures} onChange={set('blessures')} style={inp} />
+          </div>
+          <div style={grp()}>
+            <label style={lbl}>Jouw bericht *</label>
+            <textarea required placeholder="Vertel kort over je doel of situatie..." rows={4} value={form.bericht} onChange={set('bericht')} style={{ ...inp, resize: 'vertical' }} />
           </div>
           {status === 'error' && (
             <div style={{ ...B, fontSize: 13, color: '#ff6b6b', padding: '12px 16px', background: 'rgba(255,107,107,0.1)', border: '1px solid rgba(255,107,107,0.3)' }}>
@@ -172,13 +200,13 @@ export default function Home() {
             &ldquo;Ik heb mijn eigen methode bewezen — aan mijzelf.&rdquo;
           </div>
           <p style={{ ...B, fontSize: 16, color: '#aaa', lineHeight: 1.8, marginBottom: 16 }}>
-            Vanaf mijn <strong style={{ color: 'var(--text)' }}>17e speelde ik ijshockey op het hoogste niveau van Nederland</strong>. In mijn laatste seizoen voor de Korps Mariniers opleiding vertegenwoordigde ik <strong style={{ color: 'var(--text)' }}>het Nederlands mannen team</strong> en behaalden we een <strong style={{ color: 'var(--text)' }}>gouden medaille</strong>.
+            Op zeventienjarige leeftijd debuteerde ik in de hoogste ijshockeycompetitie van Nederland. In mijn laatste seizoen voor aanvang van de Korps Mariniers opleiding vertegenwoordigde ik <strong style={{ color: 'var(--text)' }}>het Nederlands mannen ijshockeyteam</strong> — een periode die bekroond werd met een <strong style={{ color: 'var(--text)' }}>gouden medaille</strong>.
           </p>
           <p style={{ ...B, fontSize: 16, color: '#aaa', lineHeight: 1.8, marginBottom: 16 }}>
-            Na de Mariniers groeide ik door als <strong style={{ color: 'var(--text)' }}>Instructeur Fysieke Training & Sport bij Defensie</strong>. Mijn kennis van periodisering, kracht en mentale coaching gebruik ik dagelijks — zowel binnen Defensie als daarbuiten.
+            Na de voltooiing van mijn opleiding bij het Korps Mariniers ontwikkelde ik mij verder als <strong style={{ color: 'var(--text)' }}>Instructeur Fysieke Training & Sport binnen de Koninklijke Landmacht</strong>. De expertise die ik daar dagelijks inzet — op het gebied van periodisering, krachttraining en mentale weerbaarheid — vormt de basis van mijn coachingaanpak.
           </p>
           <p style={{ ...B, fontSize: 16, color: '#aaa', lineHeight: 1.8, marginBottom: 36 }}>
-            Datzelfde systeem zet ik in voor jou. Of je nu een topsporter, tactical athlete of gedreven amateur bent — <strong style={{ color: 'var(--text)' }}>jouw doel wordt ons plan</strong>.
+            Deze methodiek — opgebouwd uit jaren operationele en sportieve ervaring — pas ik toe in elk traject dat ik begeleid. Of het nu gaat om een topsporter, een tactical athlete of een sporter met een specifiek doel: <strong style={{ color: 'var(--text)' }}>de aanpak is altijd persoonlijk en resultaatgericht</strong>.
           </p>
           <div className="milestones-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             {[
@@ -289,7 +317,7 @@ export default function Home() {
         <div style={{ ...B, fontSize: 12, color: 'var(--muted2)', letterSpacing: 1 }}>© 2025 GV Performance — Guido Vols</div>
         <div className="footer-links" style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
           <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted2)', textDecoration: 'none' }}>Instagram</a>
-          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted2)', textDecoration: 'none' }}>LinkedIn</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ ...B, fontSize: 11, letterSpacing: 2, color: 'var(--muted2)', textDecoration: 'none' }}>LinkedIn</a>
           <a href="#contact" style={{ ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted2)', textDecoration: 'none' }}>Contact</a>
           <a href="/privacy" style={{ ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted2)', textDecoration: 'none' }}>Privacybeleid</a>
         </div>
