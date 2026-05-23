@@ -7,6 +7,7 @@ export default async function Dashboard() {
 
   if (!user) redirect('/login')
 
+  // Probeer profiel op te halen
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
@@ -16,6 +17,13 @@ export default async function Dashboard() {
   if (profile?.role === 'coach') redirect('/dashboard/coach')
   if (profile?.role === 'client') redirect('/dashboard/client')
 
-  // Profiel niet gevonden → terug naar login
-  redirect('/login')
+  // Geen profiel gevonden — kijk in auth metadata als fallback
+  const role = user.user_metadata?.role || user.raw_user_meta_data?.role
+
+  if (role === 'coach') redirect('/dashboard/coach')
+  if (role === 'client') redirect('/dashboard/client')
+
+  // Absolute fallback — stuur naar coach als laatste optie
+  // (voorkomt redirect loop met /login)
+  redirect('/dashboard/coach')
 }
