@@ -16,6 +16,6 @@ export default async function Dashboard() {
   if (profile?.role === 'coach') redirect('/dashboard/coach')
   if (profile?.role === 'client') redirect('/dashboard/client')
 
-  // Als profiel niet gevonden → stuur toch naar coach als fallback
-  redirect('/dashboard/coach')
+  // Profiel niet gevonden → terug naar login
+  redirect('/login')
 }
