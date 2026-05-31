@@ -46,6 +46,9 @@ body {
   .nav-links {
     display: none !important;
   }
+  .hamburger {
+    display: flex !important;
+  }
   .hero-content {
     padding: 40px 24px !important;
     max-width: 100% !important;

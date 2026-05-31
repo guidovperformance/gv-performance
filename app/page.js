@@ -6,6 +6,55 @@ import Image from 'next/image'
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
 
+function Nav() {
+  const [open, setOpen] = React.useState(false)
+  const links = [['#over', 'Over Guido'], ['#diensten', 'Diensten'], ['/pakketten', 'Pakketten'], ['#werkwijze', 'Werkwijze']]
+  return (
+    <>
+      <nav className="site-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 60px', borderBottom: '1px solid rgba(255,77,0,0.12)', background: 'rgba(10,10,10,0.97)', position: 'relative', zIndex: 100 }}>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
+          <svg width="36" height="34" viewBox="0 0 36 34">
+            <polygon points="18,2 13,28 23,28" fill="#FF4D00" />
+            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5" />
+            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5" />
+            <rect x="0" y="31" width="36" height="2" fill="#FF4D00" opacity="0.2" />
+          </svg>
+          <div>
+            <div style={{ ...D, fontSize: 22, letterSpacing: 3, color: 'var(--text)', lineHeight: 1, fontWeight: 700 }}>GV PERFORMANCE</div>
+            <div style={{ ...B, fontSize: 10, letterSpacing: 3, color: 'var(--orange)', marginTop: 2 }}>GUIDO VOLS</div>
+          </div>
+        </a>
+        {/* Desktop links */}
+        <ul className="nav-links" style={{ display: 'flex', gap: 36, listStyle: 'none', margin: 0, padding: 0 }}>
+          {links.map(([href, label]) => (
+            <li key={href}>
+              <a href={href} style={{ ...B, fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>{label}</a>
+            </li>
+          ))}
+          <li>
+            <a href="#contact" style={{ ...B, fontSize: 13, letterSpacing: 1, textTransform: 'uppercase', color: '#000', background: 'var(--orange)', padding: '10px 22px', textDecoration: 'none', fontWeight: 700 }}>Kennismaking</a>
+          </li>
+        </ul>
+        {/* Hamburger */}
+        <button className="hamburger" onClick={() => setOpen(o => !o)} style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: 8, flexDirection: 'column', gap: 5 }}>
+          <span style={{ display: 'block', width: 24, height: 2, background: open ? 'var(--orange)' : 'var(--text)', transition: 'all 0.2s', transform: open ? 'rotate(45deg) translate(5px, 5px)' : 'none' }} />
+          <span style={{ display: 'block', width: 24, height: 2, background: open ? 'transparent' : 'var(--text)', transition: 'all 0.2s' }} />
+          <span style={{ display: 'block', width: 24, height: 2, background: open ? 'var(--orange)' : 'var(--text)', transition: 'all 0.2s', transform: open ? 'rotate(-45deg) translate(5px, -5px)' : 'none' }} />
+        </button>
+      </nav>
+      {/* Mobile menu */}
+      {open && (
+        <div style={{ background: 'rgba(10,10,10,0.98)', borderBottom: '1px solid rgba(255,77,0,0.2)', padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 0, position: 'relative', zIndex: 99 }} className="mobile-menu">
+          {links.map(([href, label]) => (
+            <a key={href} href={href} onClick={() => setOpen(false)} style={{ ...B, fontSize: 14, letterSpacing: 3, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', padding: '14px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{label}</a>
+          ))}
+          <a href="#contact" onClick={() => setOpen(false)} style={{ ...B, fontSize: 14, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#000', background: 'var(--orange)', textDecoration: 'none', padding: '14px 20px', marginTop: 16, textAlign: 'center' }}>Kennismaking</a>
+        </div>
+      )}
+    </>
+  )
+}
+
 function ContactSection() {
   const empty = { voornaam: '', achternaam: '', email: '', telefoon: '', dienst: '', fitnessniveau: '', blessures: '', beschikbaarheid: '', bericht: '' }
   const [form, setForm] = React.useState(empty)
@@ -128,30 +177,7 @@ export default function Home() {
     <div style={{ background: 'var(--dark)', color: 'var(--text)', ...B }}>
 
       {/* NAV */}
-      <nav className="site-nav" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 60px', borderBottom: '1px solid rgba(255,77,0,0.12)', background: 'rgba(10,10,10,0.97)' }}>
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
-          <svg width="36" height="34" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#FF4D00" />
-            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5" />
-            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5" />
-            <rect x="0" y="31" width="36" height="2" fill="#FF4D00" opacity="0.2" />
-          </svg>
-          <div>
-            <div style={{ ...D, fontSize: 22, letterSpacing: 3, color: 'var(--text)', lineHeight: 1, fontWeight: 700 }}>GV PERFORMANCE</div>
-            <div style={{ ...B, fontSize: 10, letterSpacing: 3, color: 'var(--orange)', marginTop: 2 }}>GUIDO VOLS</div>
-          </div>
-        </a>
-        <ul className="nav-links" style={{ display: 'flex', gap: 36, listStyle: 'none' }}>
-          {[['#over', 'Over Guido'], ['#diensten', 'Diensten'], ['/pakketten', 'Pakketten'], ['#werkwijze', 'Werkwijze']].map(([href, label]) => (
-            <li key={href}>
-              <a href={href} style={{ ...B, fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>{label}</a>
-            </li>
-          ))}
-          <li>
-            <a href="#contact" style={{ ...B, fontSize: 13, letterSpacing: 1, textTransform: 'uppercase', color: '#000', background: 'var(--orange)', padding: '10px 22px', textDecoration: 'none', fontWeight: 700 }}>Kennismaking</a>
-          </li>
-        </ul>
-      </nav>
+      <Nav />
 
       {/* HERO */}
       <section style={{ minHeight: '92vh', position: 'relative', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
