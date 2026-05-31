@@ -11,15 +11,15 @@ export default async function CoachDashboard() {
   if (!user) redirect('/login')
 
   // Gebruik admin client om RLS te omzeilen
-  const { data: clients } = await supabaseAdmin
+  const { data: clients, error: clientsError } = await supabaseAdmin
     .from('client_profiles')
-    .select('id, sport, goal, profiles(full_name, email)')
+    .select('id, sport, goal, profiles!client_profiles_user_id_fkey(full_name, email)')
     .eq('coach_id', user.id)
     .order('created_at', { ascending: false })
 
   const { data: recentCheckins } = await supabaseAdmin
     .from('daily_checkins')
-    .select('id, checkin_date, energy_level, mood, morning_weight, notes, client_profiles(profiles(full_name))')
+    .select('id, checkin_date, energy_level, mood, morning_weight, notes, client_profiles!daily_checkins_client_id_fkey(profiles!client_profiles_user_id_fkey(full_name))')
     .order('checkin_date', { ascending: false })
     .limit(5)
 
