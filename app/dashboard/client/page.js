@@ -7,51 +7,58 @@ import { useRouter } from 'next/navigation'
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
 
+function getWeekStart() {
+  const now = new Date()
+  const day = now.getDay()
+  const monday = new Date(now)
+  monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1))
+  return monday.toISOString().split('T')[0]
+}
+
+function getWeekEnd() {
+  const now = new Date()
+  const day = now.getDay()
+  const sunday = new Date(now)
+  sunday.setDate(now.getDate() + (day === 0 ? 0 : 7 - day))
+  return sunday.toISOString().split('T')[0]
+}
+
 export default function ClientDashboard() {
-  const [user, setUser] = React.useState(null)
-  const [profile, setProfile] = React.useState(null)
-  const [todaySession, setTodaySession] = React.useState(null)
-  const [todayCheckin, setTodayCheckin] = React.useState(null)
+  const [data, setData] = React.useState(null)
   const [loading, setLoading] = React.useState(true)
   const router = useRouter()
   const supabase = createClient()
 
-  React.useEffect(() => {
-    loadData()
-  }, [])
+  React.useEffect(() => { loadAll() }, [])
 
-  const loadData = async () => {
+  const loadAll = async () => {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/login'); return }
-    setUser(user)
 
-    // Get client profile
-    const { data: clientProfile } = await supabase
-      .from('client_profiles')
-      .select('*, profiles(full_name)')
-      .eq('user_id', user.id)
-      .single()
-    setProfile(clientProfile)
+    const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
+    const { data: cp } = await supabase.from('client_profiles').select('id').eq('user_id', user.id).single()
 
-    // Get today's training session
+    if (!cp) { setLoading(false); return }
+
     const today = new Date().toISOString().split('T')[0]
-    const { data: session } = await supabase
-      .from('training_sessions')
-      .select(`*, session_exercises(*, exercises(*))`)
-      .eq('client_id', clientProfile?.id)
-      .eq('session_date', today)
-      .single()
-    setTodaySession(session)
 
-    // Get today's check-in
-    const { data: checkin } = await supabase
-      .from('daily_checkins')
-      .select('*')
-      .eq('client_id', clientProfile?.id)
-      .eq('checkin_date', today)
-      .single()
-    setTodayCheckin(checkin)
+    const [todaySession, todayCheckin, recentCheckins, weekSessions, feedback] = await Promise.all([
+      supabase.from('training_sessions').select('*, session_exercises(*, exercises(*))').eq('client_id', cp.id).eq('session_date', today).maybeSingle(),
+      supabase.from('daily_checkins').select('*').eq('client_id', cp.id).eq('checkin_date', today).maybeSingle(),
+      supabase.from('daily_checkins').select('*').eq('client_id', cp.id).order('checkin_date', { ascending: false }).limit(7),
+      supabase.from('training_sessions').select('*, session_exercises(count)').eq('client_id', cp.id).gte('session_date', getWeekStart()).lte('session_date', getWeekEnd()).order('day_of_week'),
+      supabase.from('coach_feedback').select('*').eq('client_id', cp.id).order('created_at', { ascending: false }).limit(5),
+    ])
 
+    setData({
+      naam: profile?.full_name?.split(' ')[0] || 'Atleet',
+      clientId: cp.id,
+      todaySession: todaySession.data,
+      todayCheckin: todayCheckin.data,
+      recentCheckins: recentCheckins.data || [],
+      weekSessions: weekSessions.data || [],
+      feedback: feedback.data || [],
+    })
     setLoading(false)
   }
 
@@ -60,18 +67,15 @@ export default function ClientDashboard() {
     router.push('/login')
   }
 
-  const today = new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })
-
   if (loading) return (
-    <div style={{ background: 'var(--dark)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ ...D, fontSize: 24, letterSpacing: 2, color: 'var(--orange)' }}>LADEN...</div>
-    </div>
+    <div style={{ background: 'var(--dark)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', ...D, fontSize: 24, color: 'var(--orange)' }}>LADEN...</div>
   )
+
+  const today = new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })
+  const DAYS = ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo']
 
   return (
     <div style={{ background: 'var(--dark)', minHeight: '100vh', ...B }}>
-
-      {/* Header */}
       <header style={{ background: 'var(--dark2)', borderBottom: '1px solid rgba(255,77,0,0.12)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <svg width="28" height="26" viewBox="0 0 36 34">
@@ -79,30 +83,26 @@ export default function ClientDashboard() {
             <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5" />
             <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5" />
           </svg>
-          <span style={{ ...D, fontSize: 18, letterSpacing: 3, fontWeight: 700, color: 'var(--text)' }}>GV PERFORMANCE</span>
+          <span style={{ ...D, fontSize: 18, letterSpacing: 3, fontWeight: 700 }}>GV PERFORMANCE</span>
         </div>
         <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
           <a href="/dashboard/client/checkin" style={{ ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--orange)', textDecoration: 'none' }}>Check-in</a>
-          <a href="/dashboard/client/history" style={{ ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>Historie</a>
+          <a href="/dashboard/client/week" style={{ ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>Week</a>
+          <a href="/dashboard/client/history" style={{ ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>Voortgang</a>
           <button onClick={handleSignOut} style={{ ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Uitloggen</button>
         </div>
       </header>
 
-      <main style={{ padding: '40px', maxWidth: 900, margin: '0 auto' }}>
-
-        {/* Welcome */}
-        <div style={{ marginBottom: 40 }}>
-          <div style={{ ...B, fontSize: 12, color: 'var(--muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 }}>
-            {today}
-          </div>
-          <h1 style={{ ...D, fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, letterSpacing: 1, color: 'var(--text)' }}>
-            WELKOM TERUG, <span style={{ color: 'var(--orange)' }}>{profile?.profiles?.full_name?.split(' ')[0]?.toUpperCase() || 'ATLEET'}</span>
+      <main style={{ padding: '40px', maxWidth: 1000, margin: '0 auto' }}>
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ ...B, fontSize: 12, color: 'var(--muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 }}>{today}</div>
+          <h1 style={{ ...D, fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 700, letterSpacing: 1 }}>
+            WELKOM, <span style={{ color: 'var(--orange)' }}>{data?.naam?.toUpperCase()}</span>
           </h1>
         </div>
 
-        {/* Check-in banner */}
-        {!todayCheckin && (
-          <a href="/dashboard/client/checkin" style={{ display: 'block', background: 'var(--orange-dim)', border: '1px solid rgba(255,77,0,0.4)', padding: '16px 24px', marginBottom: 32, textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {!data?.todayCheckin && (
+          <a href="/dashboard/client/checkin" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--orange-dim)', border: '1px solid rgba(255,77,0,0.4)', padding: '16px 24px', marginBottom: 28, textDecoration: 'none' }}>
             <div>
               <div style={{ ...D, fontSize: 16, fontWeight: 700, color: 'var(--orange)', letterSpacing: 1 }}>DAGELIJKSE CHECK-IN</div>
               <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>Je check-in van vandaag ontbreekt nog</div>
@@ -111,66 +111,126 @@ export default function ClientDashboard() {
           </a>
         )}
 
-        {/* Today's training */}
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ display: 'block', width: 20, height: 2, background: 'var(--orange)' }} />Training van vandaag
+        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 20 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+            {/* Today's training */}
+            <div>
+              <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ display: 'block', width: 20, height: 2, background: 'var(--orange)' }} />Training vandaag
+              </div>
+              {data?.todaySession ? (
+                <div style={{ background: 'var(--dark2)', padding: 24 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+                    <div>
+                      <div style={{ ...D, fontSize: 24, fontWeight: 700, letterSpacing: 1, marginBottom: 4 }}>{data.todaySession.session_name}</div>
+                      <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>{data.todaySession.session_type} · {data.todaySession.session_exercises?.length} oefeningen</div>
+                    </div>
+                    <a href={`/dashboard/client/session/${data.todaySession.id}`} style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', padding: '10px 20px', textDecoration: 'none' }}>Start →</a>
+                  </div>
+                  {data.todaySession.session_exercises?.slice(0, 5).map((ex, i) => (
+                    <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                      <span style={{ ...D, fontSize: 13, color: 'var(--orange)', fontWeight: 700, minWidth: 20 }}>{i + 1}</span>
+                      <span style={{ ...B, fontSize: 14, flex: 1 }}>{ex.exercises?.name}</span>
+                      <span style={{ ...B, fontSize: 12, color: 'var(--muted)' }}>{ex.sets}×{ex.reps}{ex.weight_kg ? ` @ ${ex.weight_kg}kg` : ''}</span>
+                    </div>
+                  ))}
+                  {data.todaySession.session_exercises?.length > 5 && (
+                    <div style={{ ...B, fontSize: 12, color: 'var(--muted)', paddingTop: 8 }}>+{data.todaySession.session_exercises.length - 5} meer oefeningen</div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ background: 'var(--dark2)', padding: 32, textAlign: 'center' }}>
+                  <div style={{ fontSize: 32, marginBottom: 10 }}>🎯</div>
+                  <div style={{ ...D, fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Geen training vandaag</div>
+                  <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>Hersteldag of coach heeft nog niets gepland.</div>
+                  <a href="/dashboard/client/week" style={{ display: 'inline-block', marginTop: 14, ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--orange)', textDecoration: 'none', borderBottom: '1px solid var(--orange)', paddingBottom: 2 }}>Bekijk weekschema →</a>
+                </div>
+              )}
+            </div>
+
+            {/* Week overview */}
+            <div>
+              <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ display: 'block', width: 20, height: 2, background: 'var(--orange)' }} />Deze week
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
+                {DAYS.map((day, i) => {
+                  const session = data?.weekSessions?.find(s => s.day_of_week === i + 1)
+                  const isToday = new Date().getDay() === (i === 6 ? 0 : i + 1)
+                  return (
+                    <div key={day} style={{ background: isToday ? 'rgba(255,77,0,0.1)' : 'var(--dark2)', border: `1px solid ${isToday ? 'rgba(255,77,0,0.4)' : 'transparent'}`, padding: '10px 8px', textAlign: 'center' }}>
+                      <div style={{ ...B, fontSize: 10, letterSpacing: 1, color: isToday ? 'var(--orange)' : 'var(--muted)', textTransform: 'uppercase', marginBottom: 6 }}>{day}</div>
+                      <div style={{ width: 8, height: 8, background: session ? 'var(--orange)' : 'var(--dark4)', borderRadius: '50%', margin: '0 auto' }} />
+                    </div>
+                  )
+                })}
+              </div>
+              <a href="/dashboard/client/week" style={{ display: 'block', textAlign: 'center', marginTop: 10, ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>Volledig weekschema →</a>
+            </div>
+
           </div>
 
-          {todaySession ? (
-            <div style={{ background: 'var(--dark2)', padding: '32px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
-                <div>
-                  <div style={{ ...D, fontSize: 28, fontWeight: 700, letterSpacing: 1, marginBottom: 4 }}>{todaySession.session_name}</div>
-                  <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>{todaySession.session_type} · {todaySession.session_exercises?.length} oefeningen</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+            {/* Coach feedback */}
+            {data?.feedback?.length > 0 && (
+              <div>
+                <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ display: 'block', width: 20, height: 2, background: 'var(--orange)' }} />Coach feedback
                 </div>
-                <a href={`/dashboard/client/session/${todaySession.id}`} style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', padding: '12px 24px', textDecoration: 'none' }}>
-                  Start training →
-                </a>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {data.feedback.map(f => (
+                    <div key={f.id} style={{ background: 'var(--dark2)', padding: '16px 20px', borderLeft: '3px solid var(--orange)' }}>
+                      <div style={{ ...B, fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>{new Date(f.created_at).toLocaleDateString('nl-NL')}</div>
+                      <div style={{ ...B, fontSize: 14, color: 'var(--text)', lineHeight: 1.6 }}>{f.message}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
 
-              {/* Exercise preview */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {todaySession.session_exercises?.slice(0, 4).map((ex, i) => (
-                  <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <div style={{ ...D, fontSize: 13, color: 'var(--orange)', fontWeight: 700, width: 24 }}>{i + 1}</div>
-                    <div style={{ flex: 1, ...D, fontSize: 16, fontWeight: 600, letterSpacing: 1 }}>{ex.exercises?.name}</div>
-                    <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>{ex.sets}x{ex.reps} {ex.weight_kg ? `@ ${ex.weight_kg}kg` : ''}</div>
-                  </div>
-                ))}
-                {todaySession.session_exercises?.length > 4 && (
-                  <div style={{ ...B, fontSize: 12, color: 'var(--muted)', paddingTop: 8 }}>+{todaySession.session_exercises.length - 4} meer oefeningen</div>
-                )}
+            {/* Recent check-ins */}
+            <div>
+              <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ display: 'block', width: 20, height: 2, background: 'var(--orange)' }} />Jouw check-ins
               </div>
+              {data?.recentCheckins?.length === 0 ? (
+                <div style={{ background: 'var(--dark2)', padding: 24, textAlign: 'center' }}>
+                  <div style={{ ...B, fontSize: 13, color: 'var(--muted)', marginBottom: 12 }}>Nog geen check-ins</div>
+                  <a href="/dashboard/client/checkin" style={{ ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--orange)', textDecoration: 'none' }}>Eerste check-in →</a>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {data.recentCheckins.slice(0, 5).map(c => (
+                    <div key={c.id} style={{ background: 'var(--dark2)', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ ...B, fontSize: 12, color: 'var(--muted)' }}>{new Date(c.checkin_date).toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}</div>
+                      <div style={{ display: 'flex', gap: 12 }}>
+                        {c.energy_level && <span style={{ ...B, fontSize: 12 }}>⚡{c.energy_level}</span>}
+                        {c.mood && <span style={{ ...B, fontSize: 12 }}>😊{c.mood}</span>}
+                        {c.morning_weight && <span style={{ ...D, fontSize: 13, fontWeight: 700, color: 'var(--orange)' }}>{c.morning_weight}kg</span>}
+                      </div>
+                    </div>
+                  ))}
+                  <a href="/dashboard/client/history" style={{ display: 'block', textAlign: 'center', padding: '10px', ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', background: 'var(--dark2)' }}>Alle check-ins →</a>
+                </div>
+              )}
             </div>
-          ) : (
-            <div style={{ background: 'var(--dark2)', padding: '40px', textAlign: 'center' }}>
-              <div style={{ fontSize: 40, marginBottom: 16 }}>🎯</div>
-              <div style={{ ...D, fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Geen training gepland vandaag</div>
-              <div style={{ ...B, fontSize: 14, color: 'var(--muted)' }}>Hersteldag of je coach heeft nog niets ingepland.</div>
+
+            {/* Quick actions */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+              <a href="/dashboard/client/checkin" style={{ background: 'var(--dark2)', padding: 20, textDecoration: 'none', textAlign: 'center' }}>
+                <div style={{ fontSize: 24, marginBottom: 6 }}>📊</div>
+                <div style={{ ...D, fontSize: 14, fontWeight: 700, letterSpacing: 1, color: 'var(--text)' }}>CHECK-IN</div>
+              </a>
+              <a href="/dashboard/client/history" style={{ background: 'var(--dark2)', padding: 20, textDecoration: 'none', textAlign: 'center' }}>
+                <div style={{ fontSize: 24, marginBottom: 6 }}>📈</div>
+                <div style={{ ...D, fontSize: 14, fontWeight: 700, letterSpacing: 1, color: 'var(--text)' }}>VOORTGANG</div>
+              </a>
             </div>
-          )}
-        </div>
 
-        {/* Quick stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
-          <a href="/dashboard/client/week" style={{ background: 'var(--dark2)', padding: '24px', textDecoration: 'none', display: 'block' }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>📅</div>
-            <div style={{ ...D, fontSize: 18, fontWeight: 700, letterSpacing: 1, color: 'var(--text)', marginBottom: 4 }}>WEEKSCHEMA</div>
-            <div style={{ ...B, fontSize: 12, color: 'var(--muted)' }}>Bekijk je trainingen deze week</div>
-          </a>
-          <a href="/dashboard/client/checkin" style={{ background: 'var(--dark2)', padding: '24px', textDecoration: 'none', display: 'block' }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>📊</div>
-            <div style={{ ...D, fontSize: 18, fontWeight: 700, letterSpacing: 1, color: 'var(--text)', marginBottom: 4 }}>CHECK-IN</div>
-            <div style={{ ...B, fontSize: 12, color: 'var(--muted)' }}>Hoe voel je je vandaag?</div>
-          </a>
-          <a href="/dashboard/client/history" style={{ background: 'var(--dark2)', padding: '24px', textDecoration: 'none', display: 'block' }}>
-            <div style={{ fontSize: 24, marginBottom: 8 }}>📈</div>
-            <div style={{ ...D, fontSize: 18, fontWeight: 700, letterSpacing: 1, color: 'var(--text)', marginBottom: 4 }}>VOORTGANG</div>
-            <div style={{ ...B, fontSize: 12, color: 'var(--muted)' }}>Bekijk jouw progressie</div>
-          </a>
+          </div>
         </div>
-
       </main>
     </div>
   )
