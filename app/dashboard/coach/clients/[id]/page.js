@@ -161,6 +161,10 @@ export default async function ClientDetail({ params }) {
             </div>
           )}
         </div>
+
+        {/* Feedback panel */}
+        <FeedbackPanel clientId={id} checkIns={checkIns || []} />
+
       </main>
     </div>
   )
