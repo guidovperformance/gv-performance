@@ -65,8 +65,8 @@ export default async function ClientDetail({ params }) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <a href={`/dashboard/coach/clients/${id}/plan/new`} style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', padding: '12px 24px', textDecoration: 'none' }}>+ Trainingsplan</a>
-            <a href={`/dashboard/coach/clients/${id}/test/new`} style={{ border: '1px solid var(--muted2)', color: 'var(--text)', ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', padding: '12px 24px', textDecoration: 'none' }}>+ Testresultaat</a>
+            <a href={`/dashboard/coach/clients/${id}/test/new`} style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', padding: '12px 24px', textDecoration: 'none' }}>+ Trainingsplan</a>
+            <a href={`/dashboard/coach/clients/${id}/test`} style={{ border: '1px solid var(--muted2)', color: 'var(--text)', ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', padding: '12px 24px', textDecoration: 'none' }}>📊 Testen</a>
           </div>
         </div>
 
