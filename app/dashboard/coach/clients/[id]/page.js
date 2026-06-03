@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
+import FeedbackPanel from './FeedbackPanel'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
