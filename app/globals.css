@@ -36,77 +36,100 @@ body {
 }
 
 .font-display { font-family: var(--font-display); }
-.font-body { font-family: var(--font-body); }
+.font-body    { font-family: var(--font-body); }
 
-/* ── MOBILE RESPONSIVE ── */
+/* ─── SCROLLBAR ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--dark2); }
+::-webkit-scrollbar-thumb { background: var(--muted2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--orange); }
+
+/* ─── SELECTIE ────────────────────────────────────────────────── */
+::selection { background: rgba(255, 77, 0, 0.3); color: var(--text); }
+
+/* ─── FOCUS RING ──────────────────────────────────────────────── */
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+
+/* ─── MOBILE RESPONSIVE ───────────────────────────────────────── */
+
+/* Header nav: verberg labels op mobiel */
+@media (max-width: 640px) {
+  header {
+    padding: 12px 16px !important;
+  }
+}
+
+/* Dashboard grids: 1 kolom op mobiel */
 @media (max-width: 768px) {
-  .site-nav {
-    padding: 16px 20px !important;
-  }
-  .nav-links {
-    display: none !important;
-  }
-  .hamburger {
-    display: flex !important;
-  }
-  .hero-content {
-    padding: 40px 24px !important;
-    max-width: 100% !important;
-  }
-  .hero-buttons {
-    flex-direction: column !important;
-  }
-  .hero-buttons a {
-    text-align: center;
-  }
-  .site-ribbon {
-    padding: 12px 20px !important;
-    gap: 10px !important;
-  }
-  .section-about {
-    grid-template-columns: 1fr !important;
-    padding: 60px 24px !important;
-    gap: 32px !important;
-  }
-  .about-photo {
-    aspect-ratio: 4/3 !important;
-  }
-  .section-padding {
-    padding: 60px 24px !important;
-  }
-  .diensten-grid {
+  .responsive-grid-2 {
     grid-template-columns: 1fr !important;
   }
-  .process-grid {
+  .responsive-grid-3 {
     grid-template-columns: 1fr !important;
   }
-  .milestones-grid {
-    grid-template-columns: 1fr !important;
+  .responsive-grid-4 {
+    grid-template-columns: 1fr 1fr !important;
   }
-  .section-contact {
-    grid-template-columns: 1fr !important;
-    padding: 60px 24px !important;
-    gap: 40px !important;
+  .responsive-padding {
+    padding: 20px 16px !important;
   }
-  .form-row {
-    grid-template-columns: 1fr !important;
+}
+
+/* Public website nav */
+nav ul {
+  list-style: none;
+}
+
+/* Hamburger menu */
+.hamburger-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: block;
   }
-  .site-footer {
-    padding: 30px 20px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 20px !important;
+  .desktop-nav {
+    display: none;
   }
-  .footer-links {
-    gap: 16px !important;
+  .desktop-nav.open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--dark2);
+    z-index: 100;
+    padding: 80px 40px 40px;
+    align-items: flex-start;
+    gap: 24px;
   }
-  .pakketten-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .addons-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .bedrijven-grid {
-    grid-template-columns: 1fr !important;
-  }
+}
+
+/* Inputs */
+input[type="date"],
+input[type="number"],
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+  color-scheme: dark;
+}
+
+/* Range slider */
+input[type="range"] {
+  accent-color: var(--orange);
+}
+
+/* Buttons */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+}
+
+/* Links */
+a {
+  color: inherit;
 }
