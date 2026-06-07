@@ -7,23 +7,22 @@ export default async function Dashboard() {
 
   if (!user) redirect('/login')
 
-  // Probeer profiel op te halen
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single()
 
+  // Correcte role-based redirect
   if (profile?.role === 'coach') redirect('/dashboard/coach')
   if (profile?.role === 'client') redirect('/dashboard/client')
 
-  // Geen profiel gevonden — kijk in auth metadata als fallback
-  const role = user.user_metadata?.role || user.raw_user_meta_data?.role
+  // FIXED: geen profiel gevonden → toon wacht-pagina i.p.v. coach dashboard
+  // Dit kan bij nieuwe gebruikers waar de trigger nog bezig is
+  if (error || !profile) {
+    // Wacht even en probeer opnieuw via client-side redirect
+    redirect('/dashboard/wachten')
+  }
 
-  if (role === 'coach') redirect('/dashboard/coach')
-  if (role === 'client') redirect('/dashboard/client')
-
-  // Absolute fallback — stuur naar coach als laatste optie
-  // (voorkomt redirect loop met /login)
   redirect('/dashboard/coach')
 }

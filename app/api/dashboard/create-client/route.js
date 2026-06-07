@@ -1,11 +1,5 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
-
-const supabaseAdmin = createSupabaseClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
+import { supabaseAdmin } from '@/lib/supabase/admin'  // FIXED: gebruik gedeelde admin client
 
 export async function POST(request) {
   try {
@@ -13,53 +7,65 @@ export async function POST(request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return Response.json({ error: 'Niet ingelogd' }, { status: 401 })
 
+    // Controleer of ingelogde user coach is
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    if (profile?.role !== 'coach') return Response.json({ error: 'Geen toegang' }, { status: 403 })
+
     const { naam, email, sport, doel, geboortedatum, notities } = await request.json()
-    if (!naam || !email) return Response.json({ error: 'Naam en email zijn verplicht.' }, { status: 400 })
+    if (!naam?.trim() || !email?.trim()) {
+      return Response.json({ error: 'Naam en email zijn verplicht.' }, { status: 400 })
+    }
 
-    // Stap 1: Invite aanmaken
-    const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-      data: { full_name: naam, role: 'client' },
-      redirectTo: 'https://gvperformance.nl/auth/confirm',
-    })
+    // Valideer email formaat
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return Response.json({ error: 'Ongeldig e-mailadres.' }, { status: 400 })
+    }
 
-    if (inviteError) return Response.json({ error: inviteError.message }, { status: 400 })
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gvperformance.nl'
+
+    // Stuur uitnodiging
+    const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
+      email.toLowerCase().trim(),
+      {
+        data: { full_name: naam.trim(), role: 'client' },
+        redirectTo: `${siteUrl}/auth/callback?next=/auth/set-password`,
+      }
+    )
+
+    if (inviteError) {
+      if (inviteError.message?.includes('already registered')) {
+        return Response.json({ error: 'Dit e-mailadres heeft al een account.' }, { status: 400 })
+      }
+      return Response.json({ error: inviteError.message }, { status: 400 })
+    }
 
     const userId = inviteData.user.id
 
-    // Stap 2: Forceer role='client' via directe SQL — ongeacht wat de trigger deed
-    const { error: roleError } = await supabaseAdmin
-      .from('profiles')
-      .update({ role: 'client', full_name: naam })
-      .eq('id', userId)
+    // Profiel aanmaken
+    await supabaseAdmin.from('profiles').upsert(
+      { id: userId, full_name: naam.trim(), role: 'client', email: email.toLowerCase().trim() },
+      { onConflict: 'id' }
+    )
 
-    // Als update mislukt (profiel nog niet aangemaakt door trigger), insert het
-    if (roleError) {
-      await supabaseAdmin.from('profiles').insert({
-        id: userId,
-        email: email,
-        full_name: naam,
-        role: 'client',
-      })
+    // Client profiel aanmaken
+    const { error: profileError } = await supabaseAdmin.from('client_profiles').insert({
+      user_id: userId,
+      coach_id: user.id,
+      sport: sport?.trim() || null,
+      goal: doel?.trim() || null,
+      date_of_birth: geboortedatum || null,
+      notes: notities?.trim() || null,
+    })
+
+    if (profileError) {
+      console.error('Client profile error:', profileError)
+      return Response.json({ error: `Profiel aanmaken mislukt: ${profileError.message}` }, { status: 500 })
     }
 
-    // Stap 3: Klantprofiel aanmaken
-    const { error: profileError } = await supabaseAdmin
-      .from('client_profiles')
-      .insert({
-        user_id: userId,
-        coach_id: user.id,
-        sport: sport || null,
-        goal: doel || null,
-        date_of_birth: geboortedatum || null,
-        notes: notities || null,
-      })
-
-    if (profileError) return Response.json({ error: `Profiel mislukt: ${profileError.message}` }, { status: 500 })
-
     return Response.json({ success: true, userId })
-
   } catch (error) {
     console.error('Create client error:', error)
-    return Response.json({ error: 'Er ging iets mis.' }, { status: 500 })
+    return Response.json({ error: 'Er ging iets mis. Probeer opnieuw.' }, { status: 500 })
   }
 }
