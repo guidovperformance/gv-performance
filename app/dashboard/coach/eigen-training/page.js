@@ -186,6 +186,258 @@ function LvlBar({ t, raw }) {
   )
 }
 
+
+// ══ BJJ FUNDAMENTALS PLAN ══════════════════════════════════════
+
+const BJJ_PHASES = [
+  { id:1, label:"FASE 1", title:"Overleven & Ontsnappen", weken:"Weken 1–4", color:"#ff5e6b",
+    doel:"Je ontsnapt consistent uit alle dominante posities. Je laat je niet zomaar vasthouden.",
+    sparring:"Week 1–2: alleen white belts · Week 3–4: ook blue belts",
+    trainingen:[
+      { n:"Training 1", focus:"Side Control Escape", doel:"Terugkomen naar guard of half guard vanuit side control" },
+      { n:"Training 2", focus:"Mount Escape",        doel:"Hip escape of bridge naar half guard, weg van onder mount" },
+      { n:"Training 3", focus:"Back Escape",         doel:"Rug naar mat draaien, in guard komen, seatbelt breken" },
+      { n:"Training 4", focus:"Vrij Sparen",         doel:"Doel: niet gesubmit worden. Alle ontsnappingen toepassen." },
+    ]},
+  { id:2, label:"FASE 2", title:"Guard Spelen & Behouden", weken:"Weken 5–8", color:"#3dffa0",
+    doel:"Je guard wordt niet zomaar gepasst. Je bent actief vanuit guard en creëert kansen.",
+    sparring:"White belts + blue belts · Bewust vanuit guard spelen",
+    trainingen:[
+      { n:"Training 1", focus:"Guard Retention",        doel:"Als ze proberen te passen, guard terugkrijgen" },
+      { n:"Training 2", focus:"Closed Guard Aanvallen", doel:"Actief werken naar sweep of submission vanuit closed guard" },
+      { n:"Training 3", focus:"Half Guard",             doel:"Vanuit half guard: terug naar full guard of sweep initiëren" },
+      { n:"Training 4", focus:"Vrij Sparen",            doel:"Doel: guard niet laten passen. Bewust in guard positie beginnen." },
+    ]},
+  { id:3, label:"FASE 3", title:"Guard Passen & Progressie", weken:"Weken 9–12", color:"#38e8e8",
+    doel:"Je past consistent de guard en houdt positie vast na de pass.",
+    sparring:"Blue belts + 1x per week purple belt als je er klaar voor bent",
+    trainingen:[
+      { n:"Training 1", focus:"Guard Breken",           doel:"Guard openen en eerste pass richting inzetten" },
+      { n:"Training 2", focus:"Guard Passen",           doel:"Pass afmaken en landen in side control" },
+      { n:"Training 3", focus:"Positional Progression", doel:"Na pass: side control → mount → back — positie vasthouden" },
+      { n:"Training 4", focus:"Vrij Sparen",            doel:"Doel: altijd proberen te passen + positie zo lang mogelijk vasthouden." },
+    ]},
+  { id:4, label:"FASE 4", title:"Dominantie & Submissions", weken:"Weken 13–16", color:"#a78bfa",
+    doel:"Je houdt dominante positie vast en werkt consequent naar een submission.",
+    sparring:"Blue belts + purple belts · Elke spar afronden met submission poging",
+    trainingen:[
+      { n:"Training 1", focus:"Side Control + Submission", doel:"Positie vasthouden en werken naar een submission vanuit side control" },
+      { n:"Training 2", focus:"Mount + Submission",        doel:"Laag naar hoog mount opbouwen en werken naar submission" },
+      { n:"Training 3", focus:"Back Control + Submission", doel:"Seatbelt vasthouden, haken controleren, werken naar finish" },
+      { n:"Training 4", focus:"Vrij Sparen",               doel:"Doel: elke spar eindigen met een actieve submission poging." },
+    ]},
+  { id:5, label:"FASE 5", title:"Eigen Game Ontwikkelen", weken:"Weken 17–20", color:"#ffe066",
+    doel:"Je identificeert jouw A-game en gaat met specifieke taken de mat op.",
+    sparring:"Purple belts · Specifieke opdrachten per spar — strategie bewust testen",
+    trainingen:[
+      { n:"Training 1", focus:"Guard → Submission",      doel:"Specifieke taak: iemand vanuit guard submitten" },
+      { n:"Training 2", focus:"Sterkste Pass Verfijnen", doel:"De pass die voor jou het beste werkt verder slijpen" },
+      { n:"Training 3", focus:"Hogere Belt Sparring",    doel:"Tegen purple belt met specifiek doel sparen" },
+      { n:"Training 4", focus:"Vrij Sparen",             doel:"Doel: jouw eigen game spelen. Wat werkt voor jouw lichaam en tempo?" },
+    ]},
+]
+
+function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval, bjpActivePhase, setBjpActivePhase }) {
+  const C2 = { bg:"#060a0e", bg2:"#0d1520", bd:"#1a2840", tx:"#dde8f5", mt:"#4a6380" }
+  const mo = (x={}) => ({ fontFamily:"'JetBrains Mono',monospace", ...x })
+  const sy = (x={}) => ({ fontFamily:"'Syne',sans-serif", ...x })
+  const scoreColors = ["","#ff5e6b","#ff9a3c","#ffe066","#3dffa0","#38e8e8"]
+  const scoreLabels = ["","Niet goed","Matig","Oké","Goed","Top!"]
+  const curPh = BJJ_PHASES.find(p=>p.id===bjp.currentPhase)||BJJ_PHASES[0]
+
+  const saveEval = () => {
+    if(!bjpEval.tekst.trim()) return
+    setBjp(p=>({ ...p, evaluations:[
+      { phase:bjp.currentPhase, week:bjp.currentWeek, score:bjpEval.score,
+        tekst:bjpEval.tekst.trim(), bijz:bjpEval.bijzonderheden.trim(),
+        datum:new Date().toISOString().split("T")[0] },
+      ...p.evaluations].slice(0,40) }))
+    setBjpEval({ score:3, tekst:"", bijzonderheden:"" })
+    setBjpShowEval(false)
+  }
+
+  return (
+    <div>
+      <div style={mo({fontSize:9,letterSpacing:3,color:"#a78bfa",marginBottom:16,fontWeight:600})}>🥋 BJJ FUNDAMENTALS PLAN — 5 MAANDEN</div>
+
+      {/* Progress */}
+      <div style={{background:C2.bg2,border:"1px solid #a78bfa33",borderRadius:10,padding:"14px 16px",marginBottom:12}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <div>
+            <div style={mo({fontSize:8,letterSpacing:2,color:"#a78bfa",marginBottom:3})}>HUIDIGE POSITIE</div>
+            <div style={sy({fontSize:15,fontWeight:700,color:"#dde8f5"})}>{curPh.label}: {curPh.title}</div>
+            <div style={mo({fontSize:9,color:"#4a6380",marginTop:2})}>Week {bjp.currentWeek} van 4 · {curPh.weken}</div>
+          </div>
+          <button onClick={()=>setBjpShowEval(v=>!v)}
+            style={mo({background:"#a78bfa22",border:"1px solid #a78bfa44",borderRadius:6,padding:"7px 12px",color:"#a78bfa",cursor:"pointer",fontSize:9,fontWeight:700,letterSpacing:2})}>
+            + EVALUATIE
+          </button>
+        </div>
+        <div style={{display:"flex",gap:3,marginBottom:4}}>
+          {BJJ_PHASES.map(ph=>(
+            <div key={ph.id} style={{flex:1,height:3,borderRadius:2,
+              background:ph.id<bjp.currentPhase?ph.color:ph.id===bjp.currentPhase?ph.color+"88":"#1a2840"}}/>
+          ))}
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between"}}>
+          {BJJ_PHASES.map(ph=>(
+            <div key={ph.id} style={mo({fontSize:7,color:ph.id===bjp.currentPhase?ph.color:"#4a6380",letterSpacing:1})}>{ph.label}</div>
+          ))}
+        </div>
+      </div>
+
+      {/* Fase + week navigator */}
+      <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
+        <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380"})}>FASE:</div>
+        {BJJ_PHASES.map(ph=>(
+          <button key={ph.id} onClick={()=>setBjp(p=>({...p,currentPhase:ph.id,currentWeek:1}))}
+            style={mo({padding:"4px 8px",borderRadius:4,border:`1px solid ${bjp.currentPhase===ph.id?ph.color:C2.bd}`,
+              background:bjp.currentPhase===ph.id?ph.color+"18":"transparent",
+              color:bjp.currentPhase===ph.id?ph.color:"#4a6380",cursor:"pointer",fontSize:9,fontWeight:600})}>
+            {ph.label}
+          </button>
+        ))}
+        <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginLeft:6})}>WEEK:</div>
+        {[1,2,3,4].map(w=>(
+          <button key={w} onClick={()=>setBjp(p=>({...p,currentWeek:w}))}
+            style={mo({padding:"4px 8px",borderRadius:4,border:`1px solid ${bjp.currentWeek===w?curPh.color:C2.bd}`,
+              background:bjp.currentWeek===w?curPh.color+"18":"transparent",
+              color:bjp.currentWeek===w?curPh.color:"#4a6380",cursor:"pointer",fontSize:9,fontWeight:600})}>
+            W{w}
+          </button>
+        ))}
+      </div>
+
+      {/* Eval form */}
+      {bjpShowEval&&(
+        <div style={{background:C2.bg2,border:"1px solid #a78bfa33",borderRadius:10,padding:"14px 16px",marginBottom:12}}>
+          <div style={mo({fontSize:8,letterSpacing:3,color:"#a78bfa",marginBottom:10,fontWeight:600})}>EVALUATIE — {curPh.label} WEEK {bjp.currentWeek}</div>
+          <div style={{marginBottom:10}}>
+            <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginBottom:6})}>SCORE</div>
+            <div style={{display:"flex",gap:6}}>
+              {[1,2,3,4,5].map(v=>(
+                <button key={v} onClick={()=>setBjpEval(e=>({...e,score:v}))}
+                  style={{flex:1,padding:"8px",borderRadius:6,border:`1px solid ${bjpEval.score===v?scoreColors[v]:C2.bd}`,
+                    background:bjpEval.score===v?scoreColors[v]+"22":"transparent",
+                    color:bjpEval.score===v?scoreColors[v]:"#4a6380",cursor:"pointer",
+                    fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:700}}>
+                  {v}
+                </button>
+              ))}
+            </div>
+            {bjpEval.score>0&&<div style={mo({fontSize:9,color:scoreColors[bjpEval.score],marginTop:4})}>{scoreLabels[bjpEval.score]}</div>}
+          </div>
+          <div style={{marginBottom:8}}>
+            <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginBottom:5})}>HOE GING HET?</div>
+            <textarea rows={3} value={bjpEval.tekst} onChange={e=>setBjpEval(ev=>({...ev,tekst:e.target.value}))}
+              placeholder="Wat werkte? Waar loop je tegenaan? Wat viel op?"
+              style={{width:"100%",background:"#060a0e",border:"1px solid #1a2840",borderRadius:6,color:"#dde8f5",
+                fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"8px 10px",resize:"vertical",outline:"none",colorScheme:"dark"}}/>
+          </div>
+          <div style={{marginBottom:10}}>
+            <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginBottom:5})}>BIJZONDERHEDEN (optioneel)</div>
+            <input type="text" value={bjpEval.bijzonderheden} onChange={e=>setBjpEval(ev=>({...ev,bijzonderheden:e.target.value}))}
+              placeholder="Blessure, doorbraak, iets wat klikte..."
+              style={{width:"100%",background:"#060a0e",border:"1px solid #1a2840",borderRadius:6,color:"#dde8f5",
+                fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"8px 10px",outline:"none",colorScheme:"dark"}}/>
+          </div>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={saveEval}
+              style={mo({flex:1,background:"#a78bfa22",border:"1px solid #a78bfa55",borderRadius:6,padding:"8px",color:"#a78bfa",cursor:"pointer",fontSize:9,fontWeight:700,letterSpacing:2})}>
+              OPSLAAN
+            </button>
+            <button onClick={()=>setBjpShowEval(false)}
+              style={mo({background:"transparent",border:"1px solid #1a2840",borderRadius:6,padding:"8px 14px",color:"#4a6380",cursor:"pointer",fontSize:9})}>
+              Annuleer
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Phase cards */}
+      <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:14}}>
+        {BJJ_PHASES.map(ph=>{
+          const isActive=ph.id===bjp.currentPhase
+          const isDone=ph.id<bjp.currentPhase
+          const isOpen=bjpActivePhase===ph.id
+          return (
+            <div key={ph.id} style={{background:C2.bg2,border:`1px solid ${isActive?ph.color+"44":isDone?ph.color+"22":C2.bd}`,borderRadius:10,overflow:"hidden"}}>
+              <button onClick={()=>setBjpActivePhase(isOpen?null:ph.id)}
+                style={{width:"100%",background:"transparent",border:"none",padding:"12px 14px",cursor:"pointer",textAlign:"left",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div style={{display:"flex",alignItems:"center",gap:10}}>
+                  <div style={{width:30,height:30,borderRadius:6,background:ph.color+"18",border:`1px solid ${ph.color}33`,
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    fontFamily:"'JetBrains Mono',monospace",fontSize:9,fontWeight:700,color:ph.color,flexShrink:0}}>
+                    {isDone?"✓":ph.id}
+                  </div>
+                  <div>
+                    <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+                      <span style={mo({fontSize:9,letterSpacing:2,color:ph.color,fontWeight:700})}>{ph.label}</span>
+                      {isActive&&<span style={{...mo({fontSize:8}),background:ph.color+"18",border:`1px solid ${ph.color}33`,color:ph.color,padding:"1px 6px",borderRadius:3}}>ACTIEF</span>}
+                      {isDone&&<span style={{...mo({fontSize:8}),background:"#3dffa018",border:"1px solid #3dffa033",color:"#3dffa0",padding:"1px 6px",borderRadius:3}}>VOLTOOID</span>}
+                    </div>
+                    <div style={sy({fontSize:13,fontWeight:700,color:"#dde8f5"})}>{ph.title}</div>
+                    <div style={mo({fontSize:9,color:"#4a6380",marginTop:1})}>{ph.weken}</div>
+                  </div>
+                </div>
+                <div style={mo({fontSize:10,color:"#4a6380"})}>{isOpen?"▲":"▼"}</div>
+              </button>
+              {isOpen&&(
+                <div style={{padding:"0 14px 14px",borderTop:`1px solid ${ph.color}22`}}>
+                  <div style={{background:"#060a0e",border:`1px solid ${ph.color}22`,borderRadius:7,padding:"10px 12px",margin:"12px 0"}}>
+                    <div style={mo({fontSize:8,letterSpacing:2,color:ph.color,marginBottom:4,fontWeight:600})}>FASE DOELSTELLING</div>
+                    <div style={mo({fontSize:11,color:"#dde8f5",lineHeight:1.6})}>{ph.doel}</div>
+                  </div>
+                  <div style={{display:"flex",flexDirection:"column",gap:5,marginBottom:10}}>
+                    {ph.trainingen.map((t,i)=>(
+                      <div key={i} style={{display:"flex",gap:10,padding:"9px 12px",background:"#060a0e",border:`1px solid ${C2.bd}`,borderRadius:7,alignItems:"flex-start"}}>
+                        <div style={{minWidth:70,flexShrink:0}}>
+                          <div style={mo({fontSize:8,letterSpacing:1,color:ph.color,fontWeight:700})}>{t.n}</div>
+                          <div style={mo({fontSize:10,color:"#dde8f5",fontWeight:600,marginTop:2})}>{t.focus}</div>
+                        </div>
+                        <div style={mo({fontSize:10,color:"#4a6380",lineHeight:1.5,flex:1})}>→ {t.doel}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{background:"#060a0e",border:`1px solid ${C2.bd}`,borderRadius:7,padding:"8px 12px"}}>
+                    <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginBottom:3,fontWeight:600})}>SPARRING OPBOUW</div>
+                    <div style={mo({fontSize:10,color:"#dde8f5",lineHeight:1.5})}>{ph.sparring}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* History */}
+      {bjp.evaluations.length>0&&(
+        <div>
+          <div style={mo({fontSize:8,letterSpacing:3,color:"#4a6380",marginBottom:8,fontWeight:600})}>EVALUATIE GESCHIEDENIS</div>
+          <div style={{display:"flex",flexDirection:"column",gap:5}}>
+            {bjp.evaluations.slice(0,8).map((ev,i)=>{
+              const phD=BJJ_PHASES.find(p=>p.id===ev.phase)||BJJ_PHASES[0]
+              return (
+                <div key={i} style={{background:C2.bg2,border:`1px solid ${phD.color}22`,borderRadius:8,padding:"10px 14px"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                    <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                      <span style={mo({fontSize:8,color:phD.color,fontWeight:700,letterSpacing:1})}>{phD.label} W{ev.week}</span>
+                      <span style={{...mo({fontSize:8,fontWeight:700}),color:scoreColors[ev.score]}}>{scoreLabels[ev.score]}</span>
+                    </div>
+                    <span style={mo({fontSize:8,color:"#4a6380"})}>{ev.datum}</span>
+                  </div>
+                  <div style={mo({fontSize:10,color:"#dde8f5",lineHeight:1.5})}>{ev.tekst}</div>
+                  {ev.bijz&&<div style={mo({fontSize:9,color:"#4a6380",marginTop:3,fontStyle:"italic"})}>↗ {ev.bijz}</div>}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function Schema() {
   const [tab,setTab]=useState("dash")
   const [phase,setPhase]=useState(0)
@@ -195,6 +447,11 @@ function Schema() {
   const [scores,setScores]=useState(DC)
   const [expandedTest,setExpandedTest]=useState(null)
   const [mounted,setMounted]=useState(false)
+  const BJP_DEFAULT = { currentPhase:1, currentWeek:1, evaluations:[], startDate:null }
+  const [bjp,setBjp]=useState(BJP_DEFAULT)
+  const [bjpEval,setBjpEval]=useState({ score:3, tekst:"", bijzonderheden:"" })
+  const [bjpShowEval,setBjpShowEval]=useState(false)
+  const [bjpActivePhase,setBjpActivePhase]=useState(null)
 
   useEffect(()=>{
     setMounted(true)
@@ -209,6 +466,10 @@ function Schema() {
         if(p.activeDay) setActiveDay(p.activeDay)
       }
     } catch(e){}
+    try {
+      const savedBjp=localStorage.getItem("bjj_plan_v1")
+      if(savedBjp) setBjp(p=>({...BJP_DEFAULT,...JSON.parse(savedBjp)}))
+    } catch(e){}
   },[])
 
   useEffect(()=>{
@@ -216,6 +477,12 @@ function Schema() {
     try { localStorage.setItem("megafit_v1",JSON.stringify({settings,daily,scores,phase,activeDay})) }
     catch(e){}
   },[settings,daily,scores,phase,activeDay,mounted])
+
+  useEffect(()=>{
+    if(!mounted) return
+    try { localStorage.setItem("bjj_plan_v1",JSON.stringify(bjp)) }
+    catch(e){}
+  },[bjp,mounted])
 
   const updS=(k,v)=>setSettings(s=>({...s,[k]:parseFloat(v)||v}))
   const updD=(k,v)=>setDaily(d=>({...d,[k]:v}))
@@ -288,7 +555,7 @@ function Schema() {
 
         {/* TABS */}
         <div style={{display:"flex",gap:4,marginBottom:14}}>
-          {[["dash","📊 Dashboard"],["tests","🔬 Tests"],["schema","📅 Schema"],["inst","⚙️ Instellingen"]].map(([id,lb])=>(
+          {[["dash","📊 Dashboard"],["tests","🔬 Tests"],["schema","📅 Schema"],["bjj","🥋 BJJ Plan"],["inst","⚙️ Instellingen"]].map(([id,lb])=>(
             <button key={id} onClick={()=>setTab(id)}
               style={M({flex:1,background:tab===id?"#111d2e":"transparent",border:`1px solid ${tab===id?"#2a3d55":C.bd}`,borderRadius:6,padding:"8px 4px",cursor:"pointer",color:tab===id?C.tx:C.mt,fontSize:10,fontWeight:600})}>
               {lb}
@@ -577,6 +844,16 @@ function Schema() {
               )}
             </div>
           </>
+        )}
+
+
+        {/* ══ BJJ PLAN ══ */}
+        {tab==="bjj"&&(
+          <div>
+            <BJJPlan bjp={bjp} setBjp={setBjp} bjpEval={bjpEval} setBjpEval={setBjpEval}
+              bjpShowEval={bjpShowEval} setBjpShowEval={setBjpShowEval}
+              bjpActivePhase={bjpActivePhase} setBjpActivePhase={setBjpActivePhase} />
+          </div>
         )}
 
         {/* ══ INSTELLINGEN ══ */}
