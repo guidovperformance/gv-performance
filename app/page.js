@@ -456,11 +456,12 @@ export default function Homepage() {
           </div>
         </div>
         <div className="hero-right">
-          <div className="hero-photo">
-            <div className="hero-photo-icon">📷</div>
-            <div className="hero-photo-hint">FOTO: MILITAIRE INSTRUCTEUR</div>
-            <div className="hero-photo-label">Foto van jou met soldaten op het veld</div>
-          </div>
+          <img
+            src="/hero.jpg"
+            alt="Guido Vols — GV Performance coach"
+            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center top', display:'block' }}
+            onError={e => { e.target.style.display='none' }}
+          />
         </div>
       </section>
 
@@ -483,9 +484,13 @@ export default function Homepage() {
 
       {/* OVER GUIDO */}
       <section className="about" id="over">
-        <div className="about-photo fade-in">
-          <div className="hero-photo-icon">📷</div>
-          <div className="about-photo-label">Foto: portret of squat/training</div>
+        <div className="about-photo fade-in" style={{overflow:'hidden', border:'none'}}>
+          <img
+            src="/about.jpg"
+            alt="Guido Vols — personal coach Den Haag"
+            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center top', display:'block' }}
+            onError={e => { e.target.style.display='none' }}
+          />
         </div>
         <div className="fade-in delay-1">
           <div className="section-label">Over Guido</div>
