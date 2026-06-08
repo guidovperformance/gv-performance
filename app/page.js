@@ -460,7 +460,7 @@ export default function Homepage() {
           <img
             src="/hero.jpg"
             alt="Guido Vols — GV Performance coach"
-            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'left top', display:'block' }}
+            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'25% top', display:'block' }}
             onError={e => { e.target.style.display='none' }}
           />
         </div>
