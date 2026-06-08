@@ -435,6 +435,7 @@ export default function Homepage() {
           <li><a href="#over">Over Guido</a></li>
           <li><a href="#diensten">Diensten</a></li>
           <li><a href="#werkwijze">Werkwijze</a></li>
+          <li><a href="/pakketten">Pakketten</a></li>
           <li><a href="#contact" className="nav-cta">Kennismaking</a></li>
         </ul>
       </nav>
@@ -459,7 +460,7 @@ export default function Homepage() {
           <img
             src="/hero.jpg"
             alt="Guido Vols — GV Performance coach"
-            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center top', display:'block' }}
+            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'left top', display:'block' }}
             onError={e => { e.target.style.display='none' }}
           />
         </div>
@@ -469,7 +470,7 @@ export default function Homepage() {
       <div className="ribbon">
         {[
           'Korps Mariniers',
-          '🥇 Gouden Medaille NL Elftal',
+          '🥇 Gouden Medaille Nederlands Team',
           'Defensie Sport Instructeur',
           'NBB Boxing Trainer KSS 3',
           'KNAU Looptrainer',
@@ -497,7 +498,7 @@ export default function Homepage() {
           <h2 className="section-title">VAN GOUDEN PLAK TOT SPORTINSTRUCTEUR</h2>
           <div className="about-quote">&ldquo;Ik heb mijn eigen methode bewezen — aan mijzelf.&rdquo;</div>
           <p className="about-text">
-            Vanaf mijn <strong>17e speelde ik ijshockey op het hoogste niveau van Nederland</strong>. In mijn laatste seizoen voor de Korps Mariniers opleiding vertegenwoordigde ik <strong>het Nederlands mannen team</strong> en behaalden we een <strong>gouden medaille</strong>. Daarna: de Mariniers.
+            Vanaf mijn <strong>17e speelde ik ijshockey op het hoogste niveau van Nederland</strong>. In mijn laatste seizoen voor de Korps Mariniers opleiding vertegenwoordigde ik <strong>het Nederlands Team</strong> en behaalden we een <strong>gouden medaille</strong>. Daarna: de Mariniers.
           </p>
           <p className="about-text" style={{marginTop:0}}>
             Tien jaar lang geen hockey. Maar twee jaar geleden besloot ik terug te gaan — en door mijn eigen methodiek voor off-ice ontwikkeling wist ik <strong>opnieuw door te stromen naar het hoogste niveau van Nederland</strong>. Dat is niet geluk. Dat is een systeem.
@@ -508,7 +509,7 @@ export default function Homepage() {
           <div className="milestones">
             {[
               ['17 JAAR','Hoogste IJshockeycompetitie Nederland'],
-              ['GOUD 🥇','Nederlands Mannen IJshockeyteam'],
+              ['GOUD 🥇','Nederlands IJshockeyteam'],
               ['MARINIERS','Korps Mariniers opleiding & dienst'],
               ['COMEBACK','Terug op topniveau na 10 jaar, eigen methode'],
             ].map(([jaar, tekst]) => (
