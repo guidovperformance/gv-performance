@@ -3,133 +3,194 @@
 @tailwind utilities;
 
 :root {
-  --orange: #FF4D00;
-  --orange-dim: rgba(255, 77, 0, 0.15);
-  --dark: #0A0A0A;
-  --dark2: #111111;
-  --dark3: #181818;
-  --dark4: #222222;
-  --text: #F0EEE8;
-  --muted: #888888;
-  --muted2: #555555;
+  /* ── Achtergrond palette (lichter dan voorheen) ── */
+  --dark:    #141414;    /* pagina achtergrond */
+  --dark2:   #1a1a1a;    /* header / sidebar */
+  --dark3:   #222222;    /* input velden */
+  --dark4:   #2a2a2a;    /* donkere accenten */
+  --card:    #1e1e1e;    /* kaart achtergrond */
+
+  /* ── Oranje accent ── */
+  --orange:      #FF4D00;
+  --orange-dim:  rgba(255, 77, 0, 0.10);
+  --orange-mid:  rgba(255, 77, 0, 0.20);
+
+  /* ── Tekst ── */
+  --text:    #f0ede8;    /* hoofdtekst (iets warmer dan wit) */
+  --muted:   #888888;    /* secondaire tekst */
+  --muted2:  #444444;    /* hints / placeholders */
+
+  /* ── Borders ── */
+  --border:       rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --border-orange: rgba(255,77,0,0.25);
+
+  /* ── Radius tokens ── */
+  --r-card:  16px;   /* kaarten */
+  --r-btn:   10px;   /* knoppen */
+  --r-pill:  20px;   /* badges / pills */
+  --r-input: 10px;   /* input velden */
+
+  /* ── Spacing ── */
+  --page-px: clamp(16px, 5vw, 24px);
+
+  /* ── Fonts ── */
   --font-display: var(--font-oswald), Impact, sans-serif;
-  --font-body: var(--font-barlow), sans-serif;
+  --font-body:    var(--font-barlow), sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
+/* ─── RESET ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   background: var(--dark);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 17px;
-  line-height: 1.65;
+  font-size: 16px;
+  line-height: 1.6;
   overflow-x: hidden;
+  /* ruimte voor bottom nav op mobiel */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.font-display { font-family: var(--font-display); }
-.font-body    { font-family: var(--font-body); }
+/* ─── TYPOGRAPHY HELPERS ─────────────────────────── */
+.display { font-family: var(--font-display); }
+.body    { font-family: var(--font-body); }
 
-/* ─── SCROLLBAR ───────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--dark2); }
-::-webkit-scrollbar-thumb { background: var(--muted2); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--orange); }
+/* ─── SCROLLBAR ──────────────────────────────────── */
+::-webkit-scrollbar            { width: 4px; height: 4px; }
+::-webkit-scrollbar-track      { background: transparent; }
+::-webkit-scrollbar-thumb      { background: var(--muted2); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover{ background: var(--orange); }
 
-/* ─── SELECTIE ────────────────────────────────────────────────── */
-::selection { background: rgba(255, 77, 0, 0.3); color: var(--text); }
+/* ─── SELECTIE ───────────────────────────────────── */
+::selection { background: rgba(255,77,0,0.25); color: var(--text); }
 
-/* ─── FOCUS RING ──────────────────────────────────────────────── */
-:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+/* ─── FOCUS ──────────────────────────────────────── */
+:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; border-radius: 4px; }
 
-/* ─── MOBILE RESPONSIVE ───────────────────────────────────────── */
-
-/* Header nav: verberg labels op mobiel */
-@media (max-width: 640px) {
-  header {
-    padding: 12px 16px !important;
-  }
-}
-
-/* Dashboard grids: 1 kolom op mobiel */
-@media (max-width: 768px) {
-  .responsive-grid-2 {
-    grid-template-columns: 1fr !important;
-  }
-  .responsive-grid-3 {
-    grid-template-columns: 1fr !important;
-  }
-  .responsive-grid-4 {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  .responsive-padding {
-    padding: 20px 16px !important;
-  }
-}
-
-/* Public website nav */
-nav ul {
-  list-style: none;
-}
-
-/* Hamburger menu */
-.hamburger-menu {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .hamburger-menu {
-    display: block;
-  }
-  .desktop-nav {
-    display: none;
-  }
-  .desktop-nav.open {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--dark2);
-    z-index: 100;
-    padding: 80px 40px 40px;
-    align-items: flex-start;
-    gap: 24px;
-  }
-}
-
-/* Inputs */
-input[type="date"],
-input[type="number"],
-input[type="text"],
-input[type="email"],
-select,
-textarea {
+/* ─── INPUTS GLOBAL ──────────────────────────────── */
+input, select, textarea {
   color-scheme: dark;
+  background: var(--dark3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: var(--r-input);
+  font-family: var(--font-body);
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-orange);
+  outline: none;
+}
+input[type="range"] { accent-color: var(--orange); }
+
+/* ─── BUTTONS GLOBAL ─────────────────────────────── */
+button:disabled { opacity: 0.5; cursor: not-allowed !important; }
+
+/* ─── LINKS ──────────────────────────────────────── */
+a { color: inherit; text-decoration: none; }
+
+/* ─── BOTTOM NAV RUIMTE ──────────────────────────── */
+.has-bottom-nav {
+  padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Range slider */
-input[type="range"] {
-  accent-color: var(--orange);
+/* ─── CARD ───────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border-radius: var(--r-card);
+  border: 1px solid var(--border);
+  padding: 18px;
+}
+.card-orange {
+  border-color: var(--border-orange);
 }
 
-/* Buttons */
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed !important;
+/* ─── BADGE / PILL ───────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.badge-orange { background: var(--orange-dim); color: var(--orange); }
+.badge-green  { background: rgba(74,222,128,0.1); color: #4ade80; }
+.badge-muted  { background: rgba(255,255,255,0.06); color: var(--muted); }
+
+/* ─── SECTION LABEL ──────────────────────────────── */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--orange);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: var(--orange);
+  border-radius: 1px;
+  flex-shrink: 0;
 }
 
-/* Links */
-a {
-  color: inherit;
+/* ─── BOTTOM NAV ─────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--dark2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
 }
+.bottom-nav a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.bottom-nav a.active { color: var(--orange); }
+.bottom-nav .nav-icon {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 600px) {
+  .hide-mobile { display: none !important; }
+  .stack-mobile { flex-direction: column !important; }
+  .grid-mobile-1 { grid-template-columns: 1fr !important; }
+  .grid-mobile-2 { grid-template-columns: 1fr 1fr !important; }
+}
+@media (min-width: 601px) {
+  .hide-desktop { display: none !important; }
+}
+
+/* ─── PUBLIC WEBSITE (nav, etc.) ─────────────────── */
+nav ul { list-style: none; }
