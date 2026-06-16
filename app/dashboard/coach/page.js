@@ -12,7 +12,7 @@ export default async function CoachDashboard() {
 
   const { data: clients } = await supabaseAdmin
     .from('client_profiles')
-    .select('id, sport, goal, created_at, profiles(full_name, email)')
+    .select('id, sport, goal, created_at, profiles!client_profiles_user_id_fkey(full_name, email)')
     .eq('coach_id', user.id)
     .order('created_at', { ascending: false })
 
@@ -20,7 +20,7 @@ export default async function CoachDashboard() {
 
   const { data: recentCheckins } = await supabaseAdmin
     .from('daily_checkins')
-    .select('id, checkin_date, energy_level, mood, morning_weight, notes, client_id, client_profiles(profiles(full_name))')
+    .select('id, checkin_date, energy_level, mood, morning_weight, notes, client_id, client_profiles(profiles!client_profiles_user_id_fkey(full_name))')
     .in('client_id', clients?.map(c => c.id) || [])
     .order('checkin_date', { ascending: false })
     .limit(8)

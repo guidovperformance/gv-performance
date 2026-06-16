@@ -15,7 +15,7 @@ export default async function ClientDetail({ params }) {
   // Query zonder FK hint — simpelste form werkt het meest betrouwbaar
   const { data: client, error: clientError } = await supabaseAdmin
     .from('client_profiles')
-    .select('*, profiles(full_name, email)')
+    .select('*, profiles!client_profiles_user_id_fkey(full_name, email)')
     .eq('id', id)
     .maybeSingle()
 

@@ -67,7 +67,7 @@ export default async function TestOverview({ params }) {
 
   const { data: client } = await supabaseAdmin
     .from('client_profiles')
-    .select('*, profiles(full_name)')
+    .select('*, profiles!client_profiles_user_id_fkey(full_name)')
     .eq('id', id)
     .single()
 
