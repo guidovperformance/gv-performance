@@ -2,12 +2,16 @@
 import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { TopBar } from '@/app/dashboard/client/page'
+import { TopBar } from '@/app/dashboard/client/components'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
 
 export default function SessionPage({ params }) {
+  // FIXED: unwrap params Promise correctly
+  const resolvedParams = React.use(params)
+  const sessionId = resolvedParams?.id
+
   const [session, setSession] = React.useState(null)
   const [logs, setLogs] = React.useState({})
   const [rpe, setRpe] = React.useState(7)
@@ -18,7 +22,7 @@ export default function SessionPage({ params }) {
   const router = useRouter()
   const supabase = createClient()
 
-  React.useEffect(() => { params.then(p => loadSession(p.id)) }, [params])
+  React.useEffect(() => { if (sessionId) loadSession(sessionId) }, [sessionId])
 
   const loadSession = async (sid) => {
     const { data: { user } } = await supabase.auth.getUser()

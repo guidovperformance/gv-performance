@@ -42,12 +42,12 @@ const DC = {
 }
 
 const PHASES = [
-  { id:0, lb:"TEST", dates:"8–14 jun",      color:"#ffe066", bg:"rgba(255,224,102,.07)", title:"Testweek" },
-  { id:1, lb:"F1",   dates:"15 jun–13 jul", color:"#4ade80", bg:"rgba(74,222,128,.07)",  title:"Hypertrofie & Basis" },
-  { id:2, lb:"F2",   dates:"14 jul–10 aug", color:"#facc15", bg:"rgba(250,204,21,.07)",  title:"Maximale Kracht" },
-  { id:3, lb:"F3",   dates:"11 aug–7 sep",  color:"#fb923c", bg:"rgba(251,146,60,.07)",  title:"Power & Explosiviteit" },
-  { id:4, lb:"F4",   dates:"8 sep–5 okt",   color:"#818cf8", bg:"rgba(129,140,248,.07)", title:"Sport-Specific Peak" },
-  { id:5, lb:"F5",   dates:"6 okt–nov",     color:"#f87171", bg:"rgba(248,113,113,.07)", title:"Onderhoud" },
+  { id:0, lb:"TEST", dates:"1 week · Testweek",      color:"#ffe066", bg:"rgba(255,224,102,.07)", title:"Testweek" },
+  { id:1, lb:"F1",   dates:"4 weken · Hypertrofie", color:"#4ade80", bg:"rgba(74,222,128,.07)",  title:"Hypertrofie & Basis" },
+  { id:2, lb:"F2",   dates:"4 weken · Kracht", color:"#facc15", bg:"rgba(250,204,21,.07)",  title:"Maximale Kracht" },
+  { id:3, lb:"F3",   dates:"4 weken · Power",  color:"#fb923c", bg:"rgba(251,146,60,.07)",  title:"Power & Explosiviteit" },
+  { id:4, lb:"F4",   dates:"4 weken · Sport-Specific",   color:"#818cf8", bg:"rgba(129,140,248,.07)", title:"Sport-Specific Peak" },
+  { id:5, lb:"F5",   dates:"4 weken · Onderhoud",     color:"#f87171", bg:"rgba(248,113,113,.07)", title:"Onderhoud" },
 ]
 
 const MOB = [
@@ -147,25 +147,25 @@ function buildWeek(ph, dlORM, bpORM, MAS, st) {
     :[`4×4 min @ ${intHR} bpm (90% max HR)`,iDist?`Roeier: ${iDist}m per interval`:"Vul 1500m in voor exacte afstand","Rust: 3 min volledig passief",masLvl?`MAS niveau: ${masLvl}`:""].filter(Boolean)
 
   if (ph===0) return [
-    {day:"MA",lb:"Ma 9 jun",type:"test",title:"🔬 TEST — Sessie 1 + 2",time:"07:00–09:30 · 13:00–15:15",ss:[
+    {day:"MA",lb:"Dag 1",type:"test",title:"🔬 TEST — Sessie 1 + 2",time:"07:00–09:30 · 13:00–15:15",ss:[
       {n:"SESSIE 1 — Mobility + Power + Kracht",it:["🔍 Mobility Screen — 5 checks 🔴/🟡/🟢","🦘 Broad Jump — 3 pogingen, hiel tot lijn","🔄 Illinois Agility — start prone, 2 pogingen","🏋️ AMF Hexbar DL: 60kg×6 → 90kg×3 → 120kg max (1-5 reps = geldig ✓)","🏋️ AMF Bench Press: 45kg×6 → 65kg×3 → 85kg max | spotter verplicht"]},
       {n:"SESSIE 2 — Endurance + Conditie",it:["💪 Max Strict Pull-ups (pronated, dood hang, kin boven stang)",`💪 BP @ lichaamsgewicht max reps — 10 min rust na pull-ups`,"✊ Dead Hang Hold — volledig uitgehangen tot grip verlies","🧱 Plank Hold — neutrale rug, stop bij eerste vormbreuk","🏃 400m Sprint EERST — verse benen! 15 min rust daarna","🫁 1500m Loop — max effort, kalibreert alle interval paces",`🪣 Farmer's Carry — ${bwH}kg/hand, max afstand, 10 min rust`]},
     ]},
-    {day:"DI",lb:"Di 10 jun",type:"bjj",title:"🥋 BJJ — Licht herstel",time:"06:30 of 12:00",ss:[{n:"BJJ",it:["Rustige drilling — geen zwaar sparren"]}]},
-    {day:"WO",lb:"Wo 11 jun",type:"rest",title:"🧘 Optioneel Mobiliteit",time:"Flex",ss:[{n:"Optioneel",it:["Mobiliteitswerk op basis van 🔴 scores"]}]},
-    {day:"DO",lb:"Do 12 jun",type:"rest",title:"😴 Rust",time:"—",ss:[{n:"Rust",it:["Volledig herstel"]}]},
-    {day:"VR",lb:"Vr 13 jun",type:"rest",title:"🚶 Licht activering",time:"Flex",ss:[{n:"Optioneel",it:["Wandelen 30 min of lichte mobiliteit"]}]},
-    {day:"ZA",lb:"Za 14 jun",type:"rest",title:"😴 Rust",time:"—",ss:[{n:"Rust",it:["Scores bekijken en analyseren"]}]},
-    {day:"ZO",lb:"Zo 15 jun",type:"bjj",title:"🥋 BJJ",time:"GI of No-Gi",ss:[{n:"BJJ",it:["Eerste sessie na testweek"]}]},
+    {day:"DI",lb:"Dag 2",type:"bjj",title:"🥋 BJJ — Licht herstel",time:"06:30 of 12:00",ss:[{n:"BJJ",it:["Rustige drilling — geen zwaar sparren"]}]},
+    {day:"WO",lb:"Dag 3",type:"rest",title:"🧘 Optioneel Mobiliteit",time:"Flex",ss:[{n:"Optioneel",it:["Mobiliteitswerk op basis van 🔴 scores"]}]},
+    {day:"DO",lb:"Dag 4",type:"rest",title:"😴 Rust",time:"—",ss:[{n:"Rust",it:["Volledig herstel"]}]},
+    {day:"VR",lb:"Dag 5",type:"rest",title:"🚶 Licht activering",time:"Flex",ss:[{n:"Optioneel",it:["Wandelen 30 min of lichte mobiliteit"]}]},
+    {day:"ZA",lb:"Dag 6",type:"rest",title:"😴 Rust",time:"—",ss:[{n:"Rust",it:["Scores bekijken en analyseren"]}]},
+    {day:"ZO",lb:"Dag 7",type:"bjj",title:"🥋 BJJ",time:"GI of No-Gi",ss:[{n:"BJJ",it:["Eerste sessie na testweek"]}]},
   ]
   return [
-    {day:"MA",lb:"Maandag",type:"strength",title:"💪 Kracht — Lower Body",time:"07:00–08:30 (werk)",ss:[{n:"Warm-up (15 min)",it:WU_L},{n:`Hoofdtraining (${ph<=2?55:45} min)`,it:MA[ph]||[]},{n:"Cool-down (10 min)",it:CD_L}]},
-    {day:"DI",lb:"Dinsdag",type:"bjj",title:"🥋 BJJ",time:"06:30 No-Gi of 12:00 GI",ss:[{n:"BJJ Training",it:["06:30 No-Gi of 12:00 GI — keuze op de dag","Thuisdag — family time = herstel","HRV 🔴 = alleen drilling","Geen extra training"]}]},
-    {day:"WO",lb:"Woensdag",type:"strength+bjj",title:"💪 Kracht Upper + 🥋 BJJ 19:00",time:"07:00 werk + 19:00 BJJ",ss:[{n:"Warm-up (12 min)",it:WU_U},{n:`Kracht Upper (${ph<=2?55:45} min)`,it:WO[ph]||[]},{n:"Cool-down (8 min)",it:CD_U},{n:"🥋 BJJ 19:00 GI",it:["Technisch + sparren","HRV 🔴 = techniek only"]}]},
-    {day:"DO",lb:"Donderdag",type:"vo2",title:"🫁 Noorse 4×4 Intervals",time:"07:00–08:00 (werk)",ss:[{n:"Mobiliteit warm-up (15 min)",it:["Foam roller 5 min","90/90 heupen, thoracale rotatie","Dynamisch stretchen"]},{n:`${ph===1?"Conditie Opbouw":"Noorse 4×4 min"} (30–35 min)`,it:DO_IT},{n:"Cool-down (10 min)",it:["Schouder stretch 3×45 sec","Bewuste ademhaling 5 min"]}]},
-    {day:"VR",lb:"Vrijdag",type:"power+lsd+bjj",title:"⚡ Power + 🚴 LSD + 🥋 BJJ 19:00",time:"07:00 + 12:00 + 19:00",ss:[{n:"⚡ POWER (07:00–07:45)",it:[...WU_L.slice(0,2),...(VR[ph]||[])]},{n:"🚴 LSD BIKE (12:00–12:45)",it:[`Stationaire bike of roeier @ ${lsdHR} bpm (70% max HR)`,MAS?`Tempo: ~${(MAS*.70*3.6).toFixed(1)} km/h`:"70% max HR — rustig en gecontroleerd","Cadans: 80–90 RPM"]},{n:"🥋 BJJ 19:00 GI",it:["Zwaar sparren","HRV 🔴 = techniek only"]}]},
-    {day:"ZA",lb:"Zaterdag",type:"optional",title:"🎯 Andere sport / Rust",time:"Keuze",ss:[{n:"Kies op HRV",it:["🧗 Klimmen","🏊 Zwemmen","🏓 Padel","🚵 MTB","😴 Rust als HRV 🟡 of 🔴"]}]},
-    {day:"ZO",lb:"Zondag",type:"bjj",title:"🥋 BJJ — Voorkeur",time:"GI of No-Gi",ss:[{n:"BJJ Training",it:["Voorkeur zondag — GI of No-Gi naar keuze","HRV 🔴 = drilling of rust"]}]},
+    {day:"MA",lb:"Dag 1",type:"strength",title:"💪 Kracht — Lower Body",time:"07:00–08:30 (werk)",ss:[{n:"Warm-up (15 min)",it:WU_L},{n:`Hoofdtraining (${ph<=2?55:45} min)`,it:MA[ph]||[]},{n:"Cool-down (10 min)",it:CD_L}]},
+    {day:"DI",lb:"Dag 2",type:"bjj",title:"🥋 BJJ",time:"06:30 No-Gi of 12:00 GI",ss:[{n:"BJJ Training",it:["06:30 No-Gi of 12:00 GI — keuze op de dag","Thuisdag — family time = herstel","HRV 🔴 = alleen drilling","Geen extra training"]}]},
+    {day:"WO",lb:"Dag 3",type:"strength+bjj",title:"💪 Kracht Upper + 🥋 BJJ 19:00",time:"07:00 werk + 19:00 BJJ",ss:[{n:"Warm-up (12 min)",it:WU_U},{n:`Kracht Upper (${ph<=2?55:45} min)`,it:WO[ph]||[]},{n:"Cool-down (8 min)",it:CD_U},{n:"🥋 BJJ 19:00 GI",it:["Technisch + sparren","HRV 🔴 = techniek only"]}]},
+    {day:"DO",lb:"Dag 4",type:"vo2",title:"🫁 Noorse 4×4 Intervals",time:"07:00–08:00 (werk)",ss:[{n:"Mobiliteit warm-up (15 min)",it:["Foam roller 5 min","90/90 heupen, thoracale rotatie","Dynamisch stretchen"]},{n:`${ph===1?"Conditie Opbouw":"Noorse 4×4 min"} (30–35 min)`,it:DO_IT},{n:"Cool-down (10 min)",it:["Schouder stretch 3×45 sec","Bewuste ademhaling 5 min"]}]},
+    {day:"VR",lb:"Dag 5",type:"power+lsd+bjj",title:"⚡ Power + 🚴 LSD + 🥋 BJJ 19:00",time:"07:00 + 12:00 + 19:00",ss:[{n:"⚡ POWER (07:00–07:45)",it:[...WU_L.slice(0,2),...(VR[ph]||[])]},{n:"🚴 LSD BIKE (12:00–12:45)",it:[`Stationaire bike of roeier @ ${lsdHR} bpm (70% max HR)`,MAS?`Tempo: ~${(MAS*.70*3.6).toFixed(1)} km/h`:"70% max HR — rustig en gecontroleerd","Cadans: 80–90 RPM"]},{n:"🥋 BJJ 19:00 GI",it:["Zwaar sparren","HRV 🔴 = techniek only"]}]},
+    {day:"ZA",lb:"Dag 6",type:"optional",title:"🎯 Andere sport / Rust",time:"Keuze",ss:[{n:"Kies op HRV",it:["🧗 Klimmen","🏊 Zwemmen","🏓 Padel","🚵 MTB","😴 Rust als HRV 🟡 of 🔴"]}]},
+    {day:"ZO",lb:"Dag 7",type:"bjj",title:"🥋 BJJ — Voorkeur",time:"GI of No-Gi",ss:[{n:"BJJ Training",it:["Voorkeur zondag — GI of No-Gi naar keuze","HRV 🔴 = drilling of rust"]}]},
   ]
 }
 

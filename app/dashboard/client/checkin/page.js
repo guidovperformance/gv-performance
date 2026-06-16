@@ -2,7 +2,7 @@
 import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { BottomNav, TopBar } from '@/app/dashboard/client/page'
+import { BottomNav, TopBar } from '@/app/dashboard/client/components'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
