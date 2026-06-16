@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
@@ -6,32 +7,44 @@ const B = { fontFamily: 'var(--font-barlow), sans-serif' }
 
 export default async function ClientDetail({ params }) {
   const { id } = await params
+  // Auth check via reguliere client (heeft cookie-sessie nodig)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: client } = await supabase
+  // Query zonder FK hint — simpelste form werkt het meest betrouwbaar
+  const { data: client, error: clientError } = await supabaseAdmin
     .from('client_profiles')
     .select('*, profiles(full_name, email)')
     .eq('id', id)
-    .single()
+    .maybeSingle()
 
-  if (!client) redirect('/dashboard/coach')
+  if (clientError) console.error('Client detail query error:', clientError)
 
-  const { data: testResults } = await supabase
+  if (!client) {
+    return (
+      <div style={{ background: '#0A0A0A', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, fontFamily: 'sans-serif' }}>
+        <div style={{ fontSize: 22, color: '#FF4D00', letterSpacing: 2, fontWeight: 700 }}>KLANT NIET GEVONDEN</div>
+        <div style={{ fontSize: 13, color: '#888' }}>De klant kon niet worden geladen. Controleer of het account actief is.</div>
+        <a href="/dashboard/coach" style={{ fontSize: 13, color: '#FF4D00', textDecoration: 'underline', marginTop: 8 }}>← Terug naar coach dashboard</a>
+      </div>
+    )
+  }
+
+  const { data: testResults } = await supabaseAdmin
     .from('test_results')
     .select('*')
     .eq('client_id', id)
     .order('test_date', { ascending: false })
 
-  const { data: checkIns } = await supabase
+  const { data: checkIns } = await supabaseAdmin
     .from('daily_checkins')
     .select('*')
     .eq('client_id', id)
     .order('checkin_date', { ascending: false })
     .limit(10)
 
-  const { data: macroPlan } = await supabase
+  const { data: macroPlan } = await supabaseAdmin
     .from('macro_plans')
     .select('*, meso_cycles(*, training_sessions(*))')
     .eq('client_id', id)
