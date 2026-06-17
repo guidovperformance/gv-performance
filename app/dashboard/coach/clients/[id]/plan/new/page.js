@@ -127,14 +127,10 @@ export default function NewPlan({ params }) {
 
   const addExercise = (weekIdx, sIdx) => {
     const sessionType = sessions[weekIdx]?.[sIdx]?.type || 'kracht'
-    const isConditie   = sessionType === 'conditie'
-    const isMobiliteit = sessionType === 'mobiliteit'
+    // Altijd standaard kracht - coach past type aan per oefening
     const defaults = {
-      name: '', sets: isConditie ? 4 : 3,
-      reps: isConditie || isMobiliteit ? '' : '8-10',
-      weight: '', rest: isConditie ? 180 : isMobiliteit ? 30 : 90,
-      notes: '',
-      ex_mode: isConditie ? 'conditie' : isMobiliteit ? 'mobiliteit' : 'kracht',
+      name: '', sets: 3, reps: '8-10', weight: '', rest: 90, notes: '',
+      ex_mode: 'kracht',
       distance: '400', tempo: '5:00', hold_s: '30', hold_type: 'statisch',
     }
     setSessions(prev => ({
@@ -410,10 +406,9 @@ export default function NewPlan({ params }) {
                         <div style={{ marginBottom: 10 }}>
                           {session.exercises.map((ex, eIdx) => {
                             const sessionType = session.type
-                            const mode = ex.ex_mode || (sessionType === 'conditie' ? 'conditie' : sessionType === 'mobiliteit' ? 'mobiliteit' : 'kracht')
+                            const mode = ex.ex_mode || 'kracht'
                             const isConditie   = mode === 'conditie'
                             const isMobiliteit = mode === 'mobiliteit'
-                            const isGecomb     = sessionType === 'gecombineerd'
                             const tMin = ex.tempo ? (() => { try { const p = String(ex.tempo).split(':'); return parseInt(p[0]) + parseInt(p[1]||0)/60 } catch { return null } })() : null
                             const speed = tMin && tMin > 0 ? (60/tMin).toFixed(1) : null
                             return (
@@ -423,17 +418,15 @@ export default function NewPlan({ params }) {
                                   <button onClick={() => removeExercise(selectedMeso, sIdx, eIdx)} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', fontSize: 14, padding: 0 }}>✕</button>
                                 </div>
 
-                                {/* Mode toggle voor gecombineerd */}
-                                {isGecomb && (
-                                  <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
-                                    {['kracht', 'conditie', 'mobiliteit'].map(m => (
-                                      <button key={m} onClick={() => setExercise(selectedMeso, sIdx, eIdx, 'ex_mode', m)}
-                                        style={{ flex: 1, padding: '4px 8px', background: mode === m ? '#FB923C' : 'var(--dark3)', color: mode === m ? '#000' : 'var(--muted)', border: `1px solid ${mode === m ? '#FB923C' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 10, fontWeight: mode === m ? 700 : 400, textTransform: 'uppercase', letterSpacing: 1 }}>
-                                        {m}
-                                      </button>
-                                    ))}
-                                  </div>
-                                )}
+                                {/* Type toggle — altijd zichtbaar voor elke oefening */}
+                                <div style={{ display: 'flex', gap: 4, marginBottom: 10 }}>
+                                  {['kracht', 'conditie', 'mobiliteit'].map(m => (
+                                    <button key={m} onClick={() => setExercise(selectedMeso, sIdx, eIdx, 'ex_mode', m)}
+                                      style={{ flex: 1, padding: '5px 8px', background: mode === m ? (m==='kracht'?'#4ade80':m==='conditie'?'#38e8e8':'#a78bfa') : 'var(--dark3)', color: mode === m ? '#000' : 'var(--muted)', border: `1px solid ${mode === m ? (m==='kracht'?'#4ade80':m==='conditie'?'#38e8e8':'#a78bfa') : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 10, fontWeight: mode === m ? 700 : 400, textTransform: 'uppercase', letterSpacing: 1 }}>
+                                      {m}
+                                    </button>
+                                  ))}
+                                </div>
 
                                 {/* KRACHT velden */}
                                 {!isConditie && !isMobiliteit && (

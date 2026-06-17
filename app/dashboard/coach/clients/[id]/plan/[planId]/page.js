@@ -31,7 +31,6 @@ export default function PlanView({ params }) {
   const [mesos, setMesos] = React.useState([])
   const [wi, setWi] = React.useState(0)
   const [sessions, setSessions] = React.useState([])
-  const [exLib, setExLib] = React.useState([])
   const [loading, setLoading] = React.useState(true)
   const [deleting, setDeleting] = React.useState(false)
   const router = useRouter()
@@ -56,8 +55,6 @@ export default function PlanView({ params }) {
     const { data: m } = await supabase.from('meso_cycles').select('*').eq('macro_plan_id', ids.planId).order('week_number')
     setMesos(m || [])
     if (m?.length) await loadWeek(m[0].id)
-    const { data: ex } = await supabase.from('exercises').select('id,name').order('name')
-    setExLib(ex || [])
     setLoading(false)
   }
 
@@ -104,7 +101,7 @@ export default function PlanView({ params }) {
 
   const saveEx = async (ex, sType) => {
     const d = parseMode(ex.notes)
-    const mode = ex._mode || d?._mode || (sType==='conditie'?'conditie':sType==='mobiliteit'?'mobiliteit':'kracht')
+    const mode = ex._mode || d?._mode || 'kracht'
     let reps=null, wkg=null, notes=null
     if (mode==='conditie') {
       const spd = calcSpeed(ex._tempo||d?.tempo||'')
@@ -114,18 +111,17 @@ export default function PlanView({ params }) {
     } else {
       reps = ex.reps||'8-10'; wkg = ex.weight_kg?parseFloat(ex.weight_kg):null; notes = ex._notes||null
     }
-    await supabase.from('session_exercises').update({ sets:parseInt(ex.sets)||3, reps, weight_kg:wkg, rest_seconds:parseInt(ex.rest_seconds)||90, notes }).eq('id', ex.id)
+    await supabase.from('session_exercises').update({ exercise_name: ex.exercise_name || ex._name || 'Oefening', sets:parseInt(ex.sets)||3, reps, weight_kg:wkg, rest_seconds:parseInt(ex.rest_seconds)||90, notes }).eq('id', ex.id)
   }
 
   const addEx = async (s) => {
-    if (!exLib.length) { alert('Voeg eerst oefeningen toe aan de bibliotheek'); return }
-    const isC = s.session_type==='conditie', isM = s.session_type==='mobiliteit'
-    const notes = isC ? JSON.stringify({_mode:'conditie',distance_m:400,rest_s:180,tempo:'5:00',speed_kmh:12}) :
-                  isM ? JSON.stringify({_mode:'mobiliteit',hold_s:30,hold_type:'statisch',rest_s:30}) : null
+    // Nieuwe oefening met lege naam - coach typt zelf in
+    const notes = JSON.stringify({ _mode: 'kracht' }) // standaard kracht, coach kan wijzigen
     await supabase.from('session_exercises').insert({
-      session_id:s.id, exercise_id:exLib[0].id,
-      sets:isC?4:3, reps:isC||isM?null:'8-10', rest_seconds:isC?180:isM?30:90, notes,
-      order_index:s.session_exercises?.length||0
+      session_id: s.id,
+      exercise_name: 'Nieuwe oefening',
+      sets: 3, reps: '8-10', rest_seconds: 90, notes,
+      order_index: s.session_exercises?.length || 0
     })
     await loadWeek(mesos[wi].id)
   }
@@ -254,35 +250,38 @@ export default function PlanView({ params }) {
 
                   {s.session_exercises?.map((ex) => {
                     const d = parseMode(ex.notes)
-                    const mode = ex._mode||d?._mode||(s.session_type==='conditie'?'conditie':s.session_type==='mobiliteit'?'mobiliteit':'kracht')
+                    const mode = ex._mode || d?._mode || 'kracht'
                     const isC = mode==='conditie', isM = mode==='mobiliteit'
                     const tempo = ex._tempo||d?.tempo||''
                     const spd = calcSpeed(tempo)
+                    const exName = ex._name ?? ex.exercise_name ?? ex.exercises?.name ?? ''
                     return (
                       <div key={ex.id} style={{ background:'var(--dark3)', padding:'12px 14px', marginBottom:8, borderLeft:`2px solid ${TC[mode]||tc}` }}>
-                        {/* Naam + mode toggle */}
+                        {/* Naam (vrij tekstveld) + verwijder */}
                         <div style={{ display:'grid', gridTemplateColumns:'1fr 28px', gap:8, marginBottom:8 }}>
-                          <select value={ex.exercise_id} style={{...inp,fontWeight:600,fontSize:14}}
-                            onChange={async e=>{
-                              const f=exLib.find(x=>x.id===e.target.value)
-                              updEx(s.id,ex.id,'exercise_id',e.target.value)
-                              updEx(s.id,ex.id,'exercises',f)
-                              await supabase.from('session_exercises').update({exercise_id:e.target.value}).eq('id',ex.id)
-                            }}>
-                            {exLib.map(e=><option key={e.id} value={e.id}>{e.name}</option>)}
-                          </select>
+                          <input
+                            value={exName}
+                            onChange={e => updEx(s.id, ex.id, '_name', e.target.value)}
+                            onBlur={() => supabase.from('session_exercises').update({ exercise_name: exName }).eq('id', ex.id)}
+                            style={{...inp, fontWeight:600, fontSize:14}}
+                            placeholder="Naam oefening (bijv. Hardlopen, SkiErg, Deadlift...)"
+                          />
                           <button onClick={()=>delEx(ex.id,s.id)} style={{background:'none',border:'none',color:'#f87171',cursor:'pointer',fontSize:16,padding:0}}>✕</button>
                         </div>
-                        {isGec && (
-                          <div style={{ display:'flex', gap:4, marginBottom:8 }}>
-                            {['kracht','conditie','mobiliteit'].map(m=>(
-                              <button key={m} onClick={()=>{updEx(s.id,ex.id,'_mode',m)}}
-                                style={{flex:1,padding:'4px',background:mode===m?TC[m]:'var(--dark4)',color:mode===m?'#000':'var(--muted)',border:`1px solid ${mode===m?TC[m]:'rgba(255,255,255,0.08)'}`,cursor:'pointer',...B,fontSize:10,fontWeight:mode===m?700:400,textTransform:'uppercase',letterSpacing:1}}>
-                                {m}
-                              </button>
-                            ))}
-                          </div>
-                        )}
+                        {/* Type toggle — altijd zichtbaar */}
+                        <div style={{ display:'flex', gap:4, marginBottom:8 }}>
+                          {['kracht','conditie','mobiliteit'].map(m=>(
+                            <button key={m}
+                              onClick={()=>{
+                                updEx(s.id,ex.id,'_mode',m)
+                                const newNotes = JSON.stringify({...( parseMode(ex.notes)||{}), _mode:m })
+                                supabase.from('session_exercises').update({ notes: newNotes }).eq('id', ex.id)
+                              }}
+                              style={{flex:1,padding:'4px',background:mode===m?TC[m]:'var(--dark4)',color:mode===m?'#000':'var(--muted)',border:`1px solid ${mode===m?TC[m]:'rgba(255,255,255,0.08)'}`,cursor:'pointer',...B,fontSize:10,fontWeight:mode===m?700:400,textTransform:'uppercase',letterSpacing:1}}>
+                              {m}
+                            </button>
+                          ))}
+                        </div>
                         {/* KRACHT */}
                         {!isC && !isM && (
                           <div style={{ display:'grid', gridTemplateColumns:'60px 80px 80px 80px 1fr', gap:8 }}>
