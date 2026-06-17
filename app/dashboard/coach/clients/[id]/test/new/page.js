@@ -135,40 +135,51 @@ export default function TestProtocol({ params }) {
 
   const handleSave = async () => {
     setStatus('loading')
-    const { error } = await supabase.from('test_results').insert({
-      client_id: clientId,
-      test_date: f.test_date, test_type: f.test_type,
-      geslacht: f.geslacht,
-      leeftijd: f.leeftijd ? parseInt(f.leeftijd) : null,
-      functiecluster: f.functiecluster,
-      weight_kg: f.weight_kg ? parseFloat(f.weight_kg) : null,
-      height_cm: f.height_cm ? parseFloat(f.height_cm) : null,
-      body_fat_pct: f.body_fat_pct ? parseFloat(f.body_fat_pct) : null,
-      resting_hr: f.resting_hr ? parseInt(f.resting_hr) : null,
-      blessure_aanwezig: f.blessure === 'ja',
-      blessure_omschrijving: f.blessure_omschrijving || null,
-      mobility_score: mobilityScore || null,
-      broad_jump_cm: f.broad_jump_cm ? parseFloat(f.broad_jump_cm) : null,
-      deadlift_1rm: dl1rm,
-      deadlift_werkset_kg: f.dl_test_kg ? parseFloat(f.dl_test_kg) : null,
-      deadlift_werkset_reps: f.dl_test_reps ? parseInt(f.dl_test_reps) : null,
-      bench_1rm: bp1rm,
-      bench_werkset_kg: f.bp_test_kg ? parseFloat(f.bp_test_kg) : null,
-      bench_werkset_reps: f.bp_test_reps ? parseInt(f.bp_test_reps) : null,
-      illinois_sec: f.illinois_sec ? parseFloat(f.illinois_sec) : null,
-      pullup_max: f.pullup_max ? parseInt(f.pullup_max) : null,
-      bp_bw_reps: f.bp_bw_reps ? parseInt(f.bp_bw_reps) : null,
-      dead_hang_sec: dead_hang_total || null,
-      plank_sec: plank_total || null,
-      sprint_400m_sec: f.sprint_400m_sec ? parseFloat(f.sprint_400m_sec) : null,
-      loop_1500m_sec: loop_total || null,
-      mas: mas ? parseFloat(mas) : null,
-      farmers_carry_m: f.farmers_carry_m ? parseFloat(f.farmers_carry_m) : null,
-      notes: f.notes || null,
+    // Gebruik API route met supabaseAdmin — bypast RLS zodat coach test kan opslaan
+    const res = await fetch('/api/dashboard/save-test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: clientId,
+        test_date: f.test_date, test_type: f.test_type,
+        geslacht: f.geslacht,
+        leeftijd: f.leeftijd ? parseInt(f.leeftijd) : null,
+        functiecluster: f.functiecluster,
+        weight_kg: f.weight_kg ? parseFloat(f.weight_kg) : null,
+        height_cm: f.height_cm ? parseFloat(f.height_cm) : null,
+        body_fat_pct: f.body_fat_pct ? parseFloat(f.body_fat_pct) : null,
+        resting_hr: f.resting_hr ? parseInt(f.resting_hr) : null,
+        blessure_aanwezig: f.blessure === 'ja',
+        blessure_omschrijving: f.blessure_omschrijving || null,
+        mobility_score: mobilityScore || null,
+        broad_jump_cm: f.broad_jump_cm ? parseFloat(f.broad_jump_cm) : null,
+        deadlift_1rm: dl1rm,
+        deadlift_werkset_kg: f.dl_test_kg ? parseFloat(f.dl_test_kg) : null,
+        deadlift_werkset_reps: f.dl_test_reps ? parseInt(f.dl_test_reps) : null,
+        bench_1rm: bp1rm,
+        bench_werkset_kg: f.bp_test_kg ? parseFloat(f.bp_test_kg) : null,
+        bench_werkset_reps: f.bp_test_reps ? parseInt(f.bp_test_reps) : null,
+        illinois_sec: f.illinois_sec ? parseFloat(f.illinois_sec) : null,
+        pullup_max: f.pullup_max ? parseInt(f.pullup_max) : null,
+        bp_bw_reps: f.bp_bw_reps ? parseInt(f.bp_bw_reps) : null,
+        dead_hang_sec: dead_hang_total || null,
+        plank_sec: plank_total || null,
+        sprint_400m_sec: f.sprint_400m_sec ? parseFloat(f.sprint_400m_sec) : null,
+        loop_1500m_sec: loop_total || null,
+        mas: mas ? parseFloat(mas) : null,
+        farmers_carry_m: f.farmers_carry_m ? parseFloat(f.farmers_carry_m) : null,
+        notes: f.notes || null,
+      })
     })
-    if (error) { console.error(error); setStatus('error'); return }
+    const result = await res.json()
+    if (!res.ok || result.error) {
+      console.error('Save test error:', result.error)
+      setStatus('error')
+      return
+    }
     setStatus('success')
-    setTimeout(() => router.push(`/dashboard/coach/clients/${clientId}`), 2500)
+    // Redirect naar test overzicht zodat je de nieuwe test direct ziet
+    setTimeout(() => router.push(`/dashboard/coach/clients/${clientId}/test`), 2000)
   }
 
   const FV = ({ label, name, unit, hint, type = 'number', placeholder = '' }) => (

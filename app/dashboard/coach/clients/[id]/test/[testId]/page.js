@@ -1,3 +1,5 @@
+'use client'
+import React from 'react'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -59,6 +61,37 @@ function Badge({ level }) {
   )
 }
 
+// CopyBtn voor server component - gebruikt script approach
+function CopyBtn({ text }) {
+  const id = 'copy-btn-' + Math.random().toString(36).slice(2)
+  const escaped = text.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')
+  return (
+    <>
+      <button id={id}
+        style={{ background: 'var(--dark3)', border: '1px solid var(--muted2)', color: 'var(--text)', fontFamily: 'var(--font-barlow), sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', padding: '8px 18px', cursor: 'pointer' }}>
+        📋 Kopieer
+      </button>
+      <script dangerouslySetInnerHTML={{ __html: `
+        (function() {
+          var btn = document.getElementById('${id}');
+          if(btn) btn.addEventListener('click', function() {
+            navigator.clipboard.writeText('${escaped}').then(function() {
+              btn.textContent = '✓ Gekopieerd!';
+              btn.style.background = '#4ade80';
+              btn.style.color = '#000';
+              setTimeout(function() {
+                btn.textContent = '📋 Kopieer';
+                btn.style.background = 'var(--dark3)';
+                btn.style.color = 'var(--text)';
+              }, 2000);
+            });
+          });
+        })();
+      ` }} />
+    </>
+  )
+}
+
 function MetricCard({ normKey, value }) {
   if (!value && value !== 0) return null
   const n = NORMS[normKey]
@@ -109,6 +142,32 @@ export default async function TestDetail({ params }) {
   const naam = client?.profiles?.full_name || 'Onbekend'
   const mas = test.mas || (test.loop_1500m_sec ? (1500 / test.loop_1500m_sec).toFixed(2) : null)
 
+
+  // Genereer klembord tekst
+  const fmtT = (s) => { if (!s) return '—'; const m = Math.floor(s/60); return `${m}:${String(s%60).padStart(2,'0')}` }
+  const testLabel = new Date(test.test_date).toLocaleDateString('nl-NL', { day:'numeric', month:'long', year:'numeric' })
+  const clipText = [
+    `GV Performance — Testresultaat ${naam}`,
+    `Datum: ${testLabel}`,
+    `Type: ${test.test_type || 'AMF Protocol'}`,
+    '',
+    `Mobility Score: ${test.mobility_score ?? '—'}/10`,
+    `Broad Jump: ${test.broad_jump_cm ?? '—'} cm`,
+    `Hexbar DL 1RM: ${test.deadlift_1rm ?? '—'} kg`,
+    `Bench Press 1RM: ${test.bench_1rm ?? '—'} kg`,
+    `Illinois Agility: ${test.illinois_sec ?? '—'} sec`,
+    `Max Pull-ups: ${test.pullup_max ?? '—'} reps`,
+    `Bench @ BW: ${test.bp_bw_reps ?? '—'} reps`,
+    `Dead Hang: ${fmtT(test.dead_hang_sec)}`,
+    `Plank Hold: ${fmtT(test.plank_sec)}`,
+    `400m Sprint: ${test.sprint_400m_sec ?? '—'} sec`,
+    `1500m Loop: ${fmtT(test.loop_1500m_sec)}`,
+    `Farmer's Carry: ${test.farmers_carry_m ?? '—'} m`,
+    mas ? `MAS: ${mas} m/s` : '',
+    mas ? `Intervalafstand (90% / 4min): ${Math.round(240 * parseFloat(mas) * 0.90)} m` : '',
+    test.notes ? `Notities: ${test.notes}` : '',
+  ].filter(Boolean).join('\n')
+
   return (
     <div style={{ background: 'var(--dark)', minHeight: '100vh', ...B }}>
       <header style={{ background: 'var(--dark2)', borderBottom: '1px solid rgba(255,77,0,0.12)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -120,8 +179,9 @@ export default async function TestDetail({ params }) {
           </svg>
           <span style={{ ...D, fontSize: 18, letterSpacing: 3, fontWeight: 700, color: 'var(--text)' }}>GV PERFORMANCE</span>
         </div>
-        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
           <a href={`/dashboard/coach/clients/${id}/test`} style={{ ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>← Alle testen</a>
+          <CopyBtn text={clipText} />
           <a href={`/dashboard/coach/clients/${id}/test/new`} style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', padding: '8px 18px', textDecoration: 'none' }}>+ Nieuwe test</a>
         </div>
       </header>
