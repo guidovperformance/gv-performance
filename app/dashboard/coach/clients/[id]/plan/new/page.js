@@ -126,10 +126,21 @@ export default function NewPlan({ params }) {
   }
 
   const addExercise = (weekIdx, sIdx) => {
+    const sessionType = sessions[weekIdx]?.[sIdx]?.type || 'kracht'
+    const isConditie   = sessionType === 'conditie'
+    const isMobiliteit = sessionType === 'mobiliteit'
+    const defaults = {
+      name: '', sets: isConditie ? 4 : 3,
+      reps: isConditie || isMobiliteit ? '' : '8-10',
+      weight: '', rest: isConditie ? 180 : isMobiliteit ? 30 : 90,
+      notes: '',
+      ex_mode: isConditie ? 'conditie' : isMobiliteit ? 'mobiliteit' : 'kracht',
+      distance: '400', tempo: '5:00', hold_s: '30', hold_type: 'statisch',
+    }
     setSessions(prev => ({
       ...prev,
       [weekIdx]: prev[weekIdx].map((s, i) => i === sIdx ? {
-        ...s, exercises: [...s.exercises, { name: '', sets: 3, reps: '8-10', weight: '', rest: 90, notes: '' }]
+        ...s, exercises: [...s.exercises, defaults]
       } : s)
     }))
   }
@@ -183,13 +194,25 @@ export default function NewPlan({ params }) {
                 exData = newEx
               }
               if (exData) {
+                const mode = ex.ex_mode || 'kracht'
+                let exReps = null, exWeight = null, exNotes = null
+                if (mode === 'conditie') {
+                  const tMin = ex.tempo ? (() => { const p = String(ex.tempo).split(':'); return parseInt(p[0]) + parseInt(p[1]||0)/60 })() : null
+                  const speed = tMin ? (60/tMin).toFixed(1) : null
+                  exNotes = JSON.stringify({ _mode:'conditie', distance_m:parseInt(ex.distance)||null, rest_s:parseInt(ex.rest)||180, tempo:ex.tempo||null, speed_kmh:speed?parseFloat(speed):null })
+                } else if (mode === 'mobiliteit') {
+                  exNotes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex.hold_s)||30, hold_type:ex.hold_type||'statisch', rest_s:parseInt(ex.rest)||30 })
+                } else {
+                  exReps = ex.reps || '8-10'
+                  exWeight = ex.weight ? parseFloat(ex.weight) : null
+                  exNotes = ex.notes || null
+                }
                 await supabase.from('session_exercises').insert({
                   session_id: sessionData.id, exercise_id: exData.id,
                   order_index: eIdx, sets: parseInt(ex.sets) || 3,
-                  reps: ex.reps || '8-10',
-                  weight_kg: ex.weight ? parseFloat(ex.weight) : null,
+                  reps: exReps, weight_kg: exWeight,
                   rest_seconds: parseInt(ex.rest) || 90,
-                  notes: ex.notes || null,
+                  notes: exNotes,
                 })
               }
             }
@@ -385,22 +408,106 @@ export default function NewPlan({ params }) {
                       <div style={{ ...B, fontSize: 10, letterSpacing: 3, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 10 }}>Oefeningen</div>
                       {session.exercises.length > 0 && (
                         <div style={{ marginBottom: 10 }}>
-                          <div style={{ display: 'grid', gridTemplateColumns: '2fr 50px 80px 80px 80px 1fr 24px', gap: 6, marginBottom: 6 }}>
-                            {['Oefening', 'Sets', 'Reps', 'KG', 'Rust(s)', 'Notities', ''].map(h => (
-                              <div key={h} style={{ ...B, fontSize: 9, letterSpacing: 1, color: 'var(--muted)', textTransform: 'uppercase' }}>{h}</div>
-                            ))}
-                          </div>
-                          {session.exercises.map((ex, eIdx) => (
-                            <div key={eIdx} style={{ display: 'grid', gridTemplateColumns: '2fr 50px 80px 80px 80px 1fr 24px', gap: 6, marginBottom: 6 }}>
-                              <input type="text" placeholder="Oefening" value={ex.name} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'name', e.target.value)} style={exInp} />
-                              <input type="number" min="1" max="10" value={ex.sets} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'sets', e.target.value)} style={{...exInp, textAlign: 'center'}} />
-                              <input type="text" placeholder="8-10" value={ex.reps} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'reps', e.target.value)} style={{...exInp, textAlign: 'center'}} />
-                              <input type="number" step="0.5" placeholder="—" value={ex.weight} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'weight', e.target.value)} style={{...exInp, textAlign: 'center'}} />
-                              <input type="number" value={ex.rest} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'rest', e.target.value)} style={{...exInp, textAlign: 'center'}} />
-                              <input type="text" placeholder="Notities" value={ex.notes} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'notes', e.target.value)} style={exInp} />
-                              <button onClick={() => removeExercise(selectedMeso, sIdx, eIdx)} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', fontSize: 14, padding: 0 }}>✕</button>
-                            </div>
-                          ))}
+                          {session.exercises.map((ex, eIdx) => {
+                            const sessionType = session.type
+                            const mode = ex.ex_mode || (sessionType === 'conditie' ? 'conditie' : sessionType === 'mobiliteit' ? 'mobiliteit' : 'kracht')
+                            const isConditie   = mode === 'conditie'
+                            const isMobiliteit = mode === 'mobiliteit'
+                            const isGecomb     = sessionType === 'gecombineerd'
+                            const tMin = ex.tempo ? (() => { try { const p = String(ex.tempo).split(':'); return parseInt(p[0]) + parseInt(p[1]||0)/60 } catch { return null } })() : null
+                            const speed = tMin && tMin > 0 ? (60/tMin).toFixed(1) : null
+                            return (
+                              <div key={eIdx} style={{ background: 'var(--dark4)', padding: '10px 12px', marginBottom: 6, borderRadius: 4 }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 24px', gap: 6, marginBottom: 8 }}>
+                                  <input type="text" placeholder="Naam oefening / activiteit" value={ex.name} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'name', e.target.value)} style={{...exInp, fontWeight: 600}} />
+                                  <button onClick={() => removeExercise(selectedMeso, sIdx, eIdx)} style={{ background: 'none', border: 'none', color: '#ff6b6b', cursor: 'pointer', fontSize: 14, padding: 0 }}>✕</button>
+                                </div>
+
+                                {/* Mode toggle voor gecombineerd */}
+                                {isGecomb && (
+                                  <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+                                    {['kracht', 'conditie', 'mobiliteit'].map(m => (
+                                      <button key={m} onClick={() => setExercise(selectedMeso, sIdx, eIdx, 'ex_mode', m)}
+                                        style={{ flex: 1, padding: '4px 8px', background: mode === m ? '#FB923C' : 'var(--dark3)', color: mode === m ? '#000' : 'var(--muted)', border: `1px solid ${mode === m ? '#FB923C' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 10, fontWeight: mode === m ? 700 : 400, textTransform: 'uppercase', letterSpacing: 1 }}>
+                                        {m}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* KRACHT velden */}
+                                {!isConditie && !isMobiliteit && (
+                                  <div style={{ display: 'grid', gridTemplateColumns: '60px 80px 80px 80px 1fr', gap: 6 }}>
+                                    {[['Sets','number','sets','3',''],['Reps','text','reps','8-10',''],['KG','number','weight','—','0.5'],['Rust(s)','number','rest','90',''],['Notities','text','notes','Bijv. RIR 2','']].map(([h,t,f,ph,step]) => (
+                                      <div key={f}>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>{h}</div>
+                                        <input type={t} placeholder={ph} value={ex[f]||''} step={step||undefined}
+                                          onChange={e => setExercise(selectedMeso, sIdx, eIdx, f, e.target.value)} style={{...exInp, textAlign: ['sets','reps','weight','rest'].includes(f) ? 'center' : 'left'}} />
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* CONDITIE velden */}
+                                {isConditie && (
+                                  <div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '60px 100px 120px 90px', gap: 6, marginBottom: 6 }}>
+                                      <div>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Intervals</div>
+                                        <input type="number" value={ex.sets||4} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'sets', e.target.value)} style={{...exInp, textAlign:'center'}} placeholder="4" />
+                                      </div>
+                                      <div>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Afstand (m)</div>
+                                        <input type="number" value={ex.distance||''} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'distance', e.target.value)} style={{...exInp, textAlign:'center'}} placeholder="400" />
+                                      </div>
+                                      <div>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Tempo (min:sec/km)</div>
+                                        <input type="text" value={ex.tempo||''} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'tempo', e.target.value)} style={exInp} placeholder="5:30" />
+                                      </div>
+                                      <div>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Rust (s)</div>
+                                        <input type="number" value={ex.rest||180} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'rest', e.target.value)} style={{...exInp, textAlign:'center'}} placeholder="180" />
+                                      </div>
+                                    </div>
+                                    {speed && (
+                                      <div style={{ background: 'rgba(56,232,232,0.08)', border: '1px solid rgba(56,232,232,0.2)', padding: '7px 12px', display: 'flex', gap: 16 }}>
+                                        <span style={{ ...B, fontSize: 12, color: '#38e8e8' }}>⚡ <strong>{speed} km/h</strong></span>
+                                        <span style={{ ...B, fontSize: 11, color: '#888' }}>{ex.tempo} min/km</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* MOBILITEIT velden */}
+                                {isMobiliteit && (
+                                  <div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '60px 110px 90px', gap: 6, marginBottom: 8 }}>
+                                      <div>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Sets</div>
+                                        <input type="number" value={ex.sets||3} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'sets', e.target.value)} style={{...exInp, textAlign:'center'}} />
+                                      </div>
+                                      <div>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Vasthoud (sec)</div>
+                                        <input type="number" value={ex.hold_s||30} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'hold_s', e.target.value)} style={{...exInp, textAlign:'center'}} />
+                                      </div>
+                                      <div>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Rust (s)</div>
+                                        <input type="number" value={ex.rest||30} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'rest', e.target.value)} style={{...exInp, textAlign:'center'}} />
+                                      </div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: 4 }}>
+                                      {['statisch', 'dynamisch'].map(t => (
+                                        <button key={t} onClick={() => setExercise(selectedMeso, sIdx, eIdx, 'hold_type', t)}
+                                          style={{ flex: 1, padding: '5px', background: (ex.hold_type||'statisch') === t ? '#a78bfa' : 'var(--dark3)', color: (ex.hold_type||'statisch') === t ? '#000' : 'var(--muted)', border: `1px solid ${(ex.hold_type||'statisch') === t ? '#a78bfa' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 10, fontWeight: (ex.hold_type||'statisch') === t ? 700 : 400, textTransform: 'uppercase', letterSpacing: 1 }}>
+                                          {t}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
                         </div>
                       )}
                       <button onClick={() => addExercise(selectedMeso, sIdx)} style={{ background: 'none', border: '1px dashed var(--muted2)', color: 'var(--muted)', ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', padding: '7px', cursor: 'pointer', width: '100%' }}>
