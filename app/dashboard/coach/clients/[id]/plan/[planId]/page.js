@@ -64,29 +64,28 @@ function getExMode(ex, sessionType) {
 }
 
 export default function PlanView({ params }) {
+  // FIXED: React.use() buiten useEffect - correct voor Next.js 15
+  const { id: clientIdParam, planId: planIdParam } = React.use(params)
+
   const [plan, setPlan]             = React.useState(null)
   const [mesos, setMesos]           = React.useState([])
   const [selectedWeek, setSelectedWeek] = React.useState(0)
   const [sessions, setSessions]     = React.useState([])
-  const [clientId, setClientId]     = React.useState(null)
-  const [planId, setPlanId]         = React.useState(null)
   const [loading, setLoading]       = React.useState(true)
   const [editingExercise, setEditingExercise] = React.useState(null)
   const [editingSession, setEditingSession]   = React.useState(null)
   const [saving, setSaving]         = React.useState(false)
   const [allExercises, setAllExercises] = React.useState([])
+  const clientId  = clientIdParam
+  const planIdVal = planIdParam
   const router = useRouter()
   const supabase = createClient()
 
   React.useEffect(() => {
-    const resolvedParams = React.use ? undefined : null
-    params.then(p => {
-      setClientId(p.id)
-      setPlanId(p.planId)
-      loadPlan(p.planId)
-      loadExercises()
-    })
-  }, [params])
+    if (!planIdVal) return
+    loadPlan(planIdVal)
+    loadExercises()
+  }, [planIdVal])
 
   const loadExercises = async () => {
     const { data } = await supabase.from('exercises').select('id, name, category').order('name')
@@ -256,7 +255,7 @@ export default function PlanView({ params }) {
           </svg>
           <span style={{ ...D, fontSize:18, letterSpacing:3, fontWeight:700 }}>GV PERFORMANCE</span>
         </div>
-        <a href={`/dashboard/coach/clients/${clientId}`} style={{ ...B, fontSize:12, letterSpacing:2, textTransform:'uppercase', color:'var(--muted)', textDecoration:'none' }}>← Klant</a>
+        <a href={`/dashboard/coach/clients/${clientIdParam}`} style={{ ...B, fontSize:12, letterSpacing:2, textTransform:'uppercase', color:'var(--muted)', textDecoration:'none' }}>← Klant</a>
       </header>
 
       <main style={{ padding:'clamp(16px,4vw,40px)' }}>
