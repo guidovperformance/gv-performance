@@ -87,6 +87,7 @@ const SECTIONS = [
   { id: 'plank',     label: '9. Plank Hold',             short: 'Plank'      },
   { id: 'sprint400', label: '10. 400m Sprint',           short: '400m'       },
   { id: 'run1500',   label: '11. 1500m Run',             short: '1500m'      },
+  { id: 'looptesten', label: '12. Looptesten',            short: 'Lopen'      },
   { id: 'carry',     label: "12. Farmer's Carry",        short: 'Carry'      },
   { id: 'overzicht', label: '📊 Overzicht',              short: 'Overzicht'  },
 ]
@@ -116,6 +117,9 @@ export default function TestProtocol({ params }) {
     plank_min: '', plank_sec_f: '',
     sprint_400m_sec: '',
     loop_min: '', loop_sec: '', resting_hr: '',
+    cooper_12min_m: '', mas_6min_m: '',
+    run_5km_min: '', run_5km_sec_f: '',
+    run_10km_min: '', run_10km_sec_f: '',
     farmers_carry_m: '',
     notes: '',
   })
@@ -130,6 +134,26 @@ export default function TestProtocol({ params }) {
   const plank_total = (parseInt(f.plank_min) || 0) * 60 + (parseInt(f.plank_sec_f) || 0)
   const loop_total = (parseInt(f.loop_min) || 0) * 60 + (parseInt(f.loop_sec) || 0)
   const mas = loop_total > 0 ? calcMAS(loop_total) : null
+
+  // Looptesten berekeningen
+  const cooper_mas = f.cooper_12min_m ? (parseInt(f.cooper_12min_m) / 720).toFixed(2) : null
+  const cooper_vo2max = f.cooper_12min_m ? ((parseInt(f.cooper_12min_m) - 504.9) / 44.73).toFixed(1) : null
+  const mas_6min = f.mas_6min_m ? (parseInt(f.mas_6min_m) / 360).toFixed(2) : null
+  const run5km_total = (parseInt(f.run_5km_min)||0)*60 + (parseInt(f.run_5km_sec_f)||0)
+  const run10km_total = (parseInt(f.run_10km_min)||0)*60 + (parseInt(f.run_10km_sec_f)||0)
+  const run5km_speed  = run5km_total  > 0 ? (18000/run5km_total).toFixed(1)  : null
+  const run10km_speed = run10km_total > 0 ? (36000/run10km_total).toFixed(1) : null
+  const run5km_pace   = run5km_total  > 0 ? `\${Math.floor(run5km_total/5/60)}:\${String(Math.round((run5km_total/5)%60)).padStart(2,'0')}` : null
+  const run10km_pace  = run10km_total > 0 ? `\${Math.floor(run10km_total/10/60)}:\${String(Math.round((run10km_total/10)%60)).padStart(2,'0')}` : null
+  // Beste MAS voor trainingszones
+  const best_mas = cooper_mas || mas_6min || mas || null
+  const masZones = best_mas ? [
+    { zone:'Z1 Herstel',       pct:0.65, kmh:(parseFloat(best_mas)*3.6*0.65).toFixed(1) },
+    { zone:'Z2 Duurloop',      pct:0.75, kmh:(parseFloat(best_mas)*3.6*0.75).toFixed(1) },
+    { zone:'Z3 Drempelzone',   pct:0.87, kmh:(parseFloat(best_mas)*3.6*0.87).toFixed(1) },
+    { zone:'Z4 Intervalzone',  pct:0.95, kmh:(parseFloat(best_mas)*3.6*0.95).toFixed(1) },
+    { zone:'Z5 VO2max',        pct:1.05, kmh:(parseFloat(best_mas)*3.6*1.05).toFixed(1) },
+  ] : null
   const masInfo = masLevel(mas)
   const navIdx = SECTIONS.findIndex(s => s.id === active)
 
@@ -166,6 +190,10 @@ export default function TestProtocol({ params }) {
         plank_sec: plank_total || null,
         sprint_400m_sec: f.sprint_400m_sec ? parseFloat(f.sprint_400m_sec) : null,
         loop_1500m_sec: loop_total || null,
+        cooper_12min_m: f.cooper_12min_m ? parseInt(f.cooper_12min_m) : null,
+        mas_veldtest_6min_m: f.mas_6min_m ? parseInt(f.mas_6min_m) : null,
+        run_5km_sec: run5km_total || null,
+        run_10km_sec: run10km_total || null,
         mas: mas ? parseFloat(mas) : null,
         farmers_carry_m: f.farmers_carry_m ? parseFloat(f.farmers_carry_m) : null,
         notes: f.notes || null,
@@ -455,6 +483,84 @@ export default function TestProtocol({ params }) {
                 </div>
               </div>}
             </>}
+          </>)}
+
+          {active === 'looptesten' && wrap(<>
+            <SH title="LOOPTESTEN" sub="Kies één of meerdere tests. Alles is optioneel. Auto-berekening van snelheid, tempo en trainingszones." />
+            {info('Op basis van de beste MAS meting worden trainingszones berekend. Gebruik bij voorkeur de Cooper test (meest standaard) of de 6-min veldtest.')}
+
+            {/* Cooper 12 min test */}
+            <div style={{ background: 'var(--dark3)', padding: 16, marginBottom: 8 }}>
+              <div style={{ ...D, fontSize: 16, fontWeight: 700, letterSpacing: 1, marginBottom: 4 }}>Cooper Test — 12 minuten</div>
+              <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginBottom: 12 }}>Ren 12 minuten zo ver mogelijk (bij voorkeur op atletiekbaan). Noteer de totale afstand.</div>
+              {grid2(<><FV label="Afstand (meter)" name="cooper_12min_m" unit="m" placeholder="2800" hint="Inclusief laatste rondje exact meten" /><div /></>)}
+              {cooper_mas && <div style={{ background: 'var(--dark4)', padding: 12, marginTop: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>MAS</div><div style={{ ...D, fontSize: 22, fontWeight: 700, color: 'var(--orange)' }}>{cooper_mas} m/s</div><div style={{ ...B, fontSize: 11, color: 'var(--muted)' }}>{(parseFloat(cooper_mas)*3.6).toFixed(1)} km/h</div></div>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>VO2max (schatting)</div><div style={{ ...D, fontSize: 22, fontWeight: 700 }}>{cooper_vo2max}</div><div style={{ ...B, fontSize: 11, color: 'var(--muted)' }}>ml/kg/min</div></div>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>4min interval (90%)</div><div style={{ ...D, fontSize: 22, fontWeight: 700 }}>{Math.round(240*parseFloat(cooper_mas)*0.90)} m</div></div>
+                </div>
+              </div>}
+            </div>
+
+            {/* MAS 6 min veldtest */}
+            <div style={{ background: 'var(--dark3)', padding: 16, marginBottom: 8 }}>
+              <div style={{ ...D, fontSize: 16, fontWeight: 700, letterSpacing: 1, marginBottom: 4 }}>MAS Veldtest — 6 minuten</div>
+              <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginBottom: 12 }}>Ren 6 minuten maximaal. Afstand / 360 = MAS in m/s. Hoge correlatie met laboratorium (r=0.94).</div>
+              {grid2(<><FV label="Afstand (meter)" name="mas_6min_m" unit="m" placeholder="1350" hint="Exact meten op atletiekbaan of GPS horloge" /><div /></>)}
+              {mas_6min && <div style={{ background: 'var(--dark4)', padding: 12, marginTop: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>MAS</div><div style={{ ...D, fontSize: 22, fontWeight: 700, color: 'var(--orange)' }}>{mas_6min} m/s</div><div style={{ ...B, fontSize: 11, color: 'var(--muted)' }}>{(parseFloat(mas_6min)*3.6).toFixed(1)} km/h</div></div>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>LSD Tempo (70%)</div><div style={{ ...D, fontSize: 20, fontWeight: 700 }}>{(parseFloat(mas_6min)*0.70).toFixed(2)} m/s</div></div>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>4min interval (90%)</div><div style={{ ...D, fontSize: 22, fontWeight: 700 }}>{Math.round(240*parseFloat(mas_6min)*0.90)} m</div></div>
+                </div>
+              </div>}
+            </div>
+
+            {/* 5km tijdrit */}
+            <div style={{ background: 'var(--dark3)', padding: 16, marginBottom: 8 }}>
+              <div style={{ ...D, fontSize: 16, fontWeight: 700, letterSpacing: 1, marginBottom: 4 }}>5km Tijdrit</div>
+              <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginBottom: 12 }}>Max inspanning over 5 kilometer.</div>
+              {grid2(<><TimeIn label="Eindtijd" minKey="run_5km_min" secKey="run_5km_sec_f" /><div /></>)}
+              {run5km_speed && <div style={{ background: 'var(--dark4)', padding: 12, marginTop: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>Snelheid</div><div style={{ ...D, fontSize: 22, fontWeight: 700, color: 'var(--orange)' }}>{run5km_speed} km/h</div></div>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>Pace</div><div style={{ ...D, fontSize: 22, fontWeight: 700 }}>{run5km_pace} /km</div></div>
+                </div>
+              </div>}
+            </div>
+
+            {/* 10km tijdrit */}
+            <div style={{ background: 'var(--dark3)', padding: 16, marginBottom: 8 }}>
+              <div style={{ ...D, fontSize: 16, fontWeight: 700, letterSpacing: 1, marginBottom: 4 }}>10km Tijdrit</div>
+              <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginBottom: 12 }}>Max inspanning over 10 kilometer.</div>
+              {grid2(<><TimeIn label="Eindtijd" minKey="run_10km_min" secKey="run_10km_sec_f" /><div /></>)}
+              {run10km_speed && <div style={{ background: 'var(--dark4)', padding: 12, marginTop: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>Snelheid</div><div style={{ ...D, fontSize: 22, fontWeight: 700, color: 'var(--orange)' }}>{run10km_speed} km/h</div></div>
+                  <div><div style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', marginBottom: 3 }}>Pace</div><div style={{ ...D, fontSize: 22, fontWeight: 700 }}>{run10km_pace} /km</div></div>
+                </div>
+              </div>}
+            </div>
+
+            {/* Trainingszones op basis van beste MAS */}
+            {masZones && <div style={{ background: '#0d1f3c', border: '1px solid rgba(255,77,0,0.2)', padding: 16, marginTop: 8 }}>
+              <div style={{ ...B, fontSize: 10, letterSpacing: 3, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 12 }}>Trainingszones op basis van MAS {best_mas} m/s ({(parseFloat(best_mas)*3.6).toFixed(1)} km/h)</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {masZones.map(z => {
+                  const speedMs = parseFloat(best_mas) * z.pct
+                  const secPerKm = 1000 / speedMs
+                  const pace = `\${Math.floor(secPerKm/60)}:\${String(Math.round(secPerKm%60)).padStart(2,'0')}`
+                  const intervalDist = z.pct >= 0.90 ? Math.round(240 * speedMs) : null
+                  return <div key={z.zone} style={{ display: 'grid', gridTemplateColumns: '160px 80px 90px 1fr', gap: 8, alignItems: 'center', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <div style={{ ...D, fontSize: 13, fontWeight: 700 }}>{z.zone}</div>
+                    <div style={{ ...B, fontSize: 12, color: 'var(--orange)' }}>{z.kmh} km/h</div>
+                    <div style={{ ...B, fontSize: 12, color: 'var(--muted)' }}>{pace} /km</div>
+                    {intervalDist && <div style={{ ...B, fontSize: 11, color: '#38e8e8' }}>→ 4min interval: {intervalDist}m</div>}
+                  </div>
+                })}
+              </div>
+            </div>}
           </>)}
 
           {active === 'carry' && wrap(<>

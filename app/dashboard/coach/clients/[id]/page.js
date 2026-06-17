@@ -156,11 +156,15 @@ export default async function ClientDetail({ params }) {
           {/* Laatste testresultaten */}
           <div style={{ background: 'var(--dark2)', padding: 28 }}>
             <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ display: 'block', width: 16, height: 2, background: 'var(--orange)' }} />Laatste test
+              <span style={{ display: 'block', width: 16, height: 2, background: 'var(--orange)' }} />
+              <a href={`/dashboard/coach/clients/${id}/test`} style={{ color: 'inherit', textDecoration: 'none' }}>Laatste test</a>
             </div>
             {testResults && testResults.length > 0 ? (
               <>
-                <div style={{ ...B, fontSize: 11, color: 'var(--muted)', marginBottom: 16 }}>{new Date(testResults[0].test_date).toLocaleDateString('nl-NL')}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <div style={{ ...B, fontSize: 11, color: 'var(--muted)' }}>{new Date(testResults[0].test_date).toLocaleDateString('nl-NL')}</div>
+                  <a href={`/dashboard/coach/clients/${id}/test`} style={{ ...B, fontSize: 11, letterSpacing: 1, textTransform: 'uppercase', color: 'var(--orange)', textDecoration: 'none', fontWeight: 700 }}>Alle testen →</a>
+                </div>
                 {[
                   ['Gewicht', testResults[0].weight_kg ? `${testResults[0].weight_kg} kg` : null],
                   ['VO2max', testResults[0].vo2max ? `${testResults[0].vo2max} ml/kg/min` : null],

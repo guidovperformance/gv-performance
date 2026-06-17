@@ -1,4 +1,5 @@
 import CopyButton from '../CopyButton'
+import DeleteTestButton from '../DeleteTestButton'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -88,7 +89,8 @@ function MetricCard({ normKey, value }) {
 }
 
 export default async function TestDetail({ params }) {
-  const { id, testId } = await params
+  const resolvedParams = await params
+  const { id, testId } = resolvedParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -150,6 +152,7 @@ export default async function TestDetail({ params }) {
           <a href={`/dashboard/coach/clients/${id}/test`} style={{ ...B, fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none' }}>← Alle testen</a>
           <CopyButton text={clipText} label="📋 Kopieer test" />
           <a href={`/dashboard/coach/clients/${id}/test/new`} style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', padding: '8px 18px', textDecoration: 'none' }}>+ Nieuwe test</a>
+          <DeleteTestButton testId={testId} clientId={id} />
         </div>
       </header>
 
