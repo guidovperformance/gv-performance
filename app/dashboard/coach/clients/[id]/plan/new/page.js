@@ -183,34 +183,36 @@ export default function NewPlan({ params }) {
 
           if (sessionData && session.exercises.length > 0) {
             for (const [eIdx, ex] of session.exercises.entries()) {
-              if (!ex.name) continue
-              let { data: exData } = await supabase.from('exercises').select('id').eq('name', ex.name).single()
-              if (!exData) {
-                const { data: newEx } = await supabase.from('exercises').insert({ name: ex.name, category: 'anders' }).select().single()
-                exData = newEx
-              }
-              if (exData) {
-                const mode = ex.ex_mode || 'kracht'
-                let exReps = null, exWeight = null, exNotes = null
-                if (mode === 'conditie') {
-                  const tMin = ex.tempo ? (() => { const p = String(ex.tempo).split(':'); return parseInt(p[0]) + parseInt(p[1]||0)/60 })() : null
-                  const speed = tMin ? (60/tMin).toFixed(1) : null
-                  exNotes = JSON.stringify({ _mode:'conditie', distance_m:parseInt(ex.distance)||null, rest_s:parseInt(ex.rest)||180, tempo:ex.tempo||null, speed_kmh:speed?parseFloat(speed):null })
-                } else if (mode === 'mobiliteit') {
-                  exNotes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex.hold_s)||30, hold_type:ex.hold_type||'statisch', rest_s:parseInt(ex.rest)||30 })
-                } else {
-                  exReps = ex.reps || '8-10'
-                  exWeight = ex.weight ? parseFloat(ex.weight) : null
-                  exNotes = ex.notes || null
-                }
-                await supabase.from('session_exercises').insert({
-                  session_id: sessionData.id, exercise_id: exData.id,
-                  order_index: eIdx, sets: parseInt(ex.sets) || 3,
-                  reps: exReps, weight_kg: exWeight,
-                  rest_seconds: parseInt(ex.rest) || 90,
-                  notes: exNotes,
+              // Sla direct op via exercise_name — geen bibliotheek lookup meer
+              const mode = ex.ex_mode || 'kracht'
+              let exReps = null, exWeight = null, exNotes = null
+              if (mode === 'conditie') {
+                const tMin = ex.tempo ? (() => { const p = String(ex.tempo).split(':'); return parseInt(p[0]) + parseInt(p[1]||0)/60 })() : null
+                const speed = tMin ? (60/tMin).toFixed(1) : null
+                exNotes = JSON.stringify({
+                  _mode:'conditie',
+                  _metric: ex.cond_metric || 'afstand',
+                  distance_m: ex.cond_metric !== 'tijd' ? (parseInt(ex.distance)||null) : null,
+                  duration: ex.cond_metric === 'tijd' ? (ex.duration||null) : null,
+                  rest_s: parseInt(ex.rest)||180,
+                  tempo: ex.tempo||null,
+                  speed_kmh: speed ? parseFloat(speed) : null,
                 })
+              } else if (mode === 'mobiliteit') {
+                exNotes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex.hold_s)||30, hold_type:ex.hold_type||'statisch', rest_s:parseInt(ex.rest)||30 })
+              } else {
+                exReps = ex.reps || '8-10'
+                exWeight = ex.weight ? parseFloat(ex.weight) : null
+                exNotes = ex.notes || null
               }
+              await supabase.from('session_exercises').insert({
+                session_id: sessionData.id,
+                exercise_name: ex.name || 'Oefening',
+                order_index: eIdx, sets: parseInt(ex.sets) || 3,
+                reps: exReps, weight_kg: exWeight,
+                rest_seconds: parseInt(ex.rest) || 90,
+                notes: exNotes,
+              })
             }
           }
         }
@@ -444,14 +446,29 @@ export default function NewPlan({ params }) {
                                 {/* CONDITIE velden */}
                                 {isConditie && (
                                   <div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '60px 100px 120px 90px', gap: 6, marginBottom: 6 }}>
+                                    {/* Afstand vs Tijd toggle */}
+                                    <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
+                                      {['afstand', 'tijd'].map(m => (
+                                        <button key={m} onClick={() => setExercise(selectedMeso, sIdx, eIdx, 'cond_metric', m)}
+                                          style={{ flex: 1, padding: '4px', background: (ex.cond_metric||'afstand')===m ? '#38e8e8' : 'var(--dark3)', color: (ex.cond_metric||'afstand')===m ? '#000' : 'var(--muted)', border: `1px solid ${(ex.cond_metric||'afstand')===m ? '#38e8e8' : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 10, fontWeight: (ex.cond_metric||'afstand')===m ? 700 : 400, textTransform: 'uppercase', letterSpacing: 1 }}>
+                                          {m === 'afstand' ? '📏 Afstand' : '⏱ Tijd'}
+                                        </button>
+                                      ))}
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '60px 110px 120px 90px', gap: 6, marginBottom: 6 }}>
                                       <div>
-                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Intervals</div>
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Sets</div>
                                         <input type="number" value={ex.sets||4} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'sets', e.target.value)} style={{...exInp, textAlign:'center'}} placeholder="4" />
                                       </div>
                                       <div>
-                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Afstand (m)</div>
-                                        <input type="number" value={ex.distance||''} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'distance', e.target.value)} style={{...exInp, textAlign:'center'}} placeholder="400" />
+                                        <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>
+                                          {(ex.cond_metric||'afstand') === 'afstand' ? 'Afstand (m)' : 'Totale tijd (min:sec)'}
+                                        </div>
+                                        {(ex.cond_metric||'afstand') === 'afstand' ? (
+                                          <input type="number" value={ex.distance||''} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'distance', e.target.value)} style={{...exInp, textAlign:'center'}} placeholder="400" />
+                                        ) : (
+                                          <input type="text" value={ex.duration||''} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'duration', e.target.value)} style={exInp} placeholder="4:00" />
+                                        )}
                                       </div>
                                       <div>
                                         <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Tempo (min:sec/km)</div>
@@ -470,7 +487,6 @@ export default function NewPlan({ params }) {
                                     )}
                                   </div>
                                 )}
-
                                 {/* MOBILITEIT velden */}
                                 {isMobiliteit && (
                                   <div>

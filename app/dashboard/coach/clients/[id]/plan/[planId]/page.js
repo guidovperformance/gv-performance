@@ -104,8 +104,9 @@ export default function PlanView({ params }) {
     const mode = ex._mode || d?._mode || 'kracht'
     let reps=null, wkg=null, notes=null
     if (mode==='conditie') {
+      const metric = ex._metric ?? d?._metric ?? 'afstand'
       const spd = calcSpeed(ex._tempo||d?.tempo||'')
-      notes = JSON.stringify({ _mode:'conditie', distance_m:parseInt(ex._dist||d?.distance_m)||null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
+      notes = JSON.stringify({ _mode:'conditie', _metric:metric, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
     } else if (mode==='mobiliteit') {
       notes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex._hold||d?.hold_s)||30, hold_type:ex._htype||d?.hold_type||'statisch', rest_s:parseInt(ex.rest_seconds||d?.rest_s)||30 })
     } else {
@@ -303,13 +304,73 @@ export default function PlanView({ params }) {
                         {/* CONDITIE */}
                         {isC && (
                           <div>
-                            <div style={{ display:'grid', gridTemplateColumns:'60px 100px 120px 90px', gap:8, marginBottom:6 }}>
-                              <div><label style={lbl}>Intervals</label><input type="number" value={ex.sets||4} onChange={e=>updEx(s.id,ex.id,'sets',e.target.value)} onBlur={()=>saveEx({...ex,_mode:'conditie',_dist:ex._dist||d?.distance_m,_tempo:tempo},s.session_type)} style={{...inp,textAlign:'center'}} /></div>
-                              <div><label style={lbl}>Afstand (m)</label><input type="number" placeholder="400" value={ex._dist??d?.distance_m??''} onChange={e=>updEx(s.id,ex.id,'_dist',e.target.value)} onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)} style={{...inp,textAlign:'center'}} /></div>
-                              <div><label style={lbl}>Tempo (min:sec/km)</label><input placeholder="5:30" value={tempo} onChange={e=>updEx(s.id,ex.id,'_tempo',e.target.value)} onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)} style={inp} /></div>
-                              <div><label style={lbl}>Rust (s)</label><input type="number" value={ex.rest_seconds||d?.rest_s||180} onChange={e=>updEx(s.id,ex.id,'rest_seconds',e.target.value)} onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)} style={{...inp,textAlign:'center'}} /></div>
+                            {/* Afstand vs Tijd toggle */}
+                            <div style={{ display:'flex', gap:4, marginBottom:8 }}>
+                              {['afstand','tijd'].map(m => {
+                                const metric = ex._metric ?? (parseMode(ex.notes)?._metric || 'afstand')
+                                return (
+                                  <button key={m}
+                                    onClick={() => {
+                                      updEx(s.id, ex.id, '_metric', m)
+                                      const n = {...(parseMode(ex.notes)||{}), _metric:m}
+                                      supabase.from('session_exercises').update({ notes: JSON.stringify(n) }).eq('id', ex.id)
+                                    }}
+                                    style={{ flex:1, padding:'4px', background:metric===m?'#38e8e8':'var(--dark4)', color:metric===m?'#000':'var(--muted)', border:`1px solid ${metric===m?'#38e8e8':'rgba(255,255,255,0.08)'}`, cursor:'pointer', ...B, fontSize:10, fontWeight:metric===m?700:400, textTransform:'uppercase', letterSpacing:1 }}>
+                                    {m === 'afstand' ? '📏 Afstand' : '⏱ Tijd'}
+                                  </button>
+                                )
+                              })}
                             </div>
-                            {spd&&<div style={{background:'rgba(56,232,232,0.08)',border:'1px solid rgba(56,232,232,0.2)',padding:'6px 12px',display:'flex',gap:16}}><span style={{...B,fontSize:12,color:'#38e8e8'}}>⚡ <strong>{spd} km/h</strong></span><span style={{...B,fontSize:11,color:'#888'}}>{tempo} min/km</span></div>}
+                            <div style={{ display:'grid', gridTemplateColumns:'60px 110px 120px 90px', gap:8, marginBottom:6 }}>
+                              <div>
+                                <label style={lbl}>Sets</label>
+                                <input type="number" value={ex.sets||4}
+                                  onChange={e=>updEx(s.id,ex.id,'sets',e.target.value)}
+                                  onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)}
+                                  style={{...inp,textAlign:'center'}} />
+                              </div>
+                              <div>
+                                {(() => {
+                                  const metric = ex._metric ?? (parseMode(ex.notes)?._metric || 'afstand')
+                                  const d = parseMode(ex.notes)
+                                  return metric === 'afstand' ? (
+                                    <>
+                                      <label style={lbl}>Afstand (m)</label>
+                                      <input type="number" placeholder="400" value={ex._dist??d?.distance_m??''}
+                                        onChange={e=>updEx(s.id,ex.id,'_dist',e.target.value)}
+                                        onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)}
+                                        style={{...inp,textAlign:'center'}} />
+                                    </>
+                                  ) : (
+                                    <>
+                                      <label style={lbl}>Totale tijd (min:sec)</label>
+                                      <input type="text" placeholder="4:00" value={ex._duration??d?.duration??''}
+                                        onChange={e=>updEx(s.id,ex.id,'_duration',e.target.value)}
+                                        onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)}
+                                        style={inp} />
+                                    </>
+                                  )
+                                })()}
+                              </div>
+                              <div>
+                                <label style={lbl}>Tempo (min:sec/km)</label>
+                                <input placeholder="5:30" value={tempo}
+                                  onChange={e=>updEx(s.id,ex.id,'_tempo',e.target.value)}
+                                  onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)}
+                                  style={inp} />
+                              </div>
+                              <div>
+                                <label style={lbl}>Rust (s)</label>
+                                <input type="number" value={ex.rest_seconds||parseMode(ex.notes)?.rest_s||180}
+                                  onChange={e=>updEx(s.id,ex.id,'rest_seconds',e.target.value)}
+                                  onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)}
+                                  style={{...inp,textAlign:'center'}} />
+                              </div>
+                            </div>
+                            {spd && <div style={{background:'rgba(56,232,232,0.08)',border:'1px solid rgba(56,232,232,0.2)',padding:'6px 12px',display:'flex',gap:16}}>
+                              <span style={{...B,fontSize:12,color:'#38e8e8'}}>⚡ <strong>{spd} km/h</strong></span>
+                              <span style={{...B,fontSize:11,color:'#888'}}>{tempo} min/km</span>
+                            </div>}
                           </div>
                         )}
                         {/* MOBILITEIT */}
