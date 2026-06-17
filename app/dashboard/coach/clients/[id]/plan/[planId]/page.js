@@ -136,19 +136,22 @@ export default function PlanView({ params }) {
   }
 
   const deletePlan = async () => {
-    if (!confirm('VOLLEDIGE trainingsplan verwijderen? Dit kan niet ongedaan worden.')) return
+    if (!confirm('VOLLEDIGE trainingsplan verwijderen? Kan niet ongedaan worden.')) return
+    if (!confirm('Laatste kans: alle weken, trainingen en oefeningen gaan definitief weg.')) return
     setDeleting(true)
-    for (const m of mesos) {
-      const { data:sl } = await supabase.from('training_sessions').select('id').eq('meso_cycle_id',m.id)
-      for (const s of sl||[]) {
-        await supabase.from('session_exercises').delete().eq('session_id',s.id)
-        await supabase.from('session_logs').delete().eq('session_id',s.id)
-      }
-      await supabase.from('training_sessions').delete().eq('meso_cycle_id',m.id)
-      await supabase.from('meso_cycles').delete().eq('id',m.id)
+    try {
+      const res = await fetch('/api/dashboard/delete-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId: ids.planId }),
+      })
+      const data = res.ok ? await res.json() : { error: 'HTTP ' + res.status }
+      if (data.error) { alert('Verwijderen mislukt: ' + data.error); setDeleting(false); return }
+      router.push(`/dashboard/coach/clients/${ids.clientId}`)
+    } catch (e) {
+      alert('Verbindingsfout. Probeer opnieuw.')
+      setDeleting(false)
     }
-    await supabase.from('macro_plans').delete().eq('id', ids.planId)
-    router.push(`/dashboard/coach/clients/${ids.clientId}`)
   }
 
   if (loading || !ids.planId) return (

@@ -171,14 +171,16 @@ export default function TestProtocol({ params }) {
         notes: f.notes || null,
       })
     })
-    const result = await res.json()
+    // Veilig JSON parsen - voorkomt crash als response geen JSON is
+    let result = {}
+    try { result = await res.json() } catch { result = { error: 'Server response onleesbaar' } }
+    
     if (!res.ok || result.error) {
-      console.error('Save test error:', result.error)
+      console.error('Save test error:', result.error || res.status)
       setStatus('error')
       return
     }
     setStatus('success')
-    // Redirect naar test overzicht zodat je de nieuwe test direct ziet
     setTimeout(() => router.push(`/dashboard/coach/clients/${clientId}/test`), 2000)
   }
 

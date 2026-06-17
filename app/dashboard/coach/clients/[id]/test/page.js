@@ -105,6 +105,7 @@ export default async function TestOverview({ params }) {
 
   return (
     <div style={{ background:'var(--dark)', minHeight:'100vh' }}>
+      <style dangerouslySetInnerHTML={{ __html: '.test-card-link:hover { background: #1e1e1e !important; }' }} />
       <header style={{ background:'var(--dark2)', borderBottom:'1px solid rgba(255,77,0,0.12)', padding:'14px 40px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <svg width="22" height="20" viewBox="0 0 36 34">
@@ -195,9 +196,8 @@ export default async function TestOverview({ params }) {
                 return (
                   <a key={test.id}
                     href={`/dashboard/coach/clients/${id}/test/${test.id}`}
-                    style={{ display:'block', background:'var(--dark2)', borderLeft:`3px solid ${isLatest?'var(--orange)':'var(--dark4)'}`, padding:'18px 22px', textDecoration:'none', transition:'border-color 0.2s, background 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.background='#1e1e1e'}
-                    onMouseLeave={e => e.currentTarget.style.background='var(--dark2)'}
+                    className="test-card-link"
+                    style={{ display:'block', background:'var(--dark2)', borderLeft:`3px solid ${isLatest?'var(--orange)':'var(--dark4)'}`, padding:'18px 22px', textDecoration:'none' }}
                   >
                     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10, gap:12 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:12 }}>
