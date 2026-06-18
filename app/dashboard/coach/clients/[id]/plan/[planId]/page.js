@@ -79,6 +79,43 @@ export default function PlanView({ params }) {
     }).eq('id', s.id)
   }
 
+  const saveAll = async (s) => {
+    // Sla sessie op
+    await supabase.from('training_sessions').update({
+      session_name: s.session_name, session_type: s.session_type,
+      day_of_week: parseInt(s.day_of_week)||1
+    }).eq('id', s.id)
+    // Sla alle oefeningen op
+    for (const ex of s.session_exercises || []) {
+      const d = parseMode(ex.notes)
+      const mode = ex._mode || d?._mode || 'kracht'
+      const metric = ex._metric ?? d?._metric ?? 'afstand'
+      let reps = null, weight_kg = null, notes = null
+      if (mode === 'conditie') {
+        const spd = calcSpeed(ex._tempo || d?.tempo || '')
+        notes = JSON.stringify({ _mode:'conditie', _metric:metric, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
+      } else if (mode === 'mobiliteit') {
+        notes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex._hold||d?.hold_s)||30, hold_type:ex._htype||d?.hold_type||'statisch', rest_s:parseInt(ex.rest_seconds||d?.rest_s)||30 })
+      } else {
+        reps = ex.reps || '8-10'
+        weight_kg = ex.weight_kg ? parseFloat(ex.weight_kg) : null
+        notes = ex._notes || (d?._mode ? null : ex.notes) || null
+      }
+      await supabase.from('session_exercises').update({
+        exercise_name: ex._name || ex.exercise_name || ex.exercises?.name || 'Oefening',
+        sets: parseInt(ex.sets)||3, reps, weight_kg,
+        rest_seconds: parseInt(ex.rest_seconds)||90, notes
+      }).eq('id', ex.id)
+    }
+  }
+
+  const [savedId, setSavedId] = React.useState(null)
+  const handleSave = async (s) => {
+    setSavedId(s.id)
+    await saveAll(s)
+    setTimeout(() => setSavedId(null), 2000)
+  }
+
   const addSess = async () => {
     const mesoId = mesos[wi]?.id; if (!mesoId) return
     await supabase.from('training_sessions').insert({
@@ -244,6 +281,14 @@ export default function PlanView({ params }) {
                       </select>
                     </div>
                     <button onClick={()=>delSess(s.id)} style={{ background:'none', border:'1px solid rgba(248,113,113,0.3)', color:'#f87171', cursor:'pointer', padding:'0 8px', fontSize:16, height:38 }}>✕</button>
+                  </div>
+
+                  {/* Opslaan knop */}
+                  <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:14 }}>
+                    <button onClick={() => handleSave(s)}
+                      style={{ background: savedId===s.id ? '#4ade80' : 'var(--orange)', color:'#000', ...B, fontWeight:700, fontSize:11, letterSpacing:2, textTransform:'uppercase', padding:'8px 22px', border:'none', cursor:'pointer', transition:'background 0.2s' }}>
+                      {savedId===s.id ? '✓ OPGESLAGEN!' : '💾 SESSIE OPSLAAN'}
+                    </button>
                   </div>
 
                   {/* Oefeningen label */}
