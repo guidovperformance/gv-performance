@@ -115,6 +115,40 @@ export default function PlanView({ params }) {
   }
 
   const [savedId, setSavedId] = React.useState(null)
+  const [startDate, setStartDate] = React.useState(null)
+  const [recalcDone, setRecalcDone] = React.useState(false)
+
+  // Laad startdatum uit plan
+  React.useEffect(() => {
+    if (plan?.start_date) setStartDate(plan.start_date)
+  }, [plan])
+
+  const recalcDates = async (newStartDate) => {
+    // Snap naar maandag
+    const raw = new Date(newStartDate)
+    const dow = raw.getDay()
+    const backToMonday = dow === 0 ? 6 : dow - 1
+    const monday = new Date(raw)
+    monday.setDate(raw.getDate() - backToMonday)
+
+    // Update start_date van het plan
+    await supabase.from('macro_plans').update({ start_date: monday.toISOString().split('T')[0] }).eq('id', ids.planId)
+
+    // Herbereken alle session_dates
+    for (let wi = 0; wi < mesos.length; wi++) {
+      const { data: sessies } = await supabase
+        .from('training_sessions').select('id, day_of_week').eq('meso_cycle_id', mesos[wi].id)
+      for (const sess of sessies || []) {
+        const sessDate = new Date(monday)
+        sessDate.setDate(monday.getDate() + wi * 7 + (sess.day_of_week - 1))
+        await supabase.from('training_sessions')
+          .update({ session_date: sessDate.toISOString().split('T')[0] })
+          .eq('id', sess.id)
+      }
+    }
+    setRecalcDone(true)
+    setTimeout(() => setRecalcDone(false), 2500)
+  }
   const handleSave = async (s) => {
     setSavedId(s.id)
     await saveAll(s)
@@ -243,6 +277,24 @@ export default function PlanView({ params }) {
           <div style={{ ...B, fontSize:10, letterSpacing:4, color:'var(--orange)', textTransform:'uppercase', marginBottom:5 }}>Trainingsplan wijzigen</div>
           <div style={{ ...D, fontSize:'clamp(24px,4vw,42px)', fontWeight:700, letterSpacing:2, marginBottom:4 }}>{plan?.name?.toUpperCase()}</div>
           {plan?.goal && <div style={{ ...B, fontSize:14, color:'var(--muted)' }}>🎯 {plan.goal}</div>}
+
+        {/* Startdatum bewerkbaar + herbereken knop */}
+        <div style={{ display:'flex', gap:12, alignItems:'center', marginTop:14, flexWrap:'wrap' }}>
+          <div>
+            <div style={{ ...B, fontSize:9, letterSpacing:2, color:'var(--muted)', textTransform:'uppercase', marginBottom:4 }}>
+              Startdatum plan (auto-snap naar maandag)
+            </div>
+            <div style={{ display:'flex', gap:8, alignItems:'center' }}>
+              <input type="date" value={startDate || ''}
+                onChange={e => setStartDate(e.target.value)}
+                style={{ background:'var(--dark4)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text)', fontFamily:"'Barlow Condensed',sans-serif", fontSize:13, padding:'7px 10px', outline:'none', colorScheme:'dark' }} />
+              <button onClick={() => recalcDates(startDate)}
+                style={{ background:recalcDone?'#4ade80':'var(--orange)', color:'#000', ...B, fontWeight:700, fontSize:11, letterSpacing:1, textTransform:'uppercase', padding:'8px 16px', border:'none', cursor:'pointer', transition:'background 0.2s' }}>
+                {recalcDone ? '✓ Datums bijgewerkt!' : '↻ Datums herberekenen'}
+              </button>
+            </div>
+          </div>
+        </div>
         </div>
 
         {/* Week tabs */}

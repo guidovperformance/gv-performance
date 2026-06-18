@@ -166,8 +166,15 @@ export default function NewPlan({ params }) {
         const weekIdx = parseInt(weekIdxStr)
         const mesoId = mesoIds[weekIdx]
         for (const session of weekSessions) {
-          const weekStart = new Date(macro.start_date)
-          weekStart.setDate(weekStart.getDate() + weekIdx * 7)
+          // Snap startdatum altijd naar maandag van die week
+          const rawStart = new Date(macro.start_date)
+          const dow = rawStart.getDay() // 0=zo, 1=ma, ..., 6=za
+          const backToMonday = dow === 0 ? 6 : dow - 1
+          const monday = new Date(rawStart)
+          monday.setDate(rawStart.getDate() - backToMonday)
+
+          const weekStart = new Date(monday)
+          weekStart.setDate(monday.getDate() + weekIdx * 7)
           const days = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag']
           const dayOffset = days.indexOf(session.day)
           const sessionDate = new Date(weekStart)
@@ -286,7 +293,17 @@ export default function NewPlan({ params }) {
                   <input
                     type="date"
                     value={macro.start_date}
-                    onChange={e => setMacro(p => ({...p, start_date: e.target.value}))}
+                    onChange={e => {
+                        const d = new Date(e.target.value)
+                        const dow = d.getDay()
+                        if (dow !== 1) {
+                          const diff = dow === 0 ? -6 : 1 - dow
+                          d.setDate(d.getDate() + diff)
+                          setMacro(p => ({...p, start_date: d.toISOString().split('T')[0]}))
+                        } else {
+                          setMacro(p => ({...p, start_date: e.target.value}))
+                        }
+                      }}
                     style={{ ...inp, cursor: 'pointer' }}
                   />
                 </div>
