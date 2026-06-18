@@ -62,7 +62,12 @@ export default function PlanView({ params }) {
     const { data } = await supabase.from('training_sessions')
       .select('*, session_exercises(*, exercises(*))')
       .eq('meso_cycle_id', mesoId).order('day_of_week')
-    setSessions(data || [])
+    // Sorteer oefeningen op order_index zodat volgorde klopt
+    const sorted = (data || []).map(s => ({
+      ...s,
+      session_exercises: [...(s.session_exercises || [])].sort((a,b) => (a.order_index||0) - (b.order_index||0))
+    }))
+    setSessions(sorted)
   }
 
   const switchWeek = async (i) => {
@@ -167,6 +172,24 @@ export default function PlanView({ params }) {
   const delEx = async (eId, sId) => {
     await supabase.from('session_exercises').delete().eq('id', eId)
     setSessions(p => p.map(s => s.id!==sId ? s : {...s, session_exercises:s.session_exercises.filter(e=>e.id!==eId)}))
+  }
+
+  const moveEx = async (sId, idx, dir) => {
+    // dir: -1 = omhoog, +1 = omlaag
+    setSessions(prev => prev.map(s => {
+      if (s.id !== sId) return s
+      const exs = [...s.session_exercises]
+      const newIdx = idx + dir
+      if (newIdx < 0 || newIdx >= exs.length) return s
+      // Swap in state
+      const tmp = exs[idx]
+      exs[idx] = { ...exs[newIdx], order_index: idx }
+      exs[newIdx] = { ...tmp, order_index: newIdx }
+      // Persist swapped order_indexes to DB
+      supabase.from('session_exercises').update({ order_index: idx }).eq('id', exs[idx].id)
+      supabase.from('session_exercises').update({ order_index: newIdx }).eq('id', exs[newIdx].id)
+      return { ...s, session_exercises: exs }
+    }))
   }
 
   const deletePlan = async () => {
@@ -304,7 +327,7 @@ export default function PlanView({ params }) {
                     return (
                       <div key={ex.id} style={{ background:'var(--dark3)', padding:'12px 14px', marginBottom:8, borderLeft:`2px solid ${TC[mode]||tc}` }}>
                         {/* Naam (vrij tekstveld) + verwijder */}
-                        <div style={{ display:'grid', gridTemplateColumns:'1fr 28px', gap:8, marginBottom:8 }}>
+                        <div style={{ display:'grid', gridTemplateColumns:'1fr auto', gap:8, marginBottom:8, alignItems:'center' }}>
                           <input
                             value={exName}
                             onChange={e => updEx(s.id, ex.id, '_name', e.target.value)}
@@ -312,7 +335,14 @@ export default function PlanView({ params }) {
                             style={{...inp, fontWeight:600, fontSize:14}}
                             placeholder="Naam oefening (bijv. Hardlopen, SkiErg, Deadlift...)"
                           />
-                          <button onClick={()=>delEx(ex.id,s.id)} style={{background:'none',border:'none',color:'#f87171',cursor:'pointer',fontSize:16,padding:0}}>✕</button>
+                          <div style={{ display:'flex', gap:4, alignItems:'center' }}>
+                            <button onClick={()=>moveEx(s.id, eIdx, -1)} title="Omhoog"
+                              style={{background:'none',border:'1px solid rgba(255,255,255,0.1)',color:'var(--muted)',cursor:'pointer',fontSize:12,padding:'3px 7px',lineHeight:1}}>▲</button>
+                            <button onClick={()=>moveEx(s.id, eIdx, 1)} title="Omlaag"
+                              style={{background:'none',border:'1px solid rgba(255,255,255,0.1)',color:'var(--muted)',cursor:'pointer',fontSize:12,padding:'3px 7px',lineHeight:1}}>▼</button>
+                            <button onClick={()=>delEx(ex.id,s.id)}
+                              style={{background:'none',border:'none',color:'#f87171',cursor:'pointer',fontSize:16,padding:'0 4px'}}>✕</button>
+                          </div>
                         </div>
                         {/* Type toggle — altijd zichtbaar */}
                         <div style={{ display:'flex', gap:4, marginBottom:8 }}>
