@@ -98,7 +98,7 @@ export default function PlanView({ params }) {
       let reps = null, weight_kg = null, notes = null
       if (mode === 'conditie') {
         const spd = calcSpeed(ex._tempo || d?.tempo || '')
-        notes = JSON.stringify({ _mode:'conditie', _metric:metric, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
+        notes = JSON.stringify({ _mode:'conditie', _metric:metric, _zone:ex._zone??d?._zone??null, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
       } else if (mode === 'mobiliteit') {
         notes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex._hold||d?.hold_s)||30, hold_type:ex._htype||d?.hold_type||'statisch', rest_s:parseInt(ex.rest_seconds||d?.rest_s)||30 })
       } else {
@@ -148,7 +148,7 @@ export default function PlanView({ params }) {
     if (mode==='conditie') {
       const metric = ex._metric ?? d?._metric ?? 'afstand'
       const spd = calcSpeed(ex._tempo||d?.tempo||'')
-      notes = JSON.stringify({ _mode:'conditie', _metric:metric, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
+      notes = JSON.stringify({ _mode:'conditie', _metric:metric, _zone:ex._zone??d?._zone??null, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
     } else if (mode==='mobiliteit') {
       notes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex._hold||d?.hold_s)||30, hold_type:ex._htype||d?.hold_type||'statisch', rest_s:parseInt(ex.rest_seconds||d?.rest_s)||30 })
     } else {
@@ -396,6 +396,29 @@ export default function PlanView({ params }) {
                                 )
                               })}
                             </div>
+                            {/* Zone selector */}
+                            <div style={{ marginBottom:8 }}>
+                              <label style={lbl}>Trainingszone (optioneel)</label>
+                              <div style={{ display:'flex', gap:3, marginTop:4 }}>
+                                {[['Z1','Herstel','#60a5fa'],['Z2','Duurloop','#4ade80'],['Z3','Drempel','#ffe066'],['Z4','Interval','#fb923c'],['Z5','VO2max','#f87171']].map(([z,label,c]) => {
+                                  const d = parseMode(ex.notes)
+                                  const curZone = ex._zone ?? d?._zone ?? null
+                                  return (
+                                    <button key={z} type="button" title={label}
+                                      onClick={() => {
+                                        const newZone = curZone===z ? null : z
+                                        updEx(s.id, ex.id, '_zone', newZone)
+                                        const n = {...(parseMode(ex.notes)||{}), _zone:newZone}
+                                        supabase.from('session_exercises').update({ notes: JSON.stringify(n) }).eq('id', ex.id)
+                                      }}
+                                      style={{ flex:1, padding:'5px 2px', background:curZone===z?c:'var(--dark4)', color:curZone===z?'#000':'var(--muted)', border:`1px solid ${curZone===z?c:'rgba(255,255,255,0.08)'}`, cursor:'pointer', ...B, fontSize:10, fontWeight:curZone===z?700:400, letterSpacing:1 }}>
+                                      {z}
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+
                             <div style={{ display:'grid', gridTemplateColumns:'60px 110px 120px 90px', gap:8, marginBottom:6 }}>
                               <div>
                                 <label style={lbl}>Sets</label>

@@ -192,6 +192,7 @@ export default function NewPlan({ params }) {
                 exNotes = JSON.stringify({
                   _mode:'conditie',
                   _metric: ex.cond_metric || 'afstand',
+                  _zone: ex.zone || null,
                   distance_m: ex.cond_metric !== 'tijd' ? (parseInt(ex.distance)||null) : null,
                   duration: ex.cond_metric === 'tijd' ? (ex.duration||null) : null,
                   rest_s: parseInt(ex.rest)||180,
@@ -455,6 +456,22 @@ export default function NewPlan({ params }) {
                                         </button>
                                       ))}
                                     </div>
+                                    {/* Zone selector */}
+                                    <div style={{ marginBottom: 8 }}>
+                                      <div style={{ fontFamily: 'var(--font-barlow), sans-serif', fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>Trainingszone (optioneel)</div>
+                                      <div style={{ display: 'flex', gap: 3 }}>
+                                        {[['Z1','Herstel','#60a5fa'],['Z2','Duurloop','#4ade80'],['Z3','Drempel','#ffe066'],['Z4','Interval','#fb923c'],['Z5','VO2max','#f87171']].map(([z,label,c]) => (
+                                          <button key={z} type="button"
+                                            onClick={() => setExercise(selectedMeso, sIdx, eIdx, 'zone', ex.zone===z ? null : z)}
+                                            title={label}
+                                            style={{ flex: 1, padding: '5px 2px', background: ex.zone===z ? c : 'var(--dark3)', color: ex.zone===z ? '#000' : 'var(--muted)', border: `1px solid ${ex.zone===z ? c : 'rgba(255,255,255,0.08)'}`, cursor: 'pointer', fontFamily: 'var(--font-barlow), sans-serif', fontSize: 10, fontWeight: ex.zone===z ? 700 : 400, letterSpacing: 1 }}>
+                                            {z}
+                                          </button>
+                                        ))}
+                                        {ex.zone && <button type="button" onClick={() => setExercise(selectedMeso, sIdx, eIdx, 'zone', null)} style={{ padding: '5px 6px', background: 'none', border: '1px solid rgba(255,255,255,0.06)', color: 'var(--muted)', cursor: 'pointer', fontSize: 10 }}>✕</button>}
+                                      </div>
+                                    </div>
+
                                     <div style={{ display: 'grid', gridTemplateColumns: '60px 110px 120px 90px', gap: 6, marginBottom: 6 }}>
                                       <div>
                                         <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Sets</div>
