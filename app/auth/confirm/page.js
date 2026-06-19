@@ -14,14 +14,44 @@ export default function AuthConfirm() {
 
   React.useEffect(() => {
     const handleAuth = async () => {
-      // Lees hash tokens uit URL
+      // Hash bevat token_hash en type (niet prefetcht door Outlook SafeLinks)
       const hash = window.location.hash.substring(1)
       const params = new URLSearchParams(hash)
-      const accessToken = params.get('access_token')
-      const refreshToken = params.get('refresh_token')
+
+      const token_hash = params.get('token_hash')
       const type = params.get('type')
 
+      // Legacy flow: access_token + refresh_token in hash
+      const accessToken = params.get('access_token')
+      const refreshToken = params.get('refresh_token')
+
+      if (token_hash && type) {
+        // Huidige Supabase flow: verifieer token client-side
+        const typesToTry = [type]
+        if (type === 'invite') typesToTry.push('magiclink', 'signup')
+        if (type === 'recovery') typesToTry.push('email')
+
+        let success = false
+        for (const t of typesToTry) {
+          const { error } = await supabase.auth.verifyOtp({ token_hash, type: t })
+          if (!error) {
+            success = true
+            break
+          }
+        }
+
+        if (success) {
+          if (type === 'invite' || type === 'recovery') {
+            router.push('/auth/set-password')
+          } else {
+            router.push('/dashboard')
+          }
+          return
+        }
+      }
+
       if (accessToken && refreshToken) {
+        // Legacy flow
         const { error } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken,
@@ -32,13 +62,13 @@ export default function AuthConfirm() {
           } else {
             router.push('/dashboard')
           }
-        } else {
-          setStatus('error')
+          return
         }
-      } else {
-        setStatus('error')
       }
+
+      setStatus('error')
     }
+
     handleAuth()
   }, [])
 
