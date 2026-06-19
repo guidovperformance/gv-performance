@@ -25,7 +25,7 @@ export default function Login() {
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
-  const [mode, setMode] = React.useState('login') // 'login' | 'reset'
+  const [mode, setMode] = React.useState('login')
   const [resetSent, setResetSent] = React.useState(false)
   const router = useRouter()
   const supabase = createClient()
@@ -52,8 +52,9 @@ export default function Login() {
     setLoading(true)
     setError('')
 
+    // /auth/confirm verwerkt tokens via #hash — Outlook SafeLinks fetcht geen hashes
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback?next=/auth/set-password`,
+      redirectTo: `https://www.gvperformance.nl/auth/confirm`,
     })
     if (error) {
       setError('Er ging iets mis. Controleer het e-mailadres.')
@@ -67,7 +68,6 @@ export default function Login() {
   return (
     <div style={{ background: 'var(--dark)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
 
-      {/* Logo */}
       <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', marginBottom: 40 }}>
         <svg width="32" height="30" viewBox="0 0 36 34">
           <polygon points="18,2 13,28 23,28" fill="#FF4D00" />
@@ -120,7 +120,6 @@ export default function Login() {
                 {loading ? 'INLOGGEN...' : 'INLOGGEN'}
               </button>
 
-              {/* NIEUW: wachtwoord vergeten */}
               <button type="button" onClick={() => { setMode('reset'); setError('') }}
                 style={{ ...B, fontSize: 12, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', textDecoration: 'underline', textDecorationColor: 'var(--muted2)' }}>
                 Wachtwoord vergeten?

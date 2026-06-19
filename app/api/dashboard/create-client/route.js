@@ -20,14 +20,14 @@ export async function POST(request) {
       return Response.json({ error: 'Ongeldig e-mailadres.' }, { status: 400 })
     }
 
-    // Gebruik altijd www.gvperformance.nl — consistent met Supabase allowlist
+    // /auth/confirm verwerkt tokens via #hash — Outlook SafeLinks fetcht geen hashes
     const siteUrl = 'https://www.gvperformance.nl'
 
     const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
       email.toLowerCase().trim(),
       {
         data: { full_name: naam.trim(), role: 'client' },
-        redirectTo: `${siteUrl}/auth/callback?next=/auth/set-password`,
+        redirectTo: `${siteUrl}/auth/confirm`,
       }
     )
 
