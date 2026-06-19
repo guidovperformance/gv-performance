@@ -10,32 +10,30 @@ export async function GET(request) {
 
   const supabase = await createClient()
 
-  // Stroom 1: OAuth / magic link via PKCE code
+  // Stroom 1: PKCE code (ook pkce_ token_hash valt hieronder)
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) return NextResponse.redirect(`${origin}${next}`)
     console.error('exchangeCodeForSession error:', error)
   }
 
-  // Stroom 2: token_hash — probeer origineel type, dan magiclink als fallback
-  if (token_hash && type) {
-    // Eerste poging: type zoals Supabase stuurt (invite / recovery / email)
-    const { error: err1 } = await supabase.auth.verifyOtp({ token_hash, type })
-    if (!err1) return NextResponse.redirect(`${origin}${next}`)
-    console.error('verifyOtp attempt 1 error:', err1)
+  // Stroom 2: token_hash met pkce_ prefix → ook exchangeCodeForSession
+  if (token_hash && token_hash.startsWith('pkce_')) {
+    const { error } = await supabase.auth.exchangeCodeForSession(token_hash)
+    if (!error) return NextResponse.redirect(`${origin}${next}`)
+    console.error('exchangeCodeForSession (pkce token_hash) error:', error)
+  }
 
-    // Tweede poging: nieuwere Supabase versies willen 'magiclink' voor invite
-    if (type === 'invite') {
-      const { error: err2 } = await supabase.auth.verifyOtp({ token_hash, type: 'magiclink' })
-      if (!err2) return NextResponse.redirect(`${origin}${next}`)
-      console.error('verifyOtp attempt 2 (magiclink) error:', err2)
-    }
+  // Stroom 3: gewone OTP token_hash (invite / recovery / email)
+  if (token_hash && type && !token_hash.startsWith('pkce_')) {
+    const typesToTry = [type]
+    if (type === 'invite') typesToTry.push('magiclink')
+    if (type === 'recovery') typesToTry.push('email')
 
-    // Derde poging: email (voor recovery flows)
-    if (type === 'recovery') {
-      const { error: err3 } = await supabase.auth.verifyOtp({ token_hash, type: 'email' })
-      if (!err3) return NextResponse.redirect(`${origin}${next}`)
-      console.error('verifyOtp attempt 3 (email) error:', err3)
+    for (const t of typesToTry) {
+      const { error } = await supabase.auth.verifyOtp({ token_hash, type: t })
+      if (!error) return NextResponse.redirect(`${origin}${next}`)
+      console.error(`verifyOtp type=${t} error:`, error)
     }
   }
 
