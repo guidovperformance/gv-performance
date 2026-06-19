@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { supabaseAdmin } from '@/lib/supabase/admin'  // FIXED: gebruik gedeelde admin client
+import { supabaseAdmin } from '@/lib/supabase/admin'
 
 export async function POST(request) {
   try {
@@ -7,7 +7,6 @@ export async function POST(request) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return Response.json({ error: 'Niet ingelogd' }, { status: 401 })
 
-    // Controleer of ingelogde user coach is
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
     if (profile?.role !== 'coach') return Response.json({ error: 'Geen toegang' }, { status: 403 })
 
@@ -16,15 +15,14 @@ export async function POST(request) {
       return Response.json({ error: 'Naam en email zijn verplicht.' }, { status: 400 })
     }
 
-    // Valideer email formaat
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return Response.json({ error: 'Ongeldig e-mailadres.' }, { status: 400 })
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gvperformance.nl'
+    // Gebruik altijd www.gvperformance.nl — consistent met Supabase allowlist
+    const siteUrl = 'https://www.gvperformance.nl'
 
-    // Stuur uitnodiging
     const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(
       email.toLowerCase().trim(),
       {
@@ -42,13 +40,11 @@ export async function POST(request) {
 
     const userId = inviteData.user.id
 
-    // Profiel aanmaken
     await supabaseAdmin.from('profiles').upsert(
       { id: userId, full_name: naam.trim(), role: 'client', email: email.toLowerCase().trim() },
       { onConflict: 'id' }
     )
 
-    // Client profiel aanmaken
     const { error: profileError } = await supabaseAdmin.from('client_profiles').insert({
       user_id: userId,
       coach_id: user.id,
