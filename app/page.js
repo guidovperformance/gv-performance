@@ -1,5 +1,6 @@
 'use client'
 import React from 'react'
+import { CascadeText } from './site-shared'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -97,6 +98,83 @@ const CSS = `
     padding:10px 22px; font-weight:700; letter-spacing:1px !important;
   }
   .nav-cta::after { display:none !important; }
+
+  /* NAV DROPDOWN */
+  .nav-dropdown { position: relative; }
+  .nav-dropdown-trigger {
+    display: flex; align-items: center; gap: 5px; cursor: pointer;
+    font-family: var(--body); font-size: 13px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted); transition: color .2s;
+    background: none; border: none; padding: 0;
+  }
+  .nav-dropdown:hover .nav-dropdown-trigger,
+  .nav-dropdown:focus-within .nav-dropdown-trigger { color: var(--text); }
+  .nav-dropdown-caret { font-size: 9px; transition: transform .2s; display: inline-block; }
+  .nav-dropdown:hover .nav-dropdown-caret,
+  .nav-dropdown:focus-within .nav-dropdown-caret { transform: rotate(180deg); }
+  .nav-dropdown-menu {
+    position: absolute; top: 100%; left: 50%;
+    transform: translateX(-50%) translateY(-6px);
+    background: var(--dark2); border: 1px solid rgba(212,168,87,0.15);
+    border-radius: 10px; min-width: 170px; padding: 6px; margin-top: 10px;
+    list-style: none; opacity: 0; pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45); z-index: 110;
+  }
+  .nav-dropdown:hover .nav-dropdown-menu,
+  .nav-dropdown:focus-within .nav-dropdown-menu {
+    opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0);
+  }
+  .nav-dropdown-menu li a {
+    display: block; padding: 10px 14px; font-size: 12px; letter-spacing: 1px;
+    color: var(--muted); text-decoration: none; border-radius: 6px; white-space: nowrap;
+  }
+  .nav-dropdown-menu li a::after { display: none !important; }
+  .nav-dropdown-menu li a:hover { background: rgba(212,168,87,0.08); color: var(--orange); }
+
+  /* MOBILE HAMBURGER + DRAWER */
+  .nav-hamburger {
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    width: 40px; height: 40px; background: none; border: none; cursor: pointer; padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-hamburger span {
+    display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px;
+    margin: 0 auto; transition: transform .25s ease, opacity .25s ease;
+  }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .nav-mobile-drawer {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10,10,10,0.98); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    display: flex; flex-direction: column;
+    padding: calc(env(safe-area-inset-top, 0px) + 90px) 28px 40px;
+    opacity: 0; pointer-events: none; transform: translateY(-12px);
+    transition: opacity .25s ease, transform .25s ease;
+    overflow-y: auto;
+  }
+  .nav-mobile-drawer.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .nav-mobile-links { display: flex; flex-direction: column; gap: 2px; }
+  .nav-mobile-links a {
+    font-family: var(--display); font-size: 22px; letter-spacing: 1px; color: var(--text);
+    text-decoration: none; padding: 16px 4px; border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: block; min-height: 44px;
+  }
+  .nav-mobile-links a.nav-mobile-sub {
+    font-size: 15px; font-family: var(--body); color: var(--muted); text-transform: uppercase;
+    letter-spacing: 2px; padding-left: 18px; font-weight: 700;
+  }
+  .nav-mobile-cta {
+    margin-top: 24px; background: var(--orange); color: #000 !important;
+    text-align: center; border-radius: 10px; font-family: var(--body) !important;
+    font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    border-bottom: none !important; padding: 16px !important; font-size: 14px !important;
+  }
+  @media (max-width: 768px) {
+    .nav-hamburger { display: flex; }
+  }
 
   /* ── HERO ── */
   .hero {
@@ -382,7 +460,7 @@ const CSS = `
     text-decoration: none;
     z-index: 999;
     box-shadow: 0 4px 24px rgba(212,168,87,0.4);
-    transition: transform .2s, box-shadow .2s, background .2s;
+    transition: transform .2s, box-shadow .2s, background .2s, opacity .3s ease;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -425,6 +503,13 @@ const CSS = `
 export default function Homepage() {
   const [form, setForm] = React.useState({ voornaam:'', achternaam:'', email:'', dienst:'', bericht:'' })
   const [status, setStatus] = React.useState('idle')
+  const [menuOpen, setMenuOpen] = React.useState(false)
+  const floatBtnRef = React.useRef(null)
+
+  React.useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
 
   // D: Fade-in observer
   React.useEffect(() => {
@@ -433,6 +518,19 @@ export default function Homepage() {
       { threshold: 0.12 }
     )
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el))
+    return () => observer.disconnect()
+  }, [])
+
+  // Verberg de zwevende knop zodra de footer in beeld komt
+  React.useEffect(() => {
+    const footer = document.querySelector('footer')
+    const btn = floatBtnRef.current
+    if (!footer || !btn) return
+    const observer = new IntersectionObserver(
+      ([entry]) => btn.classList.toggle('is-hidden', entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(footer)
     return () => observer.disconnect()
   }, [])
 
@@ -456,7 +554,7 @@ export default function Homepage() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       {/* B: Zwevende intake knop */}
-      <a href="#contact" className="float-btn">
+      <a href="#contact" className="float-btn" ref={floatBtnRef}>
         <span className="float-btn-pulse" />
         Gratis intake
       </a>
@@ -476,8 +574,14 @@ export default function Homepage() {
           </div>
         </a>
         <ul className="nav-links">
-          <li><a href="#over">Over Guido</a></li>
-          <li><a href="#diensten">Diensten</a></li>
+          <li className="nav-dropdown" tabIndex={0}>
+            <span className="nav-dropdown-trigger">Over Guido <span className="nav-dropdown-caret">▾</span></span>
+            <ul className="nav-dropdown-menu">
+              <li><a href="#over">Over Guido</a></li>
+              <li><a href="#diensten">Diensten</a></li>
+            </ul>
+          </li>
+          <li><a href="/expertise">Expertise</a></li>
           <li><a href="/resultaten">Resultaten</a></li>
           <li><a href="/testimonials">Reviews</a></li>
           <li><a href="/blog">Blog</a></li>
@@ -485,6 +589,29 @@ export default function Homepage() {
           <li><a href="/pakketten">Pakketten</a></li>
           <li><a href="#contact" className="nav-cta">Kennismaking</a></li>
         </ul>
+
+        <button
+          className="nav-hamburger"
+          aria-label="Menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(v => !v)}
+        >
+          <span /><span /><span />
+        </button>
+
+        <div className={`nav-mobile-drawer ${menuOpen ? 'open' : ''}`}>
+          <div className="nav-mobile-links">
+            <a href="#over" onClick={() => setMenuOpen(false)}>Over Guido</a>
+            <a href="#diensten" className="nav-mobile-sub" onClick={() => setMenuOpen(false)}>Diensten</a>
+            <a href="/expertise" onClick={() => setMenuOpen(false)}>Expertise</a>
+            <a href="/resultaten" onClick={() => setMenuOpen(false)}>Resultaten</a>
+            <a href="/testimonials" onClick={() => setMenuOpen(false)}>Reviews</a>
+            <a href="/blog" onClick={() => setMenuOpen(false)}>Blog</a>
+            <a href="/faq" onClick={() => setMenuOpen(false)}>FAQ</a>
+            <a href="/pakketten" onClick={() => setMenuOpen(false)}>Pakketten</a>
+            <a href="#contact" className="nav-mobile-cta" onClick={() => setMenuOpen(false)}>Kennismaking</a>
+          </div>
+        </div>
       </nav>
 
       {/* HERO */}
@@ -492,7 +619,11 @@ export default function Homepage() {
         <div className="hero-left">
           {/* F: Locatie keywords subtiel toegevoegd aan eyebrow */}
           <div className="hero-eyebrow">Coaching · Training · Tactical · Den Haag & Online</div>
-          <h1 className="hero-headline">JOUW<br/>DOEL,<br/><span>ONS PLAN</span></h1>
+          <h1 className="hero-headline">
+            <CascadeText text="JOUW" fontSize="inherit" color="inherit" hoverColor="var(--orange)" /><br/>
+            <CascadeText text="DOEL," fontSize="inherit" color="inherit" hoverColor="var(--orange)" /><br/>
+            <span><CascadeText text="ONS PLAN" fontSize="inherit" color="var(--orange)" hoverColor="var(--text)" /></span>
+          </h1>
           <div className="hero-tagline">GV PERFORMANCE</div>
           {/* F: "Den Haag en online" verwerkt in bestaande tekst */}
           <p className="hero-desc">
@@ -756,6 +887,7 @@ export default function Homepage() {
           <a href="#">LinkedIn</a>
           <a href="#contact">Contact</a>
           <a href="#">Privacybeleid</a>
+          <a href="/login">Inloggen</a>
         </div>
       </footer>
     </>

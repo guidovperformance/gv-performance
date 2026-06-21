@@ -2,6 +2,8 @@
 import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { BottomNav, TopBar } from '@/app/dashboard/client/components'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
 const D = { fontFamily: "'Oswald', Impact, sans-serif" }
@@ -18,53 +20,6 @@ function getWeekEnd() {
   const sun = new Date(d)
   sun.setDate(d.getDate() + (day === 0 ? 0 : 7 - day))
   return sun.toISOString().split('T')[0]
-}
-
-// ─── SHARED COMPONENTS ───────────────────────────────────────────────────────
-export function BottomNav({ active }) {
-  const items = [
-    { href: '/dashboard/client',         id: 'home',    label: 'Home',     svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> },
-    { href: '/dashboard/client/week',    id: 'week',    label: 'Week',     svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> },
-    { href: '/dashboard/client/checkin', id: 'checkin', label: 'Check-in', svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg> },
-    { href: '/dashboard/client/history', id: 'history', label: 'Voortgang',svg: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> },
-  ]
-  return (
-    <nav style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#1a1a1a', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', zIndex: 100, paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
-      {items.map(item => {
-        const isActive = active === item.id
-        return (
-          <a key={item.id} href={item.href} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '10px 8px', color: isActive ? '#D4A857' : '#666', textDecoration: 'none', ...B }}>
-            {item.svg}
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontFamily: "'Barlow Condensed', sans-serif" }}>{item.label}</span>
-          </a>
-        )
-      })}
-    </nav>
-  )
-}
-
-export function TopBar({ backHref, backLabel, showLogout }) {
-  const handleSignOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = '/login'
-  }
-  return (
-    <header style={{ background: '#1a1a1a', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '13px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <svg width="18" height="16" viewBox="0 0 36 34"><polygon points="18,2 13,28 23,28" fill="#D4A857"/><polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/><polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/></svg>
-        <span style={{ ...D, fontSize: 14, letterSpacing: '3px', fontWeight: 700, color: '#f0ede8' }}>GV PERFORMANCE</span>
-      </div>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-        {backHref && <a href={backHref} style={{ ...B, fontSize: 11, letterSpacing: '1px', color: '#666', textDecoration: 'none', textTransform: 'uppercase' }}>← {backLabel || 'Terug'}</a>}
-        {showLogout && (
-          <button onClick={handleSignOut} style={{ ...B, fontSize: 10, letterSpacing: '1px', color: '#555', background: 'none', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', textTransform: 'uppercase', fontFamily: "'Barlow Condensed', sans-serif" }}>
-            Uitloggen
-          </button>
-        )}
-      </div>
-    </header>
-  )
 }
 
 // ─── MAIN DASHBOARD ───────────────────────────────────────────────────────────
@@ -120,13 +75,13 @@ export default function ClientDashboard() {
 
         {/* Check-in banner */}
         {!data?.todayCI && (
-          <a href="/dashboard/client/checkin" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(212,168,87,0.08)', border: '1px solid rgba(212,168,87,0.25)', borderRadius: 14, padding: '14px 16px', marginBottom: 16, textDecoration: 'none' }}>
+          <Link href="/dashboard/client/checkin" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(212,168,87,0.08)', border: '1px solid rgba(212,168,87,0.25)', borderRadius: 14, padding: '14px 16px', marginBottom: 16, textDecoration: 'none' }}>
             <div>
               <div style={{ ...D, fontSize: 14, fontWeight: 700, color: '#D4A857', letterSpacing: '0.5px' }}>Dagelijkse check-in</div>
               <div style={{ ...B, fontSize: 12, color: '#666' }}>Nog niet ingevuld vandaag</div>
             </div>
             <div style={{ background: '#D4A857', borderRadius: 8, padding: '8px 14px', ...B, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, fontFamily: "'Barlow Condensed', sans-serif" }}>Invullen</div>
-          </a>
+          </Link>
         )}
 
         {/* Training vandaag */}
@@ -139,7 +94,7 @@ export default function ClientDashboard() {
                 <div style={{ ...D, fontSize: 22, fontWeight: 700, color: '#f0ede8', marginTop: 4 }}>{data.todaySess.session_name}</div>
                 <div style={{ ...B, fontSize: 12, color: '#666', marginTop: 2 }}>{data.todaySess.session_exercises?.length || 0} oefeningen</div>
               </div>
-              <a href={`/dashboard/client/session/${data.todaySess.id}`} style={{ background: '#D4A857', borderRadius: 10, padding: '10px 18px', ...B, fontSize: 12, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Start →</a>
+              <Link href={`/dashboard/client/session/${data.todaySess.id}`} style={{ background: '#D4A857', borderRadius: 10, padding: '10px 18px', ...B, fontSize: 12, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Start →</Link>
             </div>
             {data.todaySess.session_exercises?.slice(0,4).map((ex, i) => (
               <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
@@ -154,7 +109,7 @@ export default function ClientDashboard() {
             <div style={{ fontSize: 28, marginBottom: 8 }}>😴</div>
             <div style={{ ...D, fontSize: 16, fontWeight: 700, color: '#f0ede8', marginBottom: 4 }}>Geen training vandaag</div>
             <div style={{ ...B, fontSize: 12, color: '#666', marginBottom: 14 }}>Hersteldag of coach plant binnenkort iets in.</div>
-            <a href="/dashboard/client/week" style={{ ...B, fontSize: 11, color: '#D4A857', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Bekijk weekschema →</a>
+            <Link href="/dashboard/client/week" style={{ ...B, fontSize: 11, color: '#D4A857', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Bekijk weekschema →</Link>
           </div>
         )}
 
@@ -165,10 +120,10 @@ export default function ClientDashboard() {
             const session = data?.weekSess?.find(s => s.day_of_week === i+1)
             const isToday = new Date().getDay() === (i === 6 ? 0 : i+1)
             return (
-              <a key={day} href="/dashboard/client/week" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '9px 9px', borderRadius: 10, background: isToday ? '#D4A857' : '#1e1e1e', border: `1px solid ${isToday ? '#D4A857' : session ? 'rgba(212,168,87,0.3)' : 'rgba(255,255,255,0.06)'}`, minWidth: 40, flexShrink: 0, textDecoration: 'none' }}>
+              <Link key={day} href="/dashboard/client/week" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '10px 9px', borderRadius: 10, background: isToday ? '#D4A857' : '#1e1e1e', border: `1px solid ${isToday ? '#D4A857' : session ? 'rgba(212,168,87,0.3)' : 'rgba(255,255,255,0.06)'}`, minWidth: 44, minHeight: 56, flexShrink: 0, textDecoration: 'none' }}>
                 <span style={{ ...B, fontSize: 10, fontWeight: 700, letterSpacing: '1px', color: isToday ? '#000' : '#555', textTransform: 'uppercase', fontFamily: "'Barlow Condensed', sans-serif" }}>{day}</span>
                 <div style={{ width: 5, height: 5, borderRadius: '50%', background: isToday ? '#000' : session ? '#D4A857' : '#2a2a2a' }} />
-              </a>
+              </Link>
             )
           })}
         </div>
@@ -191,7 +146,7 @@ export default function ClientDashboard() {
         {data?.recentCI?.length === 0 ? (
           <div style={{ background: '#1e1e1e', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)', padding: '24px 18px', textAlign: 'center' }}>
             <div style={{ ...B, fontSize: 13, color: '#666', marginBottom: 10, fontFamily: "'Barlow Condensed', sans-serif" }}>Nog geen check-ins</div>
-            <a href="/dashboard/client/checkin" style={{ ...B, fontSize: 11, color: '#D4A857', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Eerste check-in →</a>
+            <Link href="/dashboard/client/checkin" style={{ ...B, fontSize: 11, color: '#D4A857', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Eerste check-in →</Link>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 8 }}>
@@ -205,7 +160,7 @@ export default function ClientDashboard() {
                 </div>
               </div>
             ))}
-            <a href="/dashboard/client/history" style={{ display: 'block', textAlign: 'center', padding: '12px', ...B, fontSize: 11, color: '#555', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Alle check-ins →</a>
+            <Link href="/dashboard/client/history" style={{ display: 'block', textAlign: 'center', padding: '14px', minHeight: 44, ...B, fontSize: 11, color: '#555', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Alle check-ins →</Link>
           </div>
         )}
       </main>

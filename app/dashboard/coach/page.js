@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -31,7 +32,7 @@ export default async function CoachDashboard() {
     <div style={{ background: 'var(--dark)', minHeight: '100vh', fontFamily: 'var(--font-barlow), sans-serif' }}>
 
       {/* Header */}
-      <header style={{ background: 'var(--dark2)', borderBottom: '1px solid var(--border)', padding: '14px clamp(16px,4vw,40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
+      <header style={{ background: 'rgba(26,26,26,0.85)', backdropFilter: 'blur(20px) saturate(150%)', WebkitBackdropFilter: 'blur(20px) saturate(150%)', borderBottom: '1px solid var(--border)', padding: 'calc(env(safe-area-inset-top, 0px) + 14px) clamp(16px,4vw,40px) 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <svg width="24" height="22" viewBox="0 0 36 34">
             <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
@@ -42,7 +43,7 @@ export default async function CoachDashboard() {
           <span className="badge badge-orange" style={{ display: 'none', fontFamily: 'var(--font-barlow), sans-serif' }}>Coach</span>
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <a href="/dashboard/coach/clients/new" style={{ background: 'var(--orange)', borderRadius: 'var(--r-btn)', padding: '8px 18px', ...B, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: 1, textTransform: 'uppercase', textDecoration: 'none' }}>+ Klant</a>
+          <Link href="/dashboard/coach/clients/new" style={{ background: 'var(--orange)', borderRadius: 'var(--r-btn)', padding: '8px 18px', minHeight: 36, display: 'inline-flex', alignItems: 'center', ...B, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: 1, textTransform: 'uppercase', textDecoration: 'none' }}>+ Klant</Link>
           <form action="/api/auth/signout" method="POST">
             <button type="submit" style={{ ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>Uit</button>
           </form>
@@ -68,7 +69,7 @@ export default async function CoachDashboard() {
 
         {/* Eigen trainingsplan */}
         <div style={{ marginBottom: 24 }}>
-          <a href="/dashboard/coach/eigen-training" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid rgba(61,255,160,0.2)', padding: '18px 20px', textDecoration: 'none' }}>
+          <Link href="/dashboard/coach/eigen-training" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid rgba(61,255,160,0.2)', padding: '18px 20px', textDecoration: 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{ width: 46, height: 46, background: 'rgba(61,255,160,0.1)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>🏋️</div>
               <div>
@@ -77,7 +78,7 @@ export default async function CoachDashboard() {
               </div>
             </div>
             <div style={{ ...B, fontSize: 11, color: '#3dffa0', fontWeight: 700, letterSpacing: 1, flexShrink: 0 }}>Openen →</div>
-          </a>
+          </Link>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: 24 }}>
@@ -90,7 +91,7 @@ export default async function CoachDashboard() {
                 <div style={{ fontSize: 40, marginBottom: 12 }}>👥</div>
                 <div style={{ ...D, fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Nog geen klanten</div>
                 <div style={{ ...B, fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>Voeg je eerste klant toe om te beginnen.</div>
-                <a href="/dashboard/coach/clients/new" style={{ background: 'var(--orange)', borderRadius: 'var(--r-btn)', padding: '12px 24px', ...B, fontSize: 12, fontWeight: 700, color: '#000', letterSpacing: 1, textTransform: 'uppercase', textDecoration: 'none' }}>Klant toevoegen</a>
+                <Link href="/dashboard/coach/clients/new" style={{ background: 'var(--orange)', borderRadius: 'var(--r-btn)', padding: '12px 24px', minHeight: 44, display: 'inline-flex', alignItems: 'center', ...B, fontSize: 12, fontWeight: 700, color: '#000', letterSpacing: 1, textTransform: 'uppercase', textDecoration: 'none' }}>Klant toevoegen</Link>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -99,8 +100,8 @@ export default async function CoachDashboard() {
                   const initialen = naam.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)
                   const heeftCI = recentCheckins?.some(c => c.client_id === client.id && c.checkin_date === today)
                   return (
-                    <a key={client.id} href={`/dashboard/coach/clients/${client.id}`}
-                      style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: `1px solid ${heeftCI ? 'rgba(74,222,128,0.2)' : 'var(--border)'}`, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
+                    <Link key={client.id} href={`/dashboard/coach/clients/${client.id}`}
+                      style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: `1px solid ${heeftCI ? 'rgba(74,222,128,0.2)' : 'var(--border)'}`, padding: '14px 18px', minHeight: 56, display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
                       <div style={{ width: 40, height: 40, background: 'var(--orange-dim)', border: '1px solid var(--border-orange)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', ...D, fontSize: 14, fontWeight: 700, color: 'var(--orange)', flexShrink: 0 }}>{initialen}</div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ ...D, fontSize: 15, fontWeight: 700, color: 'var(--text)', letterSpacing: 0.5 }}>{naam}</div>
@@ -112,7 +113,7 @@ export default async function CoachDashboard() {
                         {heeftCI && <span style={{ fontSize: 8, padding: '3px 8px', borderRadius: 20, background: 'rgba(74,222,128,0.1)', color: '#4ade80', ...B, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase' }}>✓ CI</span>}
                         <span style={{ ...B, fontSize: 11, color: 'var(--orange)', fontWeight: 700 }}>→</span>
                       </div>
-                    </a>
+                    </Link>
                   )
                 })}
               </div>

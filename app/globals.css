@@ -40,6 +40,33 @@
   --font-body:    var(--font-barlow), sans-serif;
 }
 
+/* ─── NATIVE-APP FEEL ────────────────────────────── */
+/* Smooth cross-page transitions (Chrome/Edge support today, no-op elsewhere) */
+@view-transition {
+  navigation: auto;
+}
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+}
+html {
+  touch-action: manipulation; /* kill the 300ms tap delay */
+}
+body {
+  overscroll-behavior-y: contain; /* no accidental rubber-band/pull-to-refresh */
+}
+/* Tap feedback on anything interactive inside the dashboards */
+.app-shell a, .app-shell button {
+  transition: transform .15s cubic-bezier(0.16,1,0.3,1), opacity .15s ease;
+}
+.app-shell a:active, .app-shell button:active {
+  transform: scale(0.96);
+  opacity: 0.85;
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-shell a, .app-shell button { transition: none !important; }
+  .app-shell a:active, .app-shell button:active { transform: none !important; opacity: 1 !important; }
+}
+
 /* ─── RESET ──────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -136,6 +163,17 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase;
   margin-bottom: 12px;
 }
+/* ─── FLOAT BUTTON: verberg zodra footer in beeld komt ── */
+.float-btn.is-hidden {
+  opacity: 0;
+  transform: translateY(16px) scale(0.92);
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .float-btn.is-hidden { transition: none; }
+}
+
 .section-label::before {
   content: '';
   display: block;
