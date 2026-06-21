@@ -10,12 +10,12 @@ export default function Privacy() {
     <div style={{ background: 'var(--dark)', color: 'var(--text)', ...B, minHeight: '100vh' }}>
 
       {/* NAV */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 60px', borderBottom: '1px solid rgba(255,77,0,0.12)', background: 'rgba(10,10,10,0.97)' }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 60px', borderBottom: '1px solid rgba(212,168,87,0.12)', background: 'rgba(10,10,10,0.97)' }}>
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 14, textDecoration: 'none' }}>
           <svg width="36" height="34" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#FF4D00" />
-            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5" />
-            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5" />
+            <polygon points="18,2 13,28 23,28" fill="#D4A857" />
+            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5" />
+            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5" />
           </svg>
           <div>
             <div style={{ ...D, fontSize: 22, letterSpacing: 3, color: 'var(--text)', lineHeight: 1, fontWeight: 700 }}>GV PERFORMANCE</div>
@@ -85,7 +85,7 @@ export default function Privacy() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ background: 'var(--dark)', borderTop: '1px solid rgba(255,77,0,0.1)', padding: '30px 60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+      <footer style={{ background: 'var(--dark)', borderTop: '1px solid rgba(212,168,87,0.1)', padding: '30px 60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <div style={{ ...B, fontSize: 12, color: 'var(--muted2)', letterSpacing: 1 }}>© 2025 GV Performance — Guido Vols</div>
         <a href="/" style={{ ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--orange)', textDecoration: 'none' }}>← Terug naar home</a>
       </footer>

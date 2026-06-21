@@ -909,15 +909,15 @@ export default function EigenTrainingsplanPage() {
   return (
     <>
       <FontLoader />
-      <div style={{ background:'#0d1520', borderBottom:'1px solid rgba(255,77,0,0.12)', padding:'12px 24px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+      <div style={{ background:'#0d1520', borderBottom:'1px solid rgba(212,168,87,0.12)', padding:'12px 24px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <svg width="22" height="20" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#FF4D00"/>
-            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5"/>
+            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
+            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
+            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
           </svg>
           <span style={{ fontFamily:'var(--font-oswald),sans-serif', fontSize:14, letterSpacing:3, fontWeight:700, color:'#f0f7ff' }}>GV PERFORMANCE</span>
-          <span style={{ fontFamily:'var(--font-barlow),sans-serif', fontSize:10, letterSpacing:2, color:'#FF4D00', textTransform:'uppercase' }}>Eigen Training</span>
+          <span style={{ fontFamily:'var(--font-barlow),sans-serif', fontSize:10, letterSpacing:2, color:'#D4A857', textTransform:'uppercase' }}>Eigen Training</span>
         </div>
         <a href="/dashboard/coach" style={{ fontFamily:'var(--font-barlow),sans-serif', fontSize:11, letterSpacing:2, textTransform:'uppercase', color:'#4a6380', textDecoration:'none' }}>
           ← Coach dashboard

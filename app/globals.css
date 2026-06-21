@@ -10,10 +10,11 @@
   --dark4:   #2a2a2a;    /* donkere accenten */
   --card:    #1e1e1e;    /* kaart achtergrond */
 
-  /* ── Oranje accent ── */
-  --orange:      #FF4D00;
-  --orange-dim:  rgba(255, 77, 0, 0.10);
-  --orange-mid:  rgba(255, 77, 0, 0.20);
+  /* ── Goud accent (premium) ── */
+  --orange:      #D4A857;
+  --orange-dim:  rgba(212, 168, 87, 0.10);
+  --orange-mid:  rgba(212, 168, 87, 0.20);
+  --gold-bright: #E8C77E;
 
   /* ── Tekst ── */
   --text:    #f0ede8;    /* hoofdtekst (iets warmer dan wit) */

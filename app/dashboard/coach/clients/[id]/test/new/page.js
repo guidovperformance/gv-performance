@@ -237,7 +237,7 @@ export default function TestProtocol({ params }) {
       <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginBottom: 10, lineHeight: 1.5 }}>{desc}</div>
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         {[['0','🔴 Beperkt'],['1','🟡 Matig'],['2','🟢 Goed']].map(([v,l]) => (
-          <button key={v} onClick={()=>set(id,v)} style={{ background: f[id]===v ? 'rgba(255,77,0,0.2)' : 'var(--dark4)', border: `1px solid ${f[id]===v ? 'var(--orange)' : 'rgba(255,255,255,0.08)'}`, color: f[id]===v ? 'var(--text)' : 'var(--muted)', ...B, fontSize: 12, padding: '6px 12px', cursor: 'pointer' }}>{l}</button>
+          <button key={v} onClick={()=>set(id,v)} style={{ background: f[id]===v ? 'rgba(212,168,87,0.2)' : 'var(--dark4)', border: `1px solid ${f[id]===v ? 'var(--orange)' : 'rgba(255,255,255,0.08)'}`, color: f[id]===v ? 'var(--text)' : 'var(--muted)', ...B, fontSize: 12, padding: '6px 12px', cursor: 'pointer' }}>{l}</button>
         ))}
         {f[id] !== '' && <span style={{ ...D, fontSize: 16, fontWeight: 700, color: 'var(--orange)', marginLeft: 8 }}>{f[id]} pt</span>}
       </div>
@@ -251,9 +251,9 @@ export default function TestProtocol({ params }) {
       </div>
       {sets.map((s, i) => (
         <div key={i} style={{ display: 'grid', gridTemplateColumns: '150px 1fr 1fr', gap: 2, marginBottom: 2 }}>
-          <div style={{ ...B, fontSize: 13, padding: '10px', background: s.isTest ? 'rgba(255,77,0,0.08)' : 'var(--dark3)', color: s.isTest ? 'var(--orange)' : 'var(--muted)', border: s.isTest ? '1px solid rgba(255,77,0,0.2)' : 'none', fontWeight: s.isTest ? 700 : 400 }}>{s.label}</div>
-          <input type="number" step="0.5" placeholder="Kg" value={f[s.kgKey]||''} onChange={e=>set(s.kgKey,e.target.value)} style={{ ...inp, padding: '10px', background: s.isTest ? 'rgba(255,77,0,0.04)' : 'var(--dark3)' }} />
-          <input type="number" placeholder={s.repsHint||'Reps'} value={f[s.repsKey]||''} onChange={e=>set(s.repsKey,e.target.value)} style={{ ...inp, padding: '10px', background: s.isTest ? 'rgba(255,77,0,0.04)' : 'var(--dark3)' }} />
+          <div style={{ ...B, fontSize: 13, padding: '10px', background: s.isTest ? 'rgba(212,168,87,0.08)' : 'var(--dark3)', color: s.isTest ? 'var(--orange)' : 'var(--muted)', border: s.isTest ? '1px solid rgba(212,168,87,0.2)' : 'none', fontWeight: s.isTest ? 700 : 400 }}>{s.label}</div>
+          <input type="number" step="0.5" placeholder="Kg" value={f[s.kgKey]||''} onChange={e=>set(s.kgKey,e.target.value)} style={{ ...inp, padding: '10px', background: s.isTest ? 'rgba(212,168,87,0.04)' : 'var(--dark3)' }} />
+          <input type="number" placeholder={s.repsHint||'Reps'} value={f[s.repsKey]||''} onChange={e=>set(s.repsKey,e.target.value)} style={{ ...inp, padding: '10px', background: s.isTest ? 'rgba(212,168,87,0.04)' : 'var(--dark3)' }} />
         </div>
       ))}
     </div>
@@ -269,7 +269,7 @@ export default function TestProtocol({ params }) {
       return Math.min(100, Math.max(0, (levels.indexOf(level) / 4) * 100))
     })()
     return (
-      <div style={{ padding: '16px 20px', background: 'rgba(255,77,0,0.07)', border: '1px solid rgba(255,77,0,0.25)', marginTop: 16 }}>
+      <div style={{ padding: '16px 20px', background: 'rgba(212,168,87,0.07)', border: '1px solid rgba(212,168,87,0.25)', marginTop: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <div>
             <div style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 4 }}>{label}</div>
@@ -290,11 +290,11 @@ export default function TestProtocol({ params }) {
   }
 
   const Btn = ({ children, onClick, variant = 'primary' }) => (
-    <button onClick={onClick} style={{ background: variant === 'primary' ? 'var(--orange)' : variant === 'selected' ? 'rgba(255,77,0,0.2)' : 'var(--dark3)', color: variant === 'primary' ? '#000' : 'var(--text)', ...B, fontWeight: variant === 'primary' ? 700 : 400, fontSize: 13, padding: '8px 20px', border: `1px solid ${variant === 'selected' ? 'var(--orange)' : 'rgba(255,255,255,0.1)'}`, cursor: 'pointer' }}>{children}</button>
+    <button onClick={onClick} style={{ background: variant === 'primary' ? 'var(--orange)' : variant === 'selected' ? 'rgba(212,168,87,0.2)' : 'var(--dark3)', color: variant === 'primary' ? '#000' : 'var(--text)', ...B, fontWeight: variant === 'primary' ? 700 : 400, fontSize: 13, padding: '8px 20px', border: `1px solid ${variant === 'selected' ? 'var(--orange)' : 'rgba(255,255,255,0.1)'}`, cursor: 'pointer' }}>{children}</button>
   )
 
   const SH = ({ title, sub }) => (
-    <div style={{ marginBottom: 20, paddingBottom: 14, borderBottom: '1px solid rgba(255,77,0,0.15)' }}>
+    <div style={{ marginBottom: 20, paddingBottom: 14, borderBottom: '1px solid rgba(212,168,87,0.15)' }}>
       <div style={{ ...D, fontSize: 22, fontWeight: 700, letterSpacing: 1, color: 'var(--orange)' }}>{title}</div>
       {sub && <div style={{ ...B, fontSize: 13, color: 'var(--muted)', marginTop: 4, lineHeight: 1.6 }}>{sub}</div>}
     </div>
@@ -317,9 +317,9 @@ export default function TestProtocol({ params }) {
 
   return (
     <div style={{ background: 'var(--dark)', minHeight: '100vh', ...B }}>
-      <header style={{ background: 'var(--dark2)', borderBottom: '1px solid rgba(255,77,0,0.12)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <header style={{ background: 'var(--dark2)', borderBottom: '1px solid rgba(212,168,87,0.12)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <svg width="28" height="26" viewBox="0 0 36 34"><polygon points="18,2 13,28 23,28" fill="#FF4D00" /><polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5" /><polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5" /></svg>
+          <svg width="28" height="26" viewBox="0 0 36 34"><polygon points="18,2 13,28 23,28" fill="#D4A857" /><polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5" /><polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5" /></svg>
           <span style={{ ...D, fontSize: 18, letterSpacing: 3, fontWeight: 700 }}>GV PERFORMANCE</span>
           <span style={{ ...B, fontSize: 11, color: 'var(--orange)', letterSpacing: 2, textTransform: 'uppercase' }}>12-Test Protocol</span>
         </div>
@@ -328,10 +328,10 @@ export default function TestProtocol({ params }) {
 
       <div style={{ display: 'flex' }}>
         {/* Sidebar */}
-        <div style={{ width: 200, background: 'var(--dark2)', minHeight: 'calc(100vh - 64px)', padding: '16px 0', flexShrink: 0, borderRight: '1px solid rgba(255,77,0,0.08)' }}>
+        <div style={{ width: 200, background: 'var(--dark2)', minHeight: 'calc(100vh - 64px)', padding: '16px 0', flexShrink: 0, borderRight: '1px solid rgba(212,168,87,0.08)' }}>
           {SECTIONS.map(s => (
             <button key={s.id} onClick={() => setActive(s.id)}
-              style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 20px', background: active === s.id ? 'rgba(255,77,0,0.1)' : 'none', borderLeft: `3px solid ${active === s.id ? 'var(--orange)' : 'transparent'}`, color: active === s.id ? 'var(--text)' : 'var(--muted)', ...B, fontSize: 12, border: 'none', borderLeft: `3px solid ${active === s.id ? 'var(--orange)' : 'transparent'}`, cursor: 'pointer', lineHeight: 1.4 }}>
+              style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 20px', background: active === s.id ? 'rgba(212,168,87,0.1)' : 'none', borderLeft: `3px solid ${active === s.id ? 'var(--orange)' : 'transparent'}`, color: active === s.id ? 'var(--text)' : 'var(--muted)', ...B, fontSize: 12, border: 'none', borderLeft: `3px solid ${active === s.id ? 'var(--orange)' : 'transparent'}`, cursor: 'pointer', lineHeight: 1.4 }}>
               {s.label}
             </button>
           ))}
@@ -544,7 +544,7 @@ export default function TestProtocol({ params }) {
             </div>
 
             {/* Trainingszones op basis van beste MAS */}
-            {masZones && <div style={{ background: '#0d1f3c', border: '1px solid rgba(255,77,0,0.2)', padding: 16, marginTop: 8 }}>
+            {masZones && <div style={{ background: '#0d1f3c', border: '1px solid rgba(212,168,87,0.2)', padding: 16, marginTop: 8 }}>
               <div style={{ ...B, fontSize: 10, letterSpacing: 3, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 12 }}>Trainingszones op basis van MAS {best_mas} m/s ({(parseFloat(best_mas)*3.6).toFixed(1)} km/h)</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {masZones.map(z => {
@@ -596,7 +596,7 @@ export default function TestProtocol({ params }) {
                 </div>
               ))}
             </div>
-            {mas && <div style={{ marginTop: 8, background: 'rgba(255,77,0,0.07)', border: '1px solid rgba(255,77,0,0.2)', padding: '14px 16px' }}>
+            {mas && <div style={{ marginTop: 8, background: 'rgba(212,168,87,0.07)', border: '1px solid rgba(212,168,87,0.2)', padding: '14px 16px' }}>
               <div style={{ ...B, fontSize: 10, letterSpacing: 2, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 4 }}>MAS Berekening</div>
               <div style={{ ...D, fontSize: 20, fontWeight: 700 }}>{mas} m/s — {masInfo?.level}</div>
               <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>LSD: {(parseFloat(mas)*0.7).toFixed(2)} m/s | Interval 90%/4min: {Math.round(240*parseFloat(mas)*0.9)}m</div>

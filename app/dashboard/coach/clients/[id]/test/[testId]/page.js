@@ -139,12 +139,12 @@ export default async function TestDetail({ params }) {
 
   return (
     <div style={{ background: 'var(--dark)', minHeight: '100vh', ...B }}>
-      <header style={{ background: 'var(--dark2)', borderBottom: '1px solid rgba(255,77,0,0.12)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <header style={{ background: 'var(--dark2)', borderBottom: '1px solid rgba(212,168,87,0.12)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <svg width="28" height="26" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#FF4D00" />
-            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5" />
-            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5" />
+            <polygon points="18,2 13,28 23,28" fill="#D4A857" />
+            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5" />
+            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5" />
           </svg>
           <span style={{ ...D, fontSize: 18, letterSpacing: 3, fontWeight: 700, color: 'var(--text)' }}>GV PERFORMANCE</span>
         </div>

@@ -153,7 +153,7 @@ export default function FeedbackPanel({ clientId, checkIns }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {feedbackList.map(f => (
-              <div key={f.id} style={{ background: 'var(--dark2)', padding: '14px 20px', borderLeft: '3px solid rgba(255,77,0,0.4)' }}>
+              <div key={f.id} style={{ background: 'var(--dark2)', padding: '14px 20px', borderLeft: '3px solid rgba(212,168,87,0.4)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                   <div style={{ ...B, fontSize: 10, color: 'var(--orange)', textTransform: 'uppercase', letterSpacing: 1 }}>
                     {f.feedback_type === 'checkin' ? '🔗 Gekoppeld aan check-in' : '💬 Algemeen'}

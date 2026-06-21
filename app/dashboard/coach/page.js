@@ -34,9 +34,9 @@ export default async function CoachDashboard() {
       <header style={{ background: 'var(--dark2)', borderBottom: '1px solid var(--border)', padding: '14px clamp(16px,4vw,40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <svg width="24" height="22" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#FF4D00"/>
-            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5"/>
+            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
+            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
+            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
           </svg>
           <span style={{ ...D, fontSize: 16, letterSpacing: 3, fontWeight: 700, color: 'var(--text)' }}>GV PERFORMANCE</span>
           <span className="badge badge-orange" style={{ display: 'none', fontFamily: 'var(--font-barlow), sans-serif' }}>Coach</span>

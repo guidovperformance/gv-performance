@@ -106,12 +106,12 @@ export default async function TestOverview({ params }) {
   return (
     <div style={{ background:'var(--dark)', minHeight:'100vh' }}>
       <style dangerouslySetInnerHTML={{ __html: '.test-card-link:hover { background: #1e1e1e !important; }' }} />
-      <header style={{ background:'var(--dark2)', borderBottom:'1px solid rgba(255,77,0,0.12)', padding:'14px 40px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+      <header style={{ background:'var(--dark2)', borderBottom:'1px solid rgba(212,168,87,0.12)', padding:'14px 40px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <svg width="22" height="20" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#FF4D00"/>
-            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5"/>
+            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
+            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
+            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
           </svg>
           <span style={{ ...D, fontSize:16, letterSpacing:3, fontWeight:700, color:'var(--text)' }}>GV PERFORMANCE</span>
         </div>

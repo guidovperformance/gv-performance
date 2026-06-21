@@ -37,9 +37,9 @@ export default function WaitingPage() {
   return (
     <div style={{ background: 'var(--dark)', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
       <svg width="40" height="38" viewBox="0 0 36 34">
-        <polygon points="18,2 13,28 23,28" fill="#FF4D00" />
-        <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5" />
-        <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5" />
+        <polygon points="18,2 13,28 23,28" fill="#D4A857" />
+        <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5" />
+        <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5" />
       </svg>
       <div style={{ ...D, fontSize: 22, letterSpacing: 3, color: 'var(--orange)' }}>ACCOUNT LADEN...</div>
       <div style={{ ...B, fontSize: 14, color: 'var(--muted)', textAlign: 'center', maxWidth: 300 }}>

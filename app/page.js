@@ -40,8 +40,8 @@ const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Barlow+Condensed:wght@400;500;700&display=swap');
 
   :root {
-    --orange: #FF4D00;
-    --orange-dim: rgba(255,77,0,0.15);
+    --orange: #D4A857;
+    --orange-dim: rgba(212,168,87,0.15);
     --dark:  #0A0A0A;
     --dark2: #111;
     --dark3: #181818;
@@ -69,7 +69,7 @@ const CSS = `
     align-items: center;
     justify-content: space-between;
     padding: 22px 60px;
-    border-bottom: 1px solid rgba(255,77,0,0.12);
+    border-bottom: 1px solid rgba(212,168,87,0.12);
     background: rgba(10,10,10,0.97);
     position: sticky;
     top: 0;
@@ -105,7 +105,7 @@ const CSS = `
   }
   .hero::before {
     content:''; position:absolute; inset:0;
-    background:radial-gradient(ellipse at 20% 50%, rgba(255,77,0,0.07) 0%, transparent 60%);
+    background:radial-gradient(ellipse at 20% 50%, rgba(212,168,87,0.07) 0%, transparent 60%);
     pointer-events:none;
   }
   .hero-left {
@@ -137,7 +137,7 @@ const CSS = `
     transition: background .2s, transform .15s;
     border: none; cursor: pointer;
   }
-  .btn-primary:hover { background:#e64400; transform:translateY(-1px); }
+  .btn-primary:hover { background:#C99540; transform:translateY(-1px); }
 
   .btn-secondary {
     border:1px solid var(--muted2); color:var(--text); font-family:var(--body);
@@ -151,7 +151,7 @@ const CSS = `
   .hero-photo {
     width:100%; height:100%; background:var(--dark3);
     display:flex; align-items:center; justify-content:center;
-    flex-direction:column; gap:12px; border-left:1px solid rgba(255,77,0,0.1);
+    flex-direction:column; gap:12px; border-left:1px solid rgba(212,168,87,0.1);
   }
   .hero-photo-label { font-size:11px; letter-spacing:2px; color:var(--muted2); text-transform:uppercase; }
   .hero-photo-hint  { font-family:var(--display); font-size:18px; letter-spacing:2px; color:var(--muted); }
@@ -164,8 +164,8 @@ const CSS = `
   /* ── RIBBON ── */
   .ribbon {
     background:var(--dark2);
-    border-top:1px solid rgba(255,77,0,0.1);
-    border-bottom:1px solid rgba(255,77,0,0.1);
+    border-top:1px solid rgba(212,168,87,0.1);
+    border-bottom:1px solid rgba(212,168,87,0.1);
     padding:18px 60px;
     display:flex; align-items:center; justify-content:space-between;
     flex-wrap:wrap; gap:16px;
@@ -217,32 +217,43 @@ const CSS = `
     gap:2px; margin-top:60px; border:2px solid var(--dark3);
   }
   .dienst-card {
-    background:var(--dark2); padding:36px 32px;
+    background:var(--dark2);
     border:1px solid transparent;
     transition: border-color .25s, background .25s, transform .25s, box-shadow .25s;
     cursor:default;
+    display:flex; flex-direction:column;
   }
   .dienst-card:hover {
     background:var(--dark3);
     border-color: var(--orange);
     transform: translateY(-6px);
-    box-shadow: 0 12px 32px rgba(255,77,0,0.12);
+    box-shadow: 0 12px 32px rgba(212,168,87,0.12);
     position: relative;
     z-index: 2;
   }
+  .dienst-photo {
+    aspect-ratio: 4/3; overflow:hidden; background:var(--dark3);
+    border-bottom: 1px solid var(--dark4);
+  }
+  .dienst-photo img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition: transform .5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .dienst-card:hover .dienst-photo img { transform: scale(1.06); }
+  .dienst-body  { padding:32px 32px 36px; }
   .dienst-icon  { font-size:28px; margin-bottom:16px; }
   .dienst-title { font-family:var(--display); font-size:24px; letter-spacing:2px; color:var(--text); margin-bottom:10px; line-height:1; }
   .dienst-desc  { font-size:14px; color:var(--muted); line-height:1.6; }
   .dienst-tag   {
     display:inline-block; margin-top:14px; font-size:10px; letter-spacing:2px;
-    color:var(--orange); text-transform:uppercase; border:1px solid rgba(255,77,0,0.3); padding:4px 10px;
+    color:var(--orange); text-transform:uppercase; border:1px solid rgba(212,168,87,0.3); padding:4px 10px;
   }
 
   /* ── HOE HET WERKT ── */
   .process { background:var(--dark2); text-align:center; }
   .process-steps { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; position:relative; }
   .process-step { padding:48px 32px; background:var(--dark3); position:relative; }
-  .step-number { font-family:var(--display); font-size:80px; color:rgba(255,77,0,0.12); line-height:1; margin-bottom:16px; }
+  .step-number { font-family:var(--display); font-size:80px; color:rgba(212,168,87,0.12); line-height:1; margin-bottom:16px; }
   .step-title  { font-family:var(--display); font-size:28px; letter-spacing:2px; color:var(--text); margin-bottom:12px; }
   .step-desc   { font-size:14px; color:var(--muted); line-height:1.7; max-width:260px; margin:0 auto; }
   .step-arrow  { position:absolute; right:-18px; top:50%; transform:translateY(-50%); font-size:28px; color:var(--orange); z-index:2; }
@@ -276,7 +287,7 @@ const CSS = `
     transition:border-color .2s, color .2s;
   }
   .cert-badge:hover { border-color:var(--orange); color:var(--text); }
-  .cert-badge.featured { border-color:rgba(255,77,0,0.4); color:var(--text); background:var(--orange-dim); }
+  .cert-badge.featured { border-color:rgba(212,168,87,0.4); color:var(--text); background:var(--orange-dim); }
   .cert-dot { width:5px; height:5px; background:var(--orange); flex-shrink:0; }
 
   /* ── CONTACT ── */
@@ -299,7 +310,7 @@ const CSS = `
 
   /* ── FOOTER ── */
   footer {
-    background:var(--dark); border-top:1px solid rgba(255,77,0,0.1);
+    background:var(--dark); border-top:1px solid rgba(212,168,87,0.1);
     padding:40px 60px; display:flex; align-items:center;
     justify-content:space-between; flex-wrap:wrap; gap:16px;
   }
@@ -322,6 +333,39 @@ const CSS = `
   .fade-in.delay-2 { transition-delay: 0.2s; }
   .fade-in.delay-3 { transition-delay: 0.3s; }
 
+  /* ── HERO ENTRANCE ── */
+  .hero-eyebrow, .hero-headline, .hero-tagline, .hero-desc, .hero-buttons {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: heroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .hero-eyebrow  { animation-delay: 0.05s; }
+  .hero-headline { animation-delay: 0.15s; }
+  .hero-tagline  { animation-delay: 0.25s; }
+  .hero-desc     { animation-delay: 0.35s; }
+  .hero-buttons  { animation-delay: 0.45s; }
+  @keyframes heroIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-right img {
+    animation: heroPhotoIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform: scale(1.06);
+    opacity: 0;
+  }
+  @keyframes heroPhotoIn {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── REDUCED MOTION ── */
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in, .hero-eyebrow, .hero-headline, .hero-tagline, .hero-desc, .hero-buttons, .hero-right img {
+      animation: none !important;
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
   /* ── B: ZWEVENDE GRATIS INTAKE KNOP ── */
   .float-btn {
     position: fixed;
@@ -337,7 +381,7 @@ const CSS = `
     padding: 14px 24px;
     text-decoration: none;
     z-index: 999;
-    box-shadow: 0 4px 24px rgba(255,77,0,0.4);
+    box-shadow: 0 4px 24px rgba(212,168,87,0.4);
     transition: transform .2s, box-shadow .2s, background .2s;
     display: flex;
     align-items: center;
@@ -345,8 +389,8 @@ const CSS = `
   }
   .float-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 32px rgba(255,77,0,0.55);
-    background: #e64400;
+    box-shadow: 0 8px 32px rgba(212,168,87,0.55);
+    background: #C99540;
   }
   .float-btn-pulse {
     width: 8px; height: 8px; background: #000;
@@ -421,10 +465,10 @@ export default function Homepage() {
       <nav>
         <a href="/" className="nav-logo">
           <svg width="36" height="34" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#FF4D00"/>
-            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5"/>
-            <rect x="0" y="31" width="36" height="2" fill="#FF4D00" opacity="0.2"/>
+            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
+            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
+            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
+            <rect x="0" y="31" width="36" height="2" fill="#D4A857" opacity="0.2"/>
           </svg>
           <div>
             <div className="nav-logo-text">GV PERFORMANCE</div>
@@ -434,7 +478,10 @@ export default function Homepage() {
         <ul className="nav-links">
           <li><a href="#over">Over Guido</a></li>
           <li><a href="#diensten">Diensten</a></li>
-          <li><a href="#werkwijze">Werkwijze</a></li>
+          <li><a href="/resultaten">Resultaten</a></li>
+          <li><a href="/testimonials">Reviews</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/faq">FAQ</a></li>
           <li><a href="/pakketten">Pakketten</a></li>
           <li><a href="#contact" className="nav-cta">Kennismaking</a></li>
         </ul>
@@ -460,7 +507,7 @@ export default function Homepage() {
           <img
             src="/hero.jpg"
             alt="Guido Vols — GV Performance coach"
-            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'25% top', display:'block' }}
+            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'left bottom', display:'block' }}
             onError={e => { e.target.style.display='none' }}
           />
         </div>
@@ -528,18 +575,25 @@ export default function Homepage() {
         <h2 className="section-title fade-in delay-1">DIENSTEN</h2>
         <div className="diensten-grid">
           {[
-            { icon:'🎯', title:'1-OP-1 COACHING',      desc:'Persoonlijk traject op maat — van intake en doelstelling tot periodisering en uitvoering. Online, in-person of hybrid.',                                         tag:'Hybrid' },
-            { icon:'🪖', title:'TACTICAL ATHLETE',     desc:'Voorbereiding op Defensie, politie, brandweer of speciale eenheden. Fysiek én mentaal klaar voor selectie en opleiding.',                                       tag:'Defensie · Politie · Brandweer' },
-            { icon:'🏅', title:'TOPSPORT BEGELEIDING', desc:'Voor sporters met een specifiek doel en de gedrevenheid om het te halen. Periodisering, kracht, conditie en mentale weerbaarheid.',                              tag:'Seizoensvoorbereiding' },
-            { icon:'⚡', title:'HYROX VOORBEREIDING',  desc:'Van nulmeting tot race day. Opbouw, tijdverbetering en volledige race-specifieke conditionering. Gebaseerd op eigen Hyrox prestaties.',                          tag:'Beginners · Tijdverbetering' },
-            { icon:'🏢', title:'TEAM & BEDRIJF',       desc:'Teamtrainingen, bootcamps en groepslessen voor bedrijven en sportclubs. Spinning, boxing en functionele training. Ook beschikbaar als externe instructeur.',  tag:'B2B · Sportscholen · Events' },
-            { icon:'🏃', title:'LOOPCOACHING',         desc:'Techniek, opbouw en race-voorbereiding. Van beginners tot hardlopers met een tijdsdoel. KNAU gecertificeerd looptrainer niveau 3.',                              tag:'KNAU Gecertificeerd' },
+            { icon:'🎯', title:'1-OP-1 COACHING',      desc:'Persoonlijk traject op maat — van intake en doelstelling tot periodisering en uitvoering. Online, in-person of hybrid.',                                         tag:'Hybrid', photo:'/diensten-coaching.jpg' },
+            { icon:'🪖', title:'TACTICAL ATHLETE',     desc:'Voorbereiding op Defensie, politie, brandweer of speciale eenheden. Fysiek én mentaal klaar voor selectie en opleiding.',                                       tag:'Defensie · Politie · Brandweer', photo:'/diensten-tactical.jpg' },
+            { icon:'🏅', title:'TOPSPORT BEGELEIDING', desc:'Voor sporters met een specifiek doel en de gedrevenheid om het te halen. Periodisering, kracht, conditie en mentale weerbaarheid.',                              tag:'Seizoensvoorbereiding', photo:'/diensten-topsport.jpg' },
+            { icon:'⚡', title:'HYROX VOORBEREIDING',  desc:'Van nulmeting tot race day. Opbouw, tijdverbetering en volledige race-specifieke conditionering. Gebaseerd op eigen Hyrox prestaties.',                          tag:'Beginners · Tijdverbetering', photo:'/diensten-hyrox.jpg' },
+            { icon:'🏢', title:'TEAM & BEDRIJF',       desc:'Teamtrainingen, bootcamps en groepslessen voor bedrijven en sportclubs. Spinning, boxing en functionele training. Ook beschikbaar als externe instructeur.',  tag:'B2B · Sportscholen · Events', photo:'/diensten-team.jpg' },
+            { icon:'🏃', title:'LOOPCOACHING',         desc:'Techniek, opbouw en race-voorbereiding. Van beginners tot hardlopers met een tijdsdoel. KNAU gecertificeerd looptrainer niveau 3.',                              tag:'KNAU Gecertificeerd', photo:null },
           ].map((d, i) => (
             <div key={d.title} className={`dienst-card fade-in delay-${(i % 3) + 1}`}>
-              <div className="dienst-icon">{d.icon}</div>
-              <div className="dienst-title">{d.title}</div>
-              <div className="dienst-desc">{d.desc}</div>
-              <div className="dienst-tag">{d.tag}</div>
+              {d.photo && (
+                <div className="dienst-photo">
+                  <img src={d.photo} alt={d.title} loading="lazy" decoding="async" />
+                </div>
+              )}
+              <div className="dienst-body">
+                <div className="dienst-icon">{d.icon}</div>
+                <div className="dienst-title">{d.title}</div>
+                <div className="dienst-desc">{d.desc}</div>
+                <div className="dienst-tag">{d.tag}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -690,9 +744,9 @@ export default function Homepage() {
       <footer>
         <div style={{display:'flex', alignItems:'center', gap:12}}>
           <svg width="24" height="22" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#FF4D00"/>
-            <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5"/>
+            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
+            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
+            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
           </svg>
           <span style={{fontFamily:'Oswald, sans-serif', fontSize:16, letterSpacing:3, color:'#888'}}>GV PERFORMANCE</span>
         </div>

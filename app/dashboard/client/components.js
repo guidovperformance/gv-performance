@@ -21,7 +21,7 @@ export function BottomNav({ active }) {
       {items.map(item => {
         const isActive = active === item.id
         return (
-          <a key={item.id} href={item.href} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'10px 8px', color:isActive ? '#FF4D00' : '#666', textDecoration:'none', fontFamily:"'Barlow Condensed', sans-serif" }}>
+          <a key={item.id} href={item.href} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'10px 8px', color:isActive ? '#D4A857' : '#666', textDecoration:'none', fontFamily:"'Barlow Condensed', sans-serif" }}>
             {item.svg}
             <span style={{ fontSize:10, fontWeight:700, letterSpacing:'1px', textTransform:'uppercase', fontFamily:"'Barlow Condensed', sans-serif" }}>{item.label}</span>
           </a>
@@ -41,9 +41,9 @@ export function TopBar({ backHref, backLabel, showLogout }) {
     <header style={{ background:'#1a1a1a', borderBottom:'1px solid rgba(255,255,255,0.06)', padding:'13px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:50 }}>
       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
         <svg width="18" height="16" viewBox="0 0 36 34">
-          <polygon points="18,2 13,28 23,28" fill="#FF4D00"/>
-          <polygon points="5,7 0,28 14,28" fill="#FF4D00" opacity="0.5"/>
-          <polygon points="31,7 23,28 36,28" fill="#FF4D00" opacity="0.5"/>
+          <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
+          <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
+          <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
         </svg>
         <span style={{ fontFamily:"'Oswald', Impact, sans-serif", fontSize:14, letterSpacing:'3px', fontWeight:700, color:'#f0ede8' }}>GV PERFORMANCE</span>
       </div>

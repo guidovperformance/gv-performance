@@ -13,7 +13,7 @@ function parseNotes(raw) {
 }
 
 const MODE_CONFIG = {
-  kracht:     { color: 'var(--orange)',  bg: 'rgba(255,77,0,0.12)',   label: 'KRACHT' },
+  kracht:     { color: 'var(--orange)',  bg: 'rgba(212,168,87,0.12)',   label: 'KRACHT' },
   conditie:   { color: '#4ade80',        bg: 'rgba(74,222,128,0.12)', label: 'CONDITIE' },
   mobiliteit: { color: '#60a5fa',        bg: 'rgba(96,165,250,0.12)', label: 'MOBILITEIT' },
 }
