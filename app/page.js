@@ -73,7 +73,7 @@ const CSS = `
     font-size: 17px;
     line-height: 1.65;
     overflow-x: hidden;
-    overflow-y: visible; /* voorkomt dat overflow-y stiekem op 'auto' komt te staan, wat de sticky nav breekt */
+    padding-top: 78px; /* compenseert de nu altijd-vaste (position:fixed) nav */
   }
 
   /* ── NAV ── */
@@ -459,6 +459,7 @@ const CSS = `
 
   /* ── MOBIEL ── */
   @media (max-width: 768px) {
+    body { padding-top: 112px; } /* mobiele nav is 2 regels hoog */
     nav { padding: 14px 16px; flex-wrap: wrap; row-gap: 10px; }
     .nav-logo { gap: 10px; }
     .nav-logo svg { width: 28px; height: 26px; }

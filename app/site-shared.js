@@ -25,12 +25,14 @@ export const SITE_CSS = `
     line-height: 1.65;
     overflow-x: hidden;
     overflow-y: visible;
+    padding-top: 78px; /* compenseert de nu altijd-vaste (position:fixed) nav */
   }
 
+  /* position:fixed i.p.v. sticky — sticky bleek onbetrouwbaar in sommige browsers */
   nav {
     display: flex; align-items: center; justify-content: space-between;
     padding: 22px 60px; border-bottom: 1px solid rgba(212,168,87,0.12);
-    background: #0A0A0A; position: sticky; top: 0; z-index: 100;
+    background: #0A0A0A; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   }
   .nav-logo { display:flex; align-items:center; gap:14px; text-decoration:none; flex-shrink:0; }
   .nav-logo-text { font-family:var(--display); font-size:22px; letter-spacing:3px; color:var(--text); line-height:1; }
