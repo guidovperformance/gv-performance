@@ -11,8 +11,8 @@ const TC = { kracht:'#4ade80', conditie:'#38e8e8', gecombineerd:'#fb923c', mobil
 const IC = { low:'#4ade80', medium:'#fb923c', high:'#f87171', deload:'#60a5fa' }
 const IL = { low:'Laag', medium:'Gemiddeld', high:'Hoog', deload:'Deload' }
 
-const inp = { background:'var(--dark4)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text)', fontFamily:"'Barlow Condensed',sans-serif", fontSize:13, padding:'8px 10px', outline:'none', colorScheme:'dark', width:'100%' }
-const lbl = { fontFamily:"'Barlow Condensed',sans-serif", fontSize:9, letterSpacing:'2px', color:'#888', textTransform:'uppercase', display:'block', marginBottom:4 }
+const inp = { background:'var(--dark4)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text)', fontFamily:"var(--font-barlow), sans-serif", fontSize:13, padding:'8px 10px', outline:'none', colorScheme:'dark', width:'100%' }
+const lbl = { fontFamily:"var(--font-barlow), sans-serif", fontSize:9, letterSpacing:'2px', color:'#888', textTransform:'uppercase', display:'block', marginBottom:4 }
 
 function calcSpeed(t) {
   if (!t || !String(t).includes(':')) return null
@@ -287,7 +287,7 @@ export default function PlanView({ params }) {
             <div style={{ display:'flex', gap:8, alignItems:'center' }}>
               <input type="date" value={startDate || ''}
                 onChange={e => setStartDate(e.target.value)}
-                style={{ background:'var(--dark4)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text)', fontFamily:"'Barlow Condensed',sans-serif", fontSize:13, padding:'7px 10px', outline:'none', colorScheme:'dark' }} />
+                style={{ background:'var(--dark4)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text)', fontFamily:"var(--font-barlow), sans-serif", fontSize:13, padding:'7px 10px', outline:'none', colorScheme:'dark' }} />
               <button onClick={() => recalcDates(startDate)}
                 style={{ background:recalcDone?'#4ade80':'var(--orange)', color:'#000', ...B, fontWeight:700, fontSize:11, letterSpacing:1, textTransform:'uppercase', padding:'8px 16px', border:'none', cursor:'pointer', transition:'background 0.2s' }}>
                 {recalcDone ? '✓ Datums bijgewerkt!' : '↻ Datums herberekenen'}

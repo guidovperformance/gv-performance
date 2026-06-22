@@ -58,7 +58,7 @@ function getLevel(key, val) {
 function Badge({ level }) {
   if (!level) return null
   const c = LEVEL_COLORS[level]||'#888'
-  return <span style={{ background:c+'22', color:c, border:`1px solid ${c}44`, fontFamily:"'Barlow Condensed',sans-serif", fontSize:9, fontWeight:700, letterSpacing:2, padding:'2px 7px' }}>{level}</span>
+  return <span style={{ background:c+'22', color:c, border:`1px solid ${c}44`, fontFamily:"var(--font-barlow), sans-serif", fontSize:9, fontWeight:700, letterSpacing:2, padding:'2px 7px' }}>{level}</span>
 }
 
 function Delta({ old: a, new: b, key: k }) {
@@ -66,7 +66,7 @@ function Delta({ old: a, new: b, key: k }) {
   const diff = parseFloat(b)-parseFloat(a)
   if (Math.abs(diff)<0.01) return null
   const up = NORMS[k]?.hi ? diff>0 : diff<0
-  return <span style={{ fontFamily:"'Barlow Condensed',sans-serif", fontSize:10, color:up?'#4ade80':'#f87171', marginLeft:4 }}>{up?'▲':'▼'}{Math.abs(diff).toFixed(1)}</span>
+  return <span style={{ fontFamily:"var(--font-barlow), sans-serif", fontSize:10, color:up?'#4ade80':'#f87171', marginLeft:4 }}>{up?'▲':'▼'}{Math.abs(diff).toFixed(1)}</span>
 }
 
 export default async function TestOverview({ params }) {

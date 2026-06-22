@@ -30,7 +30,7 @@ export function BottomNav({ active }) {
           <Link key={item.id} href={item.href} style={{
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
             minHeight: 56, padding: '8px 8px', color: isActive ? '#D4A857' : '#777', textDecoration: 'none',
-            fontFamily: "'Barlow Condensed', sans-serif", position: 'relative',
+            fontFamily: "var(--font-barlow), sans-serif", position: 'relative',
             transition: 'color .2s ease, transform .2s cubic-bezier(0.16,1,0.3,1)',
             transform: isActive ? 'translateY(-1px)' : 'none',
           }}>
@@ -41,7 +41,7 @@ export function BottomNav({ active }) {
               }} />
             )}
             {item.svg}
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontFamily: "'Barlow Condensed', sans-serif" }}>{item.label}</span>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontFamily: "var(--font-barlow), sans-serif" }}>{item.label}</span>
           </Link>
         )
       })}
@@ -78,14 +78,14 @@ export function TopBar({ backHref, backLabel, showLogout, title }) {
             <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
           </svg>
         )}
-        <span style={{ fontFamily: "'Oswald', Impact, sans-serif", fontSize: 14, letterSpacing: '3px', fontWeight: 700, color: '#f0ede8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span style={{ fontFamily: "var(--font-oswald), Impact, sans-serif", fontSize: 14, letterSpacing: '3px', fontWeight: 700, color: '#f0ede8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {title ? title.toUpperCase() : 'GV PERFORMANCE'}
         </span>
       </div>
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexShrink: 0 }}>
         {showLogout && (
           <button onClick={handleSignOut} style={{
-            fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, letterSpacing: '1px', color: '#999',
+            fontFamily: "var(--font-barlow), sans-serif", fontSize: 10, letterSpacing: '1px', color: '#999',
             background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8,
             minHeight: 32, padding: '5px 14px', cursor: 'pointer', textTransform: 'uppercase',
           }}>

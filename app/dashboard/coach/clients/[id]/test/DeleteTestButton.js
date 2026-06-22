@@ -22,7 +22,7 @@ export default function DeleteTestButton({ testId, clientId }) {
       background: 'rgba(248,113,113,0.1)',
       border: '1px solid rgba(248,113,113,0.3)',
       color: '#f87171',
-      fontFamily: "'Barlow Condensed', sans-serif",
+      fontFamily: "var(--font-barlow), sans-serif",
       fontWeight: 700, fontSize: 11,
       letterSpacing: '2px', textTransform: 'uppercase',
       padding: '8px 14px', cursor: 'pointer',

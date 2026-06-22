@@ -1,14 +1,17 @@
-import { Oswald, Barlow_Condensed } from 'next/font/google'
+import { Fraunces, Hanken_Grotesk } from 'next/font/google'
 import './globals.css'
 
-const oswald = Oswald({
-  weight: ['400', '600', '700'],
+// Variabelen heten nog --font-oswald/--font-barlow (historische naam) maar laden
+// nu Fraunces (display-serif, koppen) en Hanken Grotesk (body/UI) — Variant A.
+const oswald = Fraunces({
+  weight: ['600', '700', '900'],
+  style: ['normal', 'italic'],
   subsets: ['latin'],
   variable: '--font-oswald',
   display: 'swap',
 })
 
-const barlow = Barlow_Condensed({
+const barlow = Hanken_Grotesk({
   weight: ['400', '500', '700'],
   subsets: ['latin'],
   variable: '--font-barlow',

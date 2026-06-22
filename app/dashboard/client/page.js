@@ -6,8 +6,8 @@ import Link from 'next/link'
 import { BottomNav, TopBar } from '@/app/dashboard/client/components'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
-const D = { fontFamily: "'Oswald', Impact, sans-serif" }
-const B = { fontFamily: "'Barlow Condensed', sans-serif" }
+const D = { fontFamily: "var(--font-oswald), Impact, sans-serif" }
+const B = { fontFamily: "var(--font-barlow), sans-serif" }
 
 function getWeekStart() {
   const d = new Date(), day = d.getDay()
@@ -80,7 +80,7 @@ export default function ClientDashboard() {
               <div style={{ ...D, fontSize: 14, fontWeight: 700, color: '#D4A857', letterSpacing: '0.5px' }}>Dagelijkse check-in</div>
               <div style={{ ...B, fontSize: 12, color: '#666' }}>Nog niet ingevuld vandaag</div>
             </div>
-            <div style={{ background: '#D4A857', borderRadius: 8, padding: '8px 14px', ...B, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, fontFamily: "'Barlow Condensed', sans-serif" }}>Invullen</div>
+            <div style={{ background: '#D4A857', borderRadius: 8, padding: '8px 14px', ...B, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, fontFamily: "var(--font-barlow), sans-serif" }}>Invullen</div>
           </Link>
         )}
 
@@ -94,7 +94,7 @@ export default function ClientDashboard() {
                 <div style={{ ...D, fontSize: 22, fontWeight: 700, color: '#f0ede8', marginTop: 4 }}>{data.todaySess.session_name}</div>
                 <div style={{ ...B, fontSize: 12, color: '#666', marginTop: 2 }}>{data.todaySess.session_exercises?.length || 0} oefeningen</div>
               </div>
-              <Link href={`/dashboard/client/session/${data.todaySess.id}`} style={{ background: '#D4A857', borderRadius: 10, padding: '10px 18px', ...B, fontSize: 12, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Start →</Link>
+              <Link href={`/dashboard/client/session/${data.todaySess.id}`} style={{ background: '#D4A857', borderRadius: 10, padding: '10px 18px', ...B, fontSize: 12, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none', fontFamily: "var(--font-barlow), sans-serif" }}>Start →</Link>
             </div>
             {data.todaySess.session_exercises?.slice(0,4).map((ex, i) => (
               <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
@@ -109,7 +109,7 @@ export default function ClientDashboard() {
             <div style={{ fontSize: 28, marginBottom: 8 }}>😴</div>
             <div style={{ ...D, fontSize: 16, fontWeight: 700, color: '#f0ede8', marginBottom: 4 }}>Geen training vandaag</div>
             <div style={{ ...B, fontSize: 12, color: '#666', marginBottom: 14 }}>Hersteldag of coach plant binnenkort iets in.</div>
-            <Link href="/dashboard/client/week" style={{ ...B, fontSize: 11, color: '#D4A857', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Bekijk weekschema →</Link>
+            <Link href="/dashboard/client/week" style={{ ...B, fontSize: 11, color: '#D4A857', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "var(--font-barlow), sans-serif" }}>Bekijk weekschema →</Link>
           </div>
         )}
 
@@ -121,7 +121,7 @@ export default function ClientDashboard() {
             const isToday = new Date().getDay() === (i === 6 ? 0 : i+1)
             return (
               <Link key={day} href="/dashboard/client/week" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, padding: '10px 9px', borderRadius: 10, background: isToday ? '#D4A857' : '#1e1e1e', border: `1px solid ${isToday ? '#D4A857' : session ? 'rgba(212,168,87,0.3)' : 'rgba(255,255,255,0.06)'}`, minWidth: 44, minHeight: 56, flexShrink: 0, textDecoration: 'none' }}>
-                <span style={{ ...B, fontSize: 10, fontWeight: 700, letterSpacing: '1px', color: isToday ? '#000' : '#555', textTransform: 'uppercase', fontFamily: "'Barlow Condensed', sans-serif" }}>{day}</span>
+                <span style={{ ...B, fontSize: 10, fontWeight: 700, letterSpacing: '1px', color: isToday ? '#000' : '#555', textTransform: 'uppercase', fontFamily: "var(--font-barlow), sans-serif" }}>{day}</span>
                 <div style={{ width: 5, height: 5, borderRadius: '50%', background: isToday ? '#000' : session ? '#D4A857' : '#2a2a2a' }} />
               </Link>
             )
@@ -134,7 +134,7 @@ export default function ClientDashboard() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
             {data.feedback.map(f => (
               <div key={f.id} style={{ background: '#1e1e1e', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)', borderLeft: '3px solid #D4A857', padding: '14px 16px' }}>
-                <div style={{ ...B, fontSize: 10, color: '#555', marginBottom: 5, letterSpacing: '1px', textTransform: 'uppercase', fontFamily: "'Barlow Condensed', sans-serif" }}>{new Date(f.created_at).toLocaleDateString('nl-NL')}</div>
+                <div style={{ ...B, fontSize: 10, color: '#555', marginBottom: 5, letterSpacing: '1px', textTransform: 'uppercase', fontFamily: "var(--font-barlow), sans-serif" }}>{new Date(f.created_at).toLocaleDateString('nl-NL')}</div>
                 <div style={{ ...B, fontSize: 14, lineHeight: 1.6, color: '#f0ede8' }}>{f.message}</div>
               </div>
             ))}
@@ -145,14 +145,14 @@ export default function ClientDashboard() {
         <SectionLabel>Check-ins</SectionLabel>
         {data?.recentCI?.length === 0 ? (
           <div style={{ background: '#1e1e1e', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)', padding: '24px 18px', textAlign: 'center' }}>
-            <div style={{ ...B, fontSize: 13, color: '#666', marginBottom: 10, fontFamily: "'Barlow Condensed', sans-serif" }}>Nog geen check-ins</div>
-            <Link href="/dashboard/client/checkin" style={{ ...B, fontSize: 11, color: '#D4A857', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Eerste check-in →</Link>
+            <div style={{ ...B, fontSize: 13, color: '#666', marginBottom: 10, fontFamily: "var(--font-barlow), sans-serif" }}>Nog geen check-ins</div>
+            <Link href="/dashboard/client/checkin" style={{ ...B, fontSize: 11, color: '#D4A857', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "var(--font-barlow), sans-serif" }}>Eerste check-in →</Link>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, paddingBottom: 8 }}>
             {data.recentCI.map(c => (
               <div key={c.id} style={{ background: '#1e1e1e', borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)', padding: '11px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ ...B, fontSize: 12, color: '#666', fontFamily: "'Barlow Condensed', sans-serif" }}>{new Date(c.checkin_date).toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}</div>
+                <div style={{ ...B, fontSize: 12, color: '#666', fontFamily: "var(--font-barlow), sans-serif" }}>{new Date(c.checkin_date).toLocaleDateString('nl-NL', { weekday: 'short', day: 'numeric', month: 'short' })}</div>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                   {c.energy_level && <span style={{ ...B, fontSize: 12, color: '#f0ede8' }}>⚡{c.energy_level}</span>}
                   {c.mood && <span style={{ ...B, fontSize: 12, color: '#f0ede8' }}>😊{c.mood}</span>}
@@ -160,7 +160,7 @@ export default function ClientDashboard() {
                 </div>
               </div>
             ))}
-            <Link href="/dashboard/client/history" style={{ display: 'block', textAlign: 'center', padding: '14px', minHeight: 44, ...B, fontSize: 11, color: '#555', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "'Barlow Condensed', sans-serif" }}>Alle check-ins →</Link>
+            <Link href="/dashboard/client/history" style={{ display: 'block', textAlign: 'center', padding: '14px', minHeight: 44, ...B, fontSize: 11, color: '#555', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', textDecoration: 'none', fontFamily: "var(--font-barlow), sans-serif" }}>Alle check-ins →</Link>
           </div>
         )}
       </main>
@@ -171,7 +171,7 @@ export default function ClientDashboard() {
 
 function SectionLabel({ children }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '3px', color: '#D4A857', textTransform: 'uppercase', marginBottom: 10 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: "var(--font-barlow), sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '3px', color: '#D4A857', textTransform: 'uppercase', marginBottom: 10 }}>
       <span style={{ display: 'block', width: 14, height: 2, background: '#D4A857', borderRadius: 1, flexShrink: 0 }}/>
       {children}
     </div>
@@ -180,7 +180,7 @@ function SectionLabel({ children }) {
 
 function TypeBadge({ type }) {
   return (
-    <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 20, background: 'rgba(212,168,87,0.1)', color: '#D4A857', border: '1px solid rgba(212,168,87,0.25)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+    <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 20, background: 'rgba(212,168,87,0.1)', color: '#D4A857', border: '1px solid rgba(212,168,87,0.25)', fontFamily: "var(--font-barlow), sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
       {type}
     </span>
   )

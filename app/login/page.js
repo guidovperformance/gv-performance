@@ -32,7 +32,7 @@ const CSS = `
   .orbit-badge {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     background: var(--dark2, #111); border: 1px solid rgba(212,168,87,0.3); border-radius: 999px;
-    padding: 7px 14px; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+    padding: 7px 14px; font-family: var(--font-barlow), sans-serif; font-size: 11px; font-weight: 700;
     letter-spacing: 1.5px; color: #D4A857; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
   }
 

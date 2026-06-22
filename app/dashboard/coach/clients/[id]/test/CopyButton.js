@@ -13,7 +13,7 @@ export default function CopyButton({ text, label }) {
       background: done ? '#4ade80' : '#1e1e1e',
       border: `1px solid ${done ? '#4ade80' : '#555'}`,
       color: done ? '#000' : '#f0ede8',
-      fontFamily: "'Barlow Condensed', sans-serif",
+      fontFamily: "var(--font-barlow), sans-serif",
       fontWeight: 700, fontSize: 11, letterSpacing: '2px',
       textTransform: 'uppercase', padding: '8px 18px', cursor: 'pointer',
       transition: 'all 0.2s',

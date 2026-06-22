@@ -3,6 +3,17 @@ import React from 'react'
 import Image from 'next/image'
 import { CascadeText } from './site-shared'
 
+const ICON = {
+  over:      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>,
+  diensten:  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6.5 6.5l11 11M5 5l2 2M19 19l-2-2M3 14l3-3M18 9l3-3M14 3l-3 3M9 18l-3 3M9.5 9.5l5 5"/></svg>,
+  expertise: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"/><path d="M9 13.5 7 22l5-3 5 3-2-8.5"/></svg>,
+  resultaten:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="20" x2="6" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg>,
+  reviews:   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>,
+  blog:      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>,
+  faq:       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.83 1c0 2-2.93 2-2.93 4"/><line x1="12" y1="17" x2="12" y2="17"/></svg>,
+  pakketten: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.6 12.6 12.6 20.6a2 2 0 0 1-2.8 0l-7.4-7.4a2 2 0 0 1 0-2.8L10.4 2.4a2 2 0 0 1 2.8 0l7.4 7.4a2 2 0 0 1 0 2.8z"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>,
+}
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
@@ -77,105 +88,67 @@ const CSS = `
     z-index: 100;
     backdrop-filter: blur(8px);
   }
-  .nav-logo { display:flex; align-items:center; gap:14px; text-decoration:none; }
+  .nav-logo { display:flex; align-items:center; gap:14px; text-decoration:none; flex-shrink:0; }
   .nav-logo-text { font-family:var(--display); font-size:22px; letter-spacing:3px; color:var(--text); line-height:1; }
   .nav-logo-sub  { font-family:var(--body); font-size:10px; letter-spacing:3px; color:var(--orange); margin-top:2px; }
-  .nav-links { display:flex; gap:36px; list-style:none; }
-  .nav-links a {
-    font-family:var(--body); font-size:13px; letter-spacing:2px;
-    text-transform:uppercase; color:var(--muted); text-decoration:none;
-    transition: color .2s;
-    position: relative;
-  }
-  .nav-links a::after {
-    content:''; position:absolute; bottom:-3px; left:0;
-    width:0; height:2px; background:var(--orange); transition:width .25s;
-  }
-  .nav-links a:hover { color:var(--text); }
-  .nav-links a:hover::after { width:100%; }
   .nav-cta {
     background:var(--orange); color:#000 !important;
     padding:10px 22px; font-weight:700; letter-spacing:1px !important;
+    font-family:var(--body); font-size:13px; text-transform:uppercase;
+    text-decoration:none; border-radius:4px; transition: background .2s;
   }
-  .nav-cta::after { display:none !important; }
+  .nav-cta:hover { background:#C99540; }
+  @media (max-width: 480px) { .nav-cta-desktop { display: none; } }
 
-  /* NAV DROPDOWN */
-  .nav-dropdown { position: relative; }
-  .nav-dropdown-trigger {
-    display: flex; align-items: center; gap: 5px; cursor: pointer;
-    font-family: var(--body); font-size: 13px; letter-spacing: 2px;
-    text-transform: uppercase; color: var(--muted); transition: color .2s;
-    background: none; border: none; padding: 0;
+  /* GRADIENT CIRCLE ICON NAV — rechtstreeks in de balk, geen hamburger meer */
+  .nav-icons {
+    display: flex; align-items: center; gap: 10px;
+    overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
   }
-  .nav-dropdown:hover .nav-dropdown-trigger,
-  .nav-dropdown:focus-within .nav-dropdown-trigger { color: var(--text); }
-  .nav-dropdown-caret { font-size: 9px; transition: transform .2s; display: inline-block; }
-  .nav-dropdown:hover .nav-dropdown-caret,
-  .nav-dropdown:focus-within .nav-dropdown-caret { transform: rotate(180deg); }
-  .nav-dropdown-menu {
-    position: absolute; top: 100%; left: 50%;
-    transform: translateX(-50%) translateY(-6px);
-    background: var(--dark2); border: 1px solid rgba(212,168,87,0.15);
-    border-radius: 10px; min-width: 170px; padding: 6px; margin-top: 10px;
-    list-style: none; opacity: 0; pointer-events: none;
-    transition: opacity .2s ease, transform .2s ease;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.45); z-index: 110;
+  .nav-icons::-webkit-scrollbar { display: none; }
+  .nav-icon-item {
+    position: relative; width: 44px; height: 44px; border-radius: 50%;
+    background: var(--dark2); border: 1px solid rgba(212,168,87,0.2);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; overflow: hidden; flex-shrink: 0;
+    transition: width .4s cubic-bezier(0.16,1,0.3,1);
   }
-  .nav-dropdown:hover .nav-dropdown-menu,
-  .nav-dropdown:focus-within .nav-dropdown-menu {
-    opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0);
+  .nav-icon-item:hover, .nav-icon-item:focus-visible { width: 148px; }
+  .nav-icon-item-bg {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-bright, #E8C77E), var(--orange));
+    opacity: 0; transition: opacity .3s ease, border-radius .4s ease;
   }
-  .nav-dropdown-menu li a {
-    display: block; padding: 10px 14px; font-size: 12px; letter-spacing: 1px;
-    color: var(--muted); text-decoration: none; border-radius: 6px; white-space: nowrap;
+  .nav-icon-item:hover .nav-icon-item-bg,
+  .nav-icon-item:focus-visible .nav-icon-item-bg { opacity: 1; border-radius: 22px; }
+  .nav-icon-item-icon {
+    position: relative; z-index: 1; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--orange); transition: transform .3s ease, opacity .3s ease;
   }
-  .nav-dropdown-menu li a::after { display: none !important; }
-  .nav-dropdown-menu li a:hover { background: rgba(212,168,87,0.08); color: var(--orange); }
+  .nav-icon-item-icon svg { width: 17px; height: 17px; }
+  .nav-icon-item:hover .nav-icon-item-icon,
+  .nav-icon-item:focus-visible .nav-icon-item-icon { transform: scale(0); opacity: 0; }
+  .nav-icon-item-label {
+    position: absolute; color: #000; font-family: var(--body); font-weight: 700;
+    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    opacity: 0; transform: scale(0.6); white-space: nowrap; z-index: 2;
+    transition: opacity .3s ease .08s, transform .3s ease .08s;
+  }
+  .nav-icon-item:hover .nav-icon-item-label,
+  .nav-icon-item:focus-visible .nav-icon-item-label { opacity: 1; transform: scale(1); }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-icon-item, .nav-icon-item-bg, .nav-icon-item-icon, .nav-icon-item-label { transition: none; }
+  }
 
-  /* MOBILE HAMBURGER + DRAWER */
-  .nav-hamburger {
-    display: none; flex-direction: column; justify-content: center; gap: 5px;
-    width: 40px; height: 40px; background: none; border: none; cursor: pointer; padding: 0;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .nav-hamburger span {
-    display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px;
-    margin: 0 auto; transition: transform .25s ease, opacity .25s ease;
-  }
-  .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-  .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-  .nav-mobile-drawer {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(10,10,10,0.98); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    display: flex; flex-direction: column;
-    padding: calc(env(safe-area-inset-top, 0px) + 90px) 28px 40px;
-    opacity: 0; pointer-events: none; transform: translateY(-12px);
-    transition: opacity .25s ease, transform .25s ease;
-    overflow-y: auto;
-  }
-  .nav-mobile-drawer.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
-  .nav-mobile-links { display: flex; flex-direction: column; gap: 2px; }
-  .nav-mobile-links a {
-    font-family: var(--display); font-size: 22px; letter-spacing: 1px; color: var(--text);
-    text-decoration: none; padding: 16px 4px; border-bottom: 1px solid rgba(255,255,255,0.07);
-    display: block; min-height: 44px;
-  }
-  .nav-mobile-links a.nav-mobile-sub {
-    font-size: 15px; font-family: var(--body); color: var(--muted); text-transform: uppercase;
-    letter-spacing: 2px; padding-left: 18px; font-weight: 700;
-  }
   .nav-mobile-cta {
-    margin-top: 24px; background: var(--orange); color: #000 !important;
+    margin-top: 8px; background: var(--orange); color: #000 !important;
     text-align: center; border-radius: 10px; font-family: var(--body) !important;
     font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-    border-bottom: none !important; padding: 16px !important; font-size: 14px !important;
+    text-decoration: none; padding: 16px !important; font-size: 14px !important;
+    display: block; flex-shrink: 0;
   }
-  @media (max-width: 768px) {
-    .nav-hamburger { display: flex; }
-  }
-
   /* ── HERO ── */
   .hero {
     min-height:92vh; display:grid; grid-template-columns:1fr 1fr;
@@ -198,12 +171,12 @@ const CSS = `
   .hero-eyebrow::before { content:''; display:block; width:32px; height:2px; background:var(--orange); }
   .hero-headline {
     font-family:var(--display); font-size:clamp(64px,7vw,96px);
-    line-height:0.92; letter-spacing:2px; color:var(--text); margin-bottom:8px;
+    line-height:0.92; letter-spacing:-1px; color:var(--text); margin-bottom:8px;
   }
   .hero-headline span { color:var(--orange); }
   .hero-tagline {
     font-family:var(--display); font-size:clamp(28px,3vw,42px);
-    letter-spacing:4px; color:var(--muted); margin-bottom:32px;
+    letter-spacing:0px; color:var(--muted); margin-bottom:32px;
   }
   .hero-desc { font-size:16px; color:#aaa; max-width:420px; line-height:1.7; margin-bottom:44px; }
   .hero-buttons { display:flex; gap:16px; flex-wrap:wrap; }
@@ -261,7 +234,7 @@ const CSS = `
   .section-label::before { content:''; display:block; width:24px; height:2px; background:var(--orange); }
   .section-title {
     font-family:var(--display); font-size:clamp(42px,5vw,68px);
-    letter-spacing:2px; line-height:0.95; margin-bottom:24px;
+    letter-spacing:-1px; line-height:0.95; margin-bottom:24px;
   }
 
   /* ── OVER GUIDO ── */
@@ -410,6 +383,7 @@ const CSS = `
   .fade-in.delay-1 { transition-delay: 0.1s; }
   .fade-in.delay-2 { transition-delay: 0.2s; }
   .fade-in.delay-3 { transition-delay: 0.3s; }
+  @media (prefers-reduced-motion: reduce) { .fade-in { transition: none !important; opacity: 1 !important; transform: none !important; } }
 
   /* ── HERO ENTRANCE ── */
   .hero-eyebrow, .hero-headline, .hero-tagline, .hero-desc, .hero-buttons {
@@ -483,7 +457,6 @@ const CSS = `
   /* ── MOBIEL ── */
   @media (max-width: 768px) {
     nav { padding:18px 24px; }
-    .nav-links { display:none; }
     section { padding:60px 24px; }
 
     /* Hero: geen ingekrompen desktop-grid, maar een eigen full-bleed
@@ -526,13 +499,7 @@ const CSS = `
 export default function Homepage() {
   const [form, setForm] = React.useState({ voornaam:'', achternaam:'', email:'', dienst:'', bericht:'' })
   const [status, setStatus] = React.useState('idle')
-  const [menuOpen, setMenuOpen] = React.useState(false)
   const floatBtnRef = React.useRef(null)
-
-  React.useEffect(() => {
-    document.body.style.overflow = menuOpen ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [menuOpen])
 
   // D: Fade-in observer
   React.useEffect(() => {
@@ -596,44 +563,26 @@ export default function Homepage() {
             <div className="nav-logo-sub">GUIDO VOLS</div>
           </div>
         </a>
-        <ul className="nav-links">
-          <li className="nav-dropdown" tabIndex={0}>
-            <span className="nav-dropdown-trigger">Over Guido <span className="nav-dropdown-caret">▾</span></span>
-            <ul className="nav-dropdown-menu">
-              <li><a href="#over">Over Guido</a></li>
-              <li><a href="#diensten">Diensten</a></li>
-            </ul>
-          </li>
-          <li><a href="/expertise">Expertise</a></li>
-          <li><a href="/resultaten">Resultaten</a></li>
-          <li><a href="/testimonials">Reviews</a></li>
-          <li><a href="/blog">Blog</a></li>
-          <li><a href="/faq">FAQ</a></li>
-          <li><a href="/pakketten">Pakketten</a></li>
-          <li><a href="#contact" className="nav-cta">Kennismaking</a></li>
-        </ul>
-
-        <button
-          className="nav-hamburger"
-          aria-label="Menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen(v => !v)}
-        >
-          <span /><span /><span />
-        </button>
-
-        <div className={`nav-mobile-drawer ${menuOpen ? 'open' : ''}`}>
-          <div className="nav-mobile-links">
-            <a href="#over" onClick={() => setMenuOpen(false)}>Over Guido</a>
-            <a href="#diensten" className="nav-mobile-sub" onClick={() => setMenuOpen(false)}>Diensten</a>
-            <a href="/expertise" onClick={() => setMenuOpen(false)}>Expertise</a>
-            <a href="/resultaten" onClick={() => setMenuOpen(false)}>Resultaten</a>
-            <a href="/testimonials" onClick={() => setMenuOpen(false)}>Reviews</a>
-            <a href="/blog" onClick={() => setMenuOpen(false)}>Blog</a>
-            <a href="/faq" onClick={() => setMenuOpen(false)}>FAQ</a>
-            <a href="/pakketten" onClick={() => setMenuOpen(false)}>Pakketten</a>
-            <a href="#contact" className="nav-mobile-cta" onClick={() => setMenuOpen(false)}>Kennismaking</a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: '1 1 auto', justifyContent: 'flex-end' }}>
+          <div className="nav-icons" style={{ minWidth: 0 }}>
+            {[
+              { href: '#over', label: 'Over Guido', icon: ICON.over },
+              { href: '#diensten', label: 'Diensten', icon: ICON.diensten },
+              { href: '/expertise', label: 'Expertise', icon: ICON.expertise },
+              { href: '/resultaten', label: 'Resultaten', icon: ICON.resultaten },
+              { href: '/testimonials', label: 'Reviews', icon: ICON.reviews },
+              { href: '/blog', label: 'Blog', icon: ICON.blog },
+              { href: '/faq', label: 'FAQ', icon: ICON.faq },
+              { href: '/pakketten', label: 'Pakketten', icon: ICON.pakketten },
+            ].map(l => (
+              <a key={l.href} href={l.href} className="nav-icon-item">
+                <span className="nav-icon-item-bg" aria-hidden="true" />
+                <span className="nav-icon-item-icon">{l.icon}</span>
+                <span className="nav-icon-item-label">{l.label}</span>
+              </a>
+            ))}
           </div>
+          <a href="#contact" className="nav-cta nav-cta-desktop">Kennismaking</a>
         </div>
       </nav>
 
