@@ -1,8 +1,10 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <rect width="512" height="512" rx="96" fill="#0A0A0A"/>
-  <g transform="translate(256 266) scale(7.2) translate(-18 -17)">
+  <g transform="translate(256 200) scale(6.2) translate(-18 -17)">
     <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
     <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.55"/>
     <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.55"/>
   </g>
+  <text x="256" y="372" font-family="Arial, sans-serif" font-weight="700" font-size="58" letter-spacing="1" fill="#F0EEE8" text-anchor="middle">GV</text>
+  <text x="256" y="430" font-family="Arial, sans-serif" font-weight="700" font-size="42" letter-spacing="2" fill="#D4A857" text-anchor="middle">PERFORMANCE</text>
 </svg>
