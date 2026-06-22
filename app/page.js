@@ -1,5 +1,6 @@
 'use client'
 import React from 'react'
+import Image from 'next/image'
 import { CascadeText } from './site-shared'
 
 const jsonLd = {
@@ -8,7 +9,8 @@ const jsonLd = {
   "name": "GV Performance",
   "description": "1-op-1 personal coaching voor tactical athletes, topsporters en gedreven amateurs in Den Haag en online. Periodisering, kracht, conditie en mentale coaching.",
   "url": "https://www.gvperformance.nl",
-  "logo": "https://www.gvperformance.nl/logo.png",
+  "logo": "https://www.gvperformance.nl/icon-512.png",
+  "image": "https://www.gvperformance.nl/hero.jpg",
   "founder": {
     "@type": "Person",
     "name": "Guido Vols",
@@ -310,7 +312,7 @@ const CSS = `
     z-index: 2;
   }
   .dienst-photo {
-    aspect-ratio: 4/3; overflow:hidden; background:var(--dark3);
+    aspect-ratio: 4/3; overflow:hidden; background:var(--dark3); position:relative;
     border-bottom: 1px solid var(--dark4);
   }
   .dienst-photo img {
@@ -485,9 +487,32 @@ const CSS = `
     nav { padding:18px 24px; }
     .nav-links { display:none; }
     section { padding:60px 24px; }
-    .hero { grid-template-columns:1fr; min-height:auto; }
-    .hero-right { min-height:280px; }
-    .hero-left { padding:60px 24px; }
+
+    /* Hero: geen ingekrompen desktop-grid, maar een eigen full-bleed
+       app-achtige compositie — foto vult het scherm, tekst zweeft eroverheen. */
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: 100dvh;
+      position: relative;
+      padding: 0;
+    }
+    .hero-right {
+      position: absolute; inset: 0; min-height: 100dvh; z-index: 0;
+    }
+    .hero-right::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.55) 55%, rgba(10,10,10,0.96) 88%, #0A0A0A 100%);
+    }
+    .hero-left {
+      position: relative; z-index: 2;
+      min-height: 100dvh;
+      justify-content: flex-end;
+      padding: 24px 24px calc(env(safe-area-inset-bottom, 0px) + 40px);
+    }
+    .hero-buttons { flex-direction: column; }
+    .hero-buttons a { text-align: center; width: 100%; }
+
     .about, .contact { grid-template-columns:1fr; gap:40px; }
     .diensten-grid { grid-template-columns:1fr; }
     .process-steps { grid-template-columns:1fr; }
@@ -635,11 +660,13 @@ export default function Homepage() {
           </div>
         </div>
         <div className="hero-right">
-          <img
+          <Image
             src="/hero.jpg"
             alt="Guido Vols — GV Performance coach"
-            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'left bottom', display:'block' }}
-            onError={e => { e.target.style.display='none' }}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+            style={{ objectFit:'cover', objectPosition:'left bottom' }}
           />
         </div>
       </section>
@@ -663,12 +690,14 @@ export default function Homepage() {
 
       {/* OVER GUIDO */}
       <section className="about" id="over">
-        <div className="about-photo fade-in" style={{overflow:'hidden', border:'none'}}>
-          <img
+        <div className="about-photo fade-in" style={{overflow:'hidden', border:'none', position:'relative'}}>
+          <Image
             src="/about.jpg"
             alt="Guido Vols — personal coach Den Haag"
-            style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center top', display:'block' }}
-            onError={e => { e.target.style.display='none' }}
+            fill
+            loading="lazy"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            style={{ objectFit:'cover', objectPosition:'center top' }}
           />
         </div>
         <div className="fade-in delay-1">
@@ -716,7 +745,7 @@ export default function Homepage() {
             <div key={d.title} className={`dienst-card fade-in delay-${(i % 3) + 1}`}>
               {d.photo && (
                 <div className="dienst-photo">
-                  <img src={d.photo} alt={d.title} loading="lazy" decoding="async" />
+                  <Image src={d.photo} alt={d.title} fill loading="lazy" sizes="(max-width: 768px) 100vw, 33vw" />
                 </div>
               )}
               <div className="dienst-body">

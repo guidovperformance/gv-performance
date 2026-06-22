@@ -15,12 +15,19 @@ const barlow = Barlow_Condensed({
   display: 'swap',
 })
 
+const SITE_URL = 'https://www.gvperformance.nl'
+
 export const metadata = {
-  title: 'GV Performance — Guido Vols',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'GV Performance — Guido Vols',
+    template: '%s — GV Performance',
+  },
   description: 'Coaching, training en tactical athlete voorbereiding. Jouw doel, ons plan.',
   keywords: 'personal trainer, coaching, tactical athlete, Den Haag, fitness',
   authors: [{ name: 'Guido Vols' }],
   manifest: '/manifest.json',
+  alternates: { canonical: '/' },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -32,6 +39,21 @@ export const metadata = {
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'nl_NL',
+    url: SITE_URL,
+    siteName: 'GV Performance',
+    title: 'GV Performance — Guido Vols',
+    description: 'Coaching, training en tactical athlete voorbereiding. Jouw doel, ons plan.',
+    images: [{ url: '/hero.jpg', width: 1536, height: 2048, alt: 'GV Performance — Guido Vols' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'GV Performance — Guido Vols',
+    description: 'Coaching, training en tactical athlete voorbereiding. Jouw doel, ons plan.',
+    images: ['/hero.jpg'],
   },
 }
 
