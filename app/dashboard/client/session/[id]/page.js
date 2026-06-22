@@ -29,6 +29,7 @@ export default function SessionPage({ params }) {
   const [rpe, setRpe] = React.useState(7)
   const [notes, setNotes] = React.useState('')
   const [status, setStatus] = React.useState('idle')
+  const [errorMsg, setErrorMsg] = React.useState('')
   const [clientId, setClientId] = React.useState(null)
   const router = useRouter()
   const supabase = createClient()
@@ -78,25 +79,36 @@ export default function SessionPage({ params }) {
   const handleSave = async () => {
     if (!clientId || !session) return
     setStatus('loading')
+    setErrorMsg('')
     try {
-      const { data: sessionLog, error } = await supabase.from('session_logs')
-        .insert({ client_id: clientId, session_id: session.id, completed_at: new Date().toISOString(), rpe, notes: notes || null })
-        .select().single()
-      if (error) throw error
+      const sets = []
       for (const ex of session.session_exercises || []) {
         for (let i = 0; i < (logs[ex.id] || []).length; i++) {
           const set = logs[ex.id][i]
           if (!set.reps && !set.weight) continue
-          await supabase.from('exercise_logs').insert({
-            session_log_id: sessionLog.id, session_exercise_id: ex.id,
-            set_number: i + 1, reps_performed: set.reps ? parseInt(set.reps) : null,
-            weight_kg: set.weight ? parseFloat(set.weight) : null
+          sets.push({
+            session_exercise_id: ex.id,
+            set_number: i + 1,
+            reps_performed: set.reps ? parseInt(set.reps) : null,
+            weight_kg: set.weight ? parseFloat(set.weight) : null,
           })
         }
       }
+
+      const res = await fetch('/api/dashboard/save-session-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: session.id, rpe, notes: notes || null, sets }),
+      })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Opslaan mislukt')
+
       setStatus('success')
       setTimeout(() => router.push('/dashboard/client'), 2000)
-    } catch { setStatus('error') }
+    } catch (e) {
+      setErrorMsg(e.message || 'Er ging iets mis.')
+      setStatus('error')
+    }
   }
 
   const totalSets = session?.session_exercises?.reduce((a, ex) => a + (ex.sets || 0), 0) || 0
@@ -315,7 +327,7 @@ export default function SessionPage({ params }) {
 
           {status === 'error' && (
             <div style={{ ...B, fontSize: 13, color: '#f87171', padding: '12px 16px', background: 'rgba(248,113,113,0.1)', borderRadius: 10, marginBottom: 12 }}>
-              Er ging iets mis. Probeer opnieuw.
+              {errorMsg || 'Er ging iets mis. Probeer opnieuw.'}
             </div>
           )}
 

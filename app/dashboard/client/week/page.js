@@ -83,6 +83,21 @@ export default function WeekPage() {
           </div>
         </div>
 
+        {/* Link naar volledige agenda (maandweergave) */}
+        <a href="/dashboard/client/agenda" style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+          background: 'var(--card)', border: '1px solid var(--border-orange)', borderRadius: 'var(--r-card)',
+          padding: '14px 16px', marginBottom: 20, textDecoration: 'none',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--orange-dim)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div style={{ ...D, fontSize: 14, fontWeight: 700, letterSpacing: 0.5 }}>Volledige agenda</div>
+          </div>
+          <span style={{ ...B, fontSize: 11, color: 'var(--orange)', fontWeight: 700 }}>→</span>
+        </a>
+
         {/* Dag-pills */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 20, overflowX: 'auto', paddingBottom: 4 }}>
           {dates.map((date, i) => {
