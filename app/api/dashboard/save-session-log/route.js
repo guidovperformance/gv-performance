@@ -35,7 +35,7 @@ export async function POST(request) {
       .insert({
         client_id: clientProfile.id,
         session_id,
-        completed_at: new Date().toISOString(),
+        logged_at: new Date().toISOString(),
         rpe: rpe || null,
         notes: notes || null,
       })
