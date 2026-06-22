@@ -1,17 +1,16 @@
-import { Fraunces, Hanken_Grotesk } from 'next/font/google'
+import { Big_Shoulders, Work_Sans } from 'next/font/google'
 import './globals.css'
 
 // Variabelen heten nog --font-oswald/--font-barlow (historische naam) maar laden
-// nu Fraunces (display-serif, koppen) en Hanken Grotesk (body/UI) — Variant A.
-const oswald = Fraunces({
-  weight: ['600', '700', '900'],
-  style: ['normal', 'italic'],
+// nu Big Shoulders (condensed display, koppen) en Work Sans (body/UI) — Variant B.
+const oswald = Big_Shoulders({
+  weight: ['700', '800', '900'],
   subsets: ['latin'],
   variable: '--font-oswald',
   display: 'swap',
 })
 
-const barlow = Hanken_Grotesk({
+const barlow = Work_Sans({
   weight: ['400', '500', '700'],
   subsets: ['latin'],
   variable: '--font-barlow',

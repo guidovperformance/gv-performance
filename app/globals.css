@@ -46,6 +46,7 @@
 }
 html {
   overflow-x: hidden; /* iOS Safari scrolt anders horizontaal via html, niet body */
+  overflow-y: visible; /* voorkomt dat de browser overflow-y stiekem op 'auto' zet, wat sticky-nav breekt */
   width: 100%;
 }
 body {
@@ -79,6 +80,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   overflow-x: hidden;
+  overflow-y: visible; /* voorkomt dat de browser overflow-y stiekem op 'auto' zet, wat sticky-nav breekt */
   /* ruimte voor bottom nav op mobiel */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }

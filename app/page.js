@@ -73,6 +73,7 @@ const CSS = `
     font-size: 17px;
     line-height: 1.65;
     overflow-x: hidden;
+    overflow-y: visible; /* voorkomt dat overflow-y stiekem op 'auto' komt te staan, wat de sticky nav breekt */
   }
 
   /* ── NAV ── */
@@ -171,7 +172,7 @@ const CSS = `
   .hero-eyebrow::before { content:''; display:block; width:32px; height:2px; background:var(--orange); }
   .hero-headline {
     font-family:var(--display); font-size:clamp(64px,7vw,96px);
-    line-height:0.92; letter-spacing:-1px; color:var(--text); margin-bottom:8px;
+    line-height:0.92; letter-spacing:0px; color:var(--text); margin-bottom:8px;
   }
   .hero-headline span { color:var(--orange); }
   .hero-tagline {
@@ -234,7 +235,7 @@ const CSS = `
   .section-label::before { content:''; display:block; width:24px; height:2px; background:var(--orange); }
   .section-title {
     font-family:var(--display); font-size:clamp(42px,5vw,68px);
-    letter-spacing:-1px; line-height:0.95; margin-bottom:24px;
+    letter-spacing:0px; line-height:0.95; margin-bottom:24px;
   }
 
   /* ── OVER GUIDO ── */

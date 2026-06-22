@@ -17,7 +17,7 @@ const CSS = `
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
-  body{background:var(--dark);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.65;overflow-x:hidden;}
+  body{background:var(--dark);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.65;overflow-x:hidden;overflow-y:visible;}
   nav{display:flex;align-items:center;justify-content:space-between;padding:22px 60px;border-bottom:1px solid rgba(212,168,87,0.12);background:rgba(10,10,10,0.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px);}
   .nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none;flex-shrink:0;}
   .nav-logo-text{font-family:var(--display);font-size:22px;letter-spacing:3px;color:var(--text);line-height:1;}
@@ -41,7 +41,7 @@ const CSS = `
   section{padding:80px 60px;}
   .section-label{font-size:10px;letter-spacing:4px;color:var(--orange);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
   .section-label::before{content:'';display:block;width:24px;height:2px;background:var(--orange);}
-  .section-title{font-family:var(--display);font-size:clamp(42px,5vw,68px);letter-spacing:-1px;line-height:0.95;margin-bottom:24px;}
+  .section-title{font-family:var(--display);font-size:clamp(42px,5vw,68px);letter-spacing:0px;line-height:0.95;margin-bottom:24px;}
   .btn-primary{background:var(--orange);color:#000;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:16px 36px;text-decoration:none;display:inline-block;border:none;cursor:pointer;transition:background .2s,transform .15s;}
   .btn-primary:hover{background:#C99540;transform:translateY(-1px);}
   .btn-secondary{border:1px solid var(--muted2);color:var(--text);font-family:var(--body);font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:16px 36px;text-decoration:none;display:inline-block;transition:border-color .2s,color .2s;}

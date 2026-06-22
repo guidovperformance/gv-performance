@@ -24,6 +24,7 @@ export const SITE_CSS = `
     font-size: 17px;
     line-height: 1.65;
     overflow-x: hidden;
+    overflow-y: visible;
   }
 
   nav {
@@ -103,7 +104,7 @@ export const SITE_CSS = `
   .section-label::before { content:''; display:block; width:24px; height:2px; background:var(--orange); }
   .section-title {
     font-family:var(--display); font-size:clamp(42px,5vw,68px);
-    letter-spacing:-1px; line-height:0.95; margin-bottom:24px;
+    letter-spacing:0px; line-height:0.95; margin-bottom:24px;
   }
   .section-intro { font-size:16px; color:#aaa; line-height:1.8; max-width:620px; margin-bottom:24px; }
 
@@ -123,7 +124,7 @@ export const SITE_CSS = `
   .page-hero-eyebrow::before, .page-hero-eyebrow::after { content:''; display:block; width:32px; height:2px; background:var(--orange); }
   .page-hero-title {
     font-family:var(--display); font-size:clamp(48px,6vw,84px);
-    line-height:0.95; letter-spacing:-1px; color:var(--text); margin-bottom:20px;
+    line-height:0.95; letter-spacing:0px; color:var(--text); margin-bottom:20px;
   }
   .page-hero-title span { color:var(--orange); }
   .page-hero-desc { font-size:16px; color:#aaa; max-width:560px; margin:0 auto; line-height:1.8; }
