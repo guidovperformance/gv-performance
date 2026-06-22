@@ -77,6 +77,7 @@ const CSS = `
   }
 
   /* ── NAV ── */
+  /* position:fixed i.p.v. sticky — sticky bleek onbetrouwbaar in sommige browsers */
   nav {
     display: flex;
     align-items: center;
@@ -84,8 +85,10 @@ const CSS = `
     padding: 22px 60px;
     border-bottom: 1px solid rgba(212,168,87,0.12);
     background: #0A0A0A;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 100;
   }
   .nav-logo { display:flex; align-items:center; gap:14px; text-decoration:none; flex-shrink:0; }
@@ -472,28 +475,30 @@ const CSS = `
        app-achtige compositie — foto vult het scherm, tekst zweeft eroverheen. */
     .hero {
       grid-template-columns: 1fr;
-      min-height: 100dvh;
+      min-height: auto;
       position: relative;
       padding: 0;
     }
     .hero-right {
-      position: absolute; inset: 0; min-height: 100dvh; z-index: 0;
+      position: relative; inset: auto; height: 46vh; min-height: 280px; z-index: 0;
+      order: -1;
     }
     .hero-right::after {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(to bottom, rgba(10,10,10,0.15) 0%, rgba(10,10,10,0.55) 55%, rgba(10,10,10,0.96) 88%, #0A0A0A 100%);
+      background: linear-gradient(to bottom, rgba(10,10,10,0.35) 0%, rgba(10,10,10,0.5) 50%, rgba(10,10,10,0.92) 90%, #0A0A0A 100%);
     }
     .hero-left {
       position: relative; z-index: 2;
-      min-height: 100dvh;
-      justify-content: flex-end;
-      padding: 24px 24px calc(env(safe-area-inset-bottom, 0px) + 40px);
+      min-height: auto;
+      justify-content: flex-start;
+      padding: 28px 24px calc(env(safe-area-inset-bottom, 0px) + 32px);
     }
     .hero-buttons { flex-direction: column; }
     .hero-buttons a { text-align: center; width: 100%; }
 
     .about, .contact { grid-template-columns:1fr; gap:40px; }
+    .about-photo { aspect-ratio: 4/3; max-height: 320px; }
     .diensten-grid { grid-template-columns:1fr; }
     .process-steps { grid-template-columns:1fr; }
     .step-arrow { display:none; }
