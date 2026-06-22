@@ -57,7 +57,7 @@ export function TopBar({ backHref, backLabel, showLogout, title }) {
   }
   return (
     <header style={{
-      background: 'rgba(20,20,20,0.85)', backdropFilter: 'blur(20px) saturate(150%)', WebkitBackdropFilter: 'blur(20px) saturate(150%)',
+      background: '#141414',
       borderBottom: '1px solid rgba(255,255,255,0.08)',
       padding: 'calc(env(safe-area-inset-top, 0px) + 13px) 20px 13px',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',

@@ -18,7 +18,7 @@ const CSS = `
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
   body{background:var(--dark);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.65;overflow-x:hidden;overflow-y:visible;}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:22px 60px;border-bottom:1px solid rgba(212,168,87,0.12);background:rgba(10,10,10,0.97);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:22px 60px;border-bottom:1px solid rgba(212,168,87,0.12);background:#0A0A0A;position:sticky;top:0;z-index:100;}
   .nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none;flex-shrink:0;}
   .nav-logo-text{font-family:var(--display);font-size:22px;letter-spacing:3px;color:var(--text);line-height:1;}
   .nav-logo-sub{font-family:var(--body);font-size:10px;letter-spacing:3px;color:var(--orange);margin-top:2px;}
@@ -146,7 +146,14 @@ const CSS = `
   }
 
   @media(max-width:768px){
-    nav{padding:18px 24px;}
+    nav{padding:14px 16px;flex-wrap:wrap;row-gap:10px;}
+    .nav-logo{gap:10px;}
+    .nav-logo svg{width:28px;height:26px;}
+    .nav-logo-text{font-size:17px;letter-spacing:1.5px;}
+    .nav-logo-sub{display:none;}
+    .nav-actions{width:100%;justify-content:flex-start!important;}
+    .nav-icon-item{width:40px;height:40px;}
+    .nav-icon-item:hover,.nav-icon-item:focus-visible{width:40px;}
     section{padding:60px 24px;}
     .pakketten-grid{grid-template-columns:1fr!important;}
     .addons-grid{grid-template-columns:1fr!important;}
@@ -246,7 +253,7 @@ export default function Pakketten() {
             <div className="nav-logo-sub">GUIDO VOLS</div>
           </div>
         </a>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: '1 1 auto', justifyContent: 'flex-end' }}>
+        <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: '1 1 auto', justifyContent: 'flex-end' }}>
           <div className="nav-icons" style={{ minWidth: 0 }}>
             {[
               { href: '/#over', label: 'Over Guido', icon: ICON.over },

@@ -30,8 +30,7 @@ export const SITE_CSS = `
   nav {
     display: flex; align-items: center; justify-content: space-between;
     padding: 22px 60px; border-bottom: 1px solid rgba(212,168,87,0.12);
-    background: rgba(10,10,10,0.97); position: sticky; top: 0; z-index: 100;
-    backdrop-filter: blur(8px);
+    background: #0A0A0A; position: sticky; top: 0; z-index: 100;
   }
   .nav-logo { display:flex; align-items:center; gap:14px; text-decoration:none; flex-shrink:0; }
   .nav-logo-text { font-family:var(--display); font-size:22px; letter-spacing:3px; color:var(--text); line-height:1; }
@@ -200,7 +199,14 @@ export const SITE_CSS = `
   @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.7); } }
 
   @media (max-width: 768px) {
-    nav { padding:18px 24px; }
+    nav { padding: 14px 16px; flex-wrap: wrap; row-gap: 10px; }
+    .nav-logo { gap: 10px; }
+    .nav-logo svg { width: 28px; height: 26px; }
+    .nav-logo-text { font-size: 17px; letter-spacing: 1.5px; }
+    .nav-logo-sub { display: none; }
+    .nav-actions { width: 100%; justify-content: flex-start !important; }
+    .nav-icon-item { width: 40px; height: 40px; }
+    .nav-icon-item:hover, .nav-icon-item:focus-visible { width: 40px; }
     section { padding:60px 24px; }
     .page-hero { padding:110px 24px 60px; }
     footer { padding:30px 24px; flex-direction:column; align-items:flex-start; }
@@ -245,7 +251,7 @@ export function SiteNav({ active }) {
           <div className="nav-logo-sub">GUIDO VOLS</div>
         </div>
       </a>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: '1 1 auto', justifyContent: 'flex-end' }}>
+      <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: '1 1 auto', justifyContent: 'flex-end' }}>
         <div className="nav-icons" style={{ minWidth: 0 }}>
           {links.map(l => (
             <a key={l.href} href={l.href} className="nav-icon-item">
