@@ -99,7 +99,7 @@ export default function ClientDashboard() {
             {data.todaySess.session_exercises?.slice(0,4).map((ex, i) => (
               <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                 <span style={{ ...D, fontSize: 12, color: '#D4A857', fontWeight: 700, minWidth: 18 }}>{i+1}</span>
-                <span style={{ ...B, fontSize: 13, flex: 1, color: '#f0ede8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.exercises?.name}</span>
+                <span style={{ ...B, fontSize: 13, flex: 1, minWidth: 0, color: '#f0ede8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.exercises?.name}</span>
                 <span style={{ ...B, fontSize: 11, color: '#555', flexShrink: 0 }}>{ex.sets}×{ex.reps}{ex.weight_kg ? ` @ ${ex.weight_kg}kg` : ''}</span>
               </div>
             ))}

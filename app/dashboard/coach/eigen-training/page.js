@@ -2,13 +2,9 @@
 
 import { useState, useEffect } from "react"
 
-const FontLoader = () => (
-  <style>{`@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Syne:wght@400;600;700;800&display=swap');`}</style>
-)
-
 const C = {
-  bg:"#060a0e", bg2:"#0d1520", bd:"#1a2840",
-  tx:"#dde8f5", wh:"#f0f7ff", mt:"#4a6380",
+  bg:"#0A0A0A", bg2:"#141414", bd:"#222222",
+  tx:"#F0EEE8", wh:"#F0EEE8", mt:"#888888",
   gr:"#3dffa0", ye:"#ffe066", or:"#ff9a3c", re:"#ff5e6b",
   pu:"#a78bfa", cy:"#38e8e8", tl:"#2dd4bf",
 }
@@ -19,11 +15,11 @@ const DTYPE = {
   bjj:             { bg:"rgba(167,139,250,.07)", bd:"#a78bfa" },
   vo2:             { bg:"rgba(255,154,60,.07)",  bd:"#ff9a3c" },
   optional:        { bg:"rgba(45,212,191,.07)",  bd:"#2dd4bf" },
-  rest:            { bg:"rgba(74,99,128,.07)",   bd:"#4a6380" },
+  rest:            { bg:"rgba(74,99,128,.07)",   bd:"#888888" },
   test:            { bg:"rgba(255,224,102,.07)", bd:"#ffe066" },
 }
-const M  = (x={}) => ({ fontFamily:"'JetBrains Mono',monospace", ...x })
-const SY = (x={}) => ({ fontFamily:"'Syne',sans-serif", ...x })
+const M  = (x={}) => ({ fontFamily:'var(--font-barlow), sans-serif', ...x })
+const SY = (x={}) => ({ fontFamily:'var(--font-oswald), Impact, sans-serif', ...x })
 const pill = (c, x={}) => ({ background:c+"18", border:`1px solid ${c}44`, color:c, padding:"2px 8px", borderRadius:4, fontSize:9, fontWeight:700, ...M(), ...x })
 
 const r25    = v => Math.round(v / 2.5) * 2.5
@@ -238,9 +234,9 @@ const BJJ_PHASES = [
 ]
 
 function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval, bjpActivePhase, setBjpActivePhase }) {
-  const C2 = { bg:"#060a0e", bg2:"#0d1520", bd:"#1a2840", tx:"#dde8f5", mt:"#4a6380" }
-  const mo = (x={}) => ({ fontFamily:"'JetBrains Mono',monospace", ...x })
-  const sy = (x={}) => ({ fontFamily:"'Syne',sans-serif", ...x })
+  const C2 = { bg:"#0A0A0A", bg2:"#141414", bd:"#222222", tx:"#F0EEE8", mt:"#888888" }
+  const mo = (x={}) => ({ fontFamily:'var(--font-barlow), sans-serif', ...x })
+  const sy = (x={}) => ({ fontFamily:'var(--font-oswald), Impact, sans-serif', ...x })
   const scoreColors = ["","#ff5e6b","#ff9a3c","#ffe066","#3dffa0","#38e8e8"]
   const scoreLabels = ["","Niet goed","Matig","Oké","Goed","Top!"]
   const curPh = BJJ_PHASES.find(p=>p.id===bjp.currentPhase)||BJJ_PHASES[0]
@@ -265,8 +261,8 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
           <div>
             <div style={mo({fontSize:8,letterSpacing:2,color:"#a78bfa",marginBottom:3})}>HUIDIGE POSITIE</div>
-            <div style={sy({fontSize:15,fontWeight:700,color:"#dde8f5"})}>{curPh.label}: {curPh.title}</div>
-            <div style={mo({fontSize:9,color:"#4a6380",marginTop:2})}>Week {bjp.currentWeek} van 4 · {curPh.weken}</div>
+            <div style={sy({fontSize:15,fontWeight:700,color:"#F0EEE8"})}>{curPh.label}: {curPh.title}</div>
+            <div style={mo({fontSize:9,color:"#888888",marginTop:2})}>Week {bjp.currentWeek} van 4 · {curPh.weken}</div>
           </div>
           <button onClick={()=>setBjpShowEval(v=>!v)}
             style={mo({background:"#a78bfa22",border:"1px solid #a78bfa44",borderRadius:6,padding:"7px 12px",color:"#a78bfa",cursor:"pointer",fontSize:9,fontWeight:700,letterSpacing:2})}>
@@ -276,33 +272,33 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
         <div style={{display:"flex",gap:3,marginBottom:4}}>
           {BJJ_PHASES.map(ph=>(
             <div key={ph.id} style={{flex:1,height:3,borderRadius:2,
-              background:ph.id<bjp.currentPhase?ph.color:ph.id===bjp.currentPhase?ph.color+"88":"#1a2840"}}/>
+              background:ph.id<bjp.currentPhase?ph.color:ph.id===bjp.currentPhase?ph.color+"88":"#222222"}}/>
           ))}
         </div>
         <div style={{display:"flex",justifyContent:"space-between"}}>
           {BJJ_PHASES.map(ph=>(
-            <div key={ph.id} style={mo({fontSize:7,color:ph.id===bjp.currentPhase?ph.color:"#4a6380",letterSpacing:1})}>{ph.label}</div>
+            <div key={ph.id} style={mo({fontSize:7,color:ph.id===bjp.currentPhase?ph.color:"#888888",letterSpacing:1})}>{ph.label}</div>
           ))}
         </div>
       </div>
 
       {/* Fase + week navigator */}
       <div style={{display:"flex",gap:6,marginBottom:12,alignItems:"center",flexWrap:"wrap"}}>
-        <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380"})}>FASE:</div>
+        <div style={mo({fontSize:8,letterSpacing:2,color:"#888888"})}>FASE:</div>
         {BJJ_PHASES.map(ph=>(
           <button key={ph.id} onClick={()=>setBjp(p=>({...p,currentPhase:ph.id,currentWeek:1}))}
             style={mo({padding:"4px 8px",borderRadius:4,border:`1px solid ${bjp.currentPhase===ph.id?ph.color:C2.bd}`,
               background:bjp.currentPhase===ph.id?ph.color+"18":"transparent",
-              color:bjp.currentPhase===ph.id?ph.color:"#4a6380",cursor:"pointer",fontSize:9,fontWeight:600})}>
+              color:bjp.currentPhase===ph.id?ph.color:"#888888",cursor:"pointer",fontSize:9,fontWeight:600})}>
             {ph.label}
           </button>
         ))}
-        <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginLeft:6})}>WEEK:</div>
+        <div style={mo({fontSize:8,letterSpacing:2,color:"#888888",marginLeft:6})}>WEEK:</div>
         {[1,2,3,4].map(w=>(
           <button key={w} onClick={()=>setBjp(p=>({...p,currentWeek:w}))}
             style={mo({padding:"4px 8px",borderRadius:4,border:`1px solid ${bjp.currentWeek===w?curPh.color:C2.bd}`,
               background:bjp.currentWeek===w?curPh.color+"18":"transparent",
-              color:bjp.currentWeek===w?curPh.color:"#4a6380",cursor:"pointer",fontSize:9,fontWeight:600})}>
+              color:bjp.currentWeek===w?curPh.color:"#888888",cursor:"pointer",fontSize:9,fontWeight:600})}>
             W{w}
           </button>
         ))}
@@ -313,14 +309,14 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
         <div style={{background:C2.bg2,border:"1px solid #a78bfa33",borderRadius:10,padding:"14px 16px",marginBottom:12}}>
           <div style={mo({fontSize:8,letterSpacing:3,color:"#a78bfa",marginBottom:10,fontWeight:600})}>EVALUATIE — {curPh.label} WEEK {bjp.currentWeek}</div>
           <div style={{marginBottom:10}}>
-            <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginBottom:6})}>SCORE</div>
+            <div style={mo({fontSize:8,letterSpacing:2,color:"#888888",marginBottom:6})}>SCORE</div>
             <div style={{display:"flex",gap:6}}>
               {[1,2,3,4,5].map(v=>(
                 <button key={v} onClick={()=>setBjpEval(e=>({...e,score:v}))}
                   style={{flex:1,padding:"8px",borderRadius:6,border:`1px solid ${bjpEval.score===v?scoreColors[v]:C2.bd}`,
                     background:bjpEval.score===v?scoreColors[v]+"22":"transparent",
-                    color:bjpEval.score===v?scoreColors[v]:"#4a6380",cursor:"pointer",
-                    fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:700}}>
+                    color:bjpEval.score===v?scoreColors[v]:"#888888",cursor:"pointer",
+                    fontFamily:'var(--font-barlow), sans-serif',fontSize:12,fontWeight:700}}>
                   {v}
                 </button>
               ))}
@@ -328,18 +324,18 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
             {bjpEval.score>0&&<div style={mo({fontSize:9,color:scoreColors[bjpEval.score],marginTop:4})}>{scoreLabels[bjpEval.score]}</div>}
           </div>
           <div style={{marginBottom:8}}>
-            <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginBottom:5})}>HOE GING HET?</div>
+            <div style={mo({fontSize:8,letterSpacing:2,color:"#888888",marginBottom:5})}>HOE GING HET?</div>
             <textarea rows={3} value={bjpEval.tekst} onChange={e=>setBjpEval(ev=>({...ev,tekst:e.target.value}))}
               placeholder="Wat werkte? Waar loop je tegenaan? Wat viel op?"
-              style={{width:"100%",background:"#060a0e",border:"1px solid #1a2840",borderRadius:6,color:"#dde8f5",
-                fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"8px 10px",resize:"vertical",outline:"none",colorScheme:"dark"}}/>
+              style={{width:"100%",background:"#0A0A0A",border:"1px solid #222222",borderRadius:6,color:"#F0EEE8",
+                fontFamily:'var(--font-barlow), sans-serif',fontSize:11,padding:"8px 10px",resize:"vertical",outline:"none",colorScheme:"dark"}}/>
           </div>
           <div style={{marginBottom:10}}>
-            <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginBottom:5})}>BIJZONDERHEDEN (optioneel)</div>
+            <div style={mo({fontSize:8,letterSpacing:2,color:"#888888",marginBottom:5})}>BIJZONDERHEDEN (optioneel)</div>
             <input type="text" value={bjpEval.bijzonderheden} onChange={e=>setBjpEval(ev=>({...ev,bijzonderheden:e.target.value}))}
               placeholder="Blessure, doorbraak, iets wat klikte..."
-              style={{width:"100%",background:"#060a0e",border:"1px solid #1a2840",borderRadius:6,color:"#dde8f5",
-                fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"8px 10px",outline:"none",colorScheme:"dark"}}/>
+              style={{width:"100%",background:"#0A0A0A",border:"1px solid #222222",borderRadius:6,color:"#F0EEE8",
+                fontFamily:'var(--font-barlow), sans-serif',fontSize:11,padding:"8px 10px",outline:"none",colorScheme:"dark"}}/>
           </div>
           <div style={{display:"flex",gap:8}}>
             <button onClick={saveEval}
@@ -347,7 +343,7 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
               OPSLAAN
             </button>
             <button onClick={()=>setBjpShowEval(false)}
-              style={mo({background:"transparent",border:"1px solid #1a2840",borderRadius:6,padding:"8px 14px",color:"#4a6380",cursor:"pointer",fontSize:9})}>
+              style={mo({background:"transparent",border:"1px solid #222222",borderRadius:6,padding:"8px 14px",color:"#888888",cursor:"pointer",fontSize:9})}>
               Annuleer
             </button>
           </div>
@@ -367,7 +363,7 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
                 <div style={{display:"flex",alignItems:"center",gap:10}}>
                   <div style={{width:30,height:30,borderRadius:6,background:ph.color+"18",border:`1px solid ${ph.color}33`,
                     display:"flex",alignItems:"center",justifyContent:"center",
-                    fontFamily:"'JetBrains Mono',monospace",fontSize:9,fontWeight:700,color:ph.color,flexShrink:0}}>
+                    fontFamily:'var(--font-barlow), sans-serif',fontSize:9,fontWeight:700,color:ph.color,flexShrink:0}}>
                     {isDone?"✓":ph.id}
                   </div>
                   <div>
@@ -376,32 +372,32 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
                       {isActive&&<span style={{...mo({fontSize:8}),background:ph.color+"18",border:`1px solid ${ph.color}33`,color:ph.color,padding:"1px 6px",borderRadius:3}}>ACTIEF</span>}
                       {isDone&&<span style={{...mo({fontSize:8}),background:"#3dffa018",border:"1px solid #3dffa033",color:"#3dffa0",padding:"1px 6px",borderRadius:3}}>VOLTOOID</span>}
                     </div>
-                    <div style={sy({fontSize:13,fontWeight:700,color:"#dde8f5"})}>{ph.title}</div>
-                    <div style={mo({fontSize:9,color:"#4a6380",marginTop:1})}>{ph.weken}</div>
+                    <div style={sy({fontSize:13,fontWeight:700,color:"#F0EEE8"})}>{ph.title}</div>
+                    <div style={mo({fontSize:9,color:"#888888",marginTop:1})}>{ph.weken}</div>
                   </div>
                 </div>
-                <div style={mo({fontSize:10,color:"#4a6380"})}>{isOpen?"▲":"▼"}</div>
+                <div style={mo({fontSize:10,color:"#888888"})}>{isOpen?"▲":"▼"}</div>
               </button>
               {isOpen&&(
                 <div style={{padding:"0 14px 14px",borderTop:`1px solid ${ph.color}22`}}>
-                  <div style={{background:"#060a0e",border:`1px solid ${ph.color}22`,borderRadius:7,padding:"10px 12px",margin:"12px 0"}}>
+                  <div style={{background:"#0A0A0A",border:`1px solid ${ph.color}22`,borderRadius:7,padding:"10px 12px",margin:"12px 0"}}>
                     <div style={mo({fontSize:8,letterSpacing:2,color:ph.color,marginBottom:4,fontWeight:600})}>FASE DOELSTELLING</div>
-                    <div style={mo({fontSize:11,color:"#dde8f5",lineHeight:1.6})}>{ph.doel}</div>
+                    <div style={mo({fontSize:11,color:"#F0EEE8",lineHeight:1.6})}>{ph.doel}</div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",gap:5,marginBottom:10}}>
                     {ph.trainingen.map((t,i)=>(
-                      <div key={i} style={{display:"flex",gap:10,padding:"9px 12px",background:"#060a0e",border:`1px solid ${C2.bd}`,borderRadius:7,alignItems:"flex-start"}}>
+                      <div key={i} style={{display:"flex",gap:10,padding:"9px 12px",background:"#0A0A0A",border:`1px solid ${C2.bd}`,borderRadius:7,alignItems:"flex-start"}}>
                         <div style={{minWidth:70,flexShrink:0}}>
                           <div style={mo({fontSize:8,letterSpacing:1,color:ph.color,fontWeight:700})}>{t.n}</div>
-                          <div style={mo({fontSize:10,color:"#dde8f5",fontWeight:600,marginTop:2})}>{t.focus}</div>
+                          <div style={mo({fontSize:10,color:"#F0EEE8",fontWeight:600,marginTop:2})}>{t.focus}</div>
                         </div>
-                        <div style={mo({fontSize:10,color:"#4a6380",lineHeight:1.5,flex:1})}>→ {t.doel}</div>
+                        <div style={mo({fontSize:10,color:"#888888",lineHeight:1.5,flex:1})}>→ {t.doel}</div>
                       </div>
                     ))}
                   </div>
-                  <div style={{background:"#060a0e",border:`1px solid ${C2.bd}`,borderRadius:7,padding:"8px 12px"}}>
-                    <div style={mo({fontSize:8,letterSpacing:2,color:"#4a6380",marginBottom:3,fontWeight:600})}>SPARRING OPBOUW</div>
-                    <div style={mo({fontSize:10,color:"#dde8f5",lineHeight:1.5})}>{ph.sparring}</div>
+                  <div style={{background:"#0A0A0A",border:`1px solid ${C2.bd}`,borderRadius:7,padding:"8px 12px"}}>
+                    <div style={mo({fontSize:8,letterSpacing:2,color:"#888888",marginBottom:3,fontWeight:600})}>SPARRING OPBOUW</div>
+                    <div style={mo({fontSize:10,color:"#F0EEE8",lineHeight:1.5})}>{ph.sparring}</div>
                   </div>
                 </div>
               )}
@@ -413,7 +409,7 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
       {/* History */}
       {bjp.evaluations.length>0&&(
         <div>
-          <div style={mo({fontSize:8,letterSpacing:3,color:"#4a6380",marginBottom:8,fontWeight:600})}>EVALUATIE GESCHIEDENIS</div>
+          <div style={mo({fontSize:8,letterSpacing:3,color:"#888888",marginBottom:8,fontWeight:600})}>EVALUATIE GESCHIEDENIS</div>
           <div style={{display:"flex",flexDirection:"column",gap:5}}>
             {bjp.evaluations.slice(0,8).map((ev,i)=>{
               const phD=BJJ_PHASES.find(p=>p.id===ev.phase)||BJJ_PHASES[0]
@@ -424,10 +420,10 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
                       <span style={mo({fontSize:8,color:phD.color,fontWeight:700,letterSpacing:1})}>{phD.label} W{ev.week}</span>
                       <span style={{...mo({fontSize:8,fontWeight:700}),color:scoreColors[ev.score]}}>{scoreLabels[ev.score]}</span>
                     </div>
-                    <span style={mo({fontSize:8,color:"#4a6380"})}>{ev.datum}</span>
+                    <span style={mo({fontSize:8,color:"#888888"})}>{ev.datum}</span>
                   </div>
-                  <div style={mo({fontSize:10,color:"#dde8f5",lineHeight:1.5})}>{ev.tekst}</div>
-                  {ev.bijz&&<div style={mo({fontSize:9,color:"#4a6380",marginTop:3,fontStyle:"italic"})}>↗ {ev.bijz}</div>}
+                  <div style={mo({fontSize:10,color:"#F0EEE8",lineHeight:1.5})}>{ev.tekst}</div>
+                  {ev.bijz&&<div style={mo({fontSize:9,color:"#888888",marginTop:3,fontStyle:"italic"})}>↗ {ev.bijz}</div>}
                 </div>
               )
             })}
@@ -535,7 +531,7 @@ function Schema() {
     <div style={M({minHeight:"100vh",background:C.bg,color:C.tx})}>
 
       {/* HEADER */}
-      <div style={{background:"linear-gradient(160deg,#0e1b2e,#060a0e)",borderBottom:`1px solid ${C.bd}`,padding:"15px 14px 12px",position:"relative",overflow:"hidden"}}>
+      <div style={{background:"linear-gradient(160deg,#1a1208,#0A0A0A)",borderBottom:`1px solid ${C.bd}`,padding:"15px 14px 12px",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:-30,right:-30,width:180,height:180,background:"radial-gradient(circle,rgba(61,255,160,.06),transparent 65%)",pointerEvents:"none"}}/>
         <div style={{maxWidth:920,margin:"0 auto"}}>
           <div style={M({fontSize:8,letterSpacing:4,color:C.gr,marginBottom:3})}>GBRS+ · AMF · NSCA · BJJ · MILITAIR</div>
@@ -588,7 +584,7 @@ function Schema() {
               {si&&(
                 <div style={{background:si.c+"12",border:`1px solid ${si.c}44`,borderLeft:`3px solid ${si.c}`,borderRadius:7,padding:"10px 12px"}}>
                   <div style={SY({fontSize:13,fontWeight:700,color:si.c,marginBottom:2})}>{si.icon} {si.label}</div>
-                  <div style={M({fontSize:10,color:"#8aa8c8"})}>{si.desc}</div>
+                  <div style={M({fontSize:10,color:"#aaaaaa"})}>{si.desc}</div>
                 </div>
               )}
               {!overall&&<div style={M({fontSize:10,color:C.mt,marginTop:8,textAlign:"center"})}>Vul HRV, gewicht en RHR in voor je trainingstatus van vandaag</div>}
@@ -670,7 +666,7 @@ function Schema() {
                   return f>0&&<div style={SY({fontSize:16,fontWeight:800,color:s>=8?C.gr:s>=5?C.ye:C.re})}>{s}/10</div>
                 })()}
               </div>
-              <div style={M({fontSize:10,color:"#8aa8c8",marginBottom:10})}>🔴 Beperkt = 0 pt · 🟡 Matig = 1 pt · 🟢 Goed = 2 pt</div>
+              <div style={M({fontSize:10,color:"#aaaaaa",marginBottom:10})}>🔴 Beperkt = 0 pt · 🟡 Matig = 1 pt · 🟢 Goed = 2 pt</div>
               {MOB.map(m=>(
                 <div key={m.id} style={{background:C.bg,borderRadius:7,padding:"9px 11px",marginBottom:6}}>
                   <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:8,alignItems:"center"}}>
@@ -832,7 +828,7 @@ function Schema() {
                   {s.it.map((item,j)=>(
                     <div key={j} style={{display:"flex",gap:6,marginBottom:3}}>
                       <span style={M({color:dc.bd,fontSize:9,flexShrink:0,marginTop:1})}>→</span>
-                      <span style={M({fontSize:10,color:"#8aa8c8",lineHeight:1.5})}>{item}</span>
+                      <span style={M({fontSize:10,color:"#aaaaaa",lineHeight:1.5})}>{item}</span>
                     </div>
                   ))}
                 </div>
@@ -908,18 +904,17 @@ function Schema() {
 export default function EigenTrainingsplanPage() {
   return (
     <>
-      <FontLoader />
-      <div style={{ background:'#0d1520', borderBottom:'1px solid rgba(212,168,87,0.12)', padding:'12px 24px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+      <div style={{ background:'#141414', borderBottom:'1px solid rgba(212,168,87,0.12)', padding:'12px 24px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <svg width="22" height="20" viewBox="0 0 36 34">
             <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
             <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
             <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
           </svg>
-          <span style={{ fontFamily:'var(--font-oswald),sans-serif', fontSize:14, letterSpacing:3, fontWeight:700, color:'#f0f7ff' }}>GV PERFORMANCE</span>
+          <span style={{ fontFamily:'var(--font-oswald),sans-serif', fontSize:14, letterSpacing:3, fontWeight:700, color:'#F0EEE8' }}>GV PERFORMANCE</span>
           <span style={{ fontFamily:'var(--font-barlow),sans-serif', fontSize:10, letterSpacing:2, color:'#D4A857', textTransform:'uppercase' }}>Eigen Training</span>
         </div>
-        <a href="/dashboard/coach" style={{ fontFamily:'var(--font-barlow),sans-serif', fontSize:11, letterSpacing:2, textTransform:'uppercase', color:'#4a6380', textDecoration:'none' }}>
+        <a href="/dashboard/coach" style={{ fontFamily:'var(--font-barlow),sans-serif', fontSize:11, letterSpacing:2, textTransform:'uppercase', color:'#888888', textDecoration:'none' }}>
           ← Coach dashboard
         </a>
       </div>

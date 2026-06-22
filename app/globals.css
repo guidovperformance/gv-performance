@@ -49,10 +49,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 html {
-  touch-action: manipulation; /* kill the 300ms tap delay */
+  touch-action: manipulation; /* kill de 300ms tap delay */
+  overflow-x: hidden; /* iOS Safari scrolt anders horizontaal via html, niet body */
+  width: 100%;
 }
 body {
   overscroll-behavior-y: contain; /* no accidental rubber-band/pull-to-refresh */
+  width: 100%;
+  max-width: 100vw;
 }
 /* Tap feedback on anything interactive inside the dashboards */
 .app-shell a, .app-shell button {

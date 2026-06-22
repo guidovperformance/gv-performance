@@ -2,8 +2,6 @@
 import React from 'react'
 
 export const SITE_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Barlow+Condensed:wght@400;500;700&display=swap');
-
   :root {
     --orange: #D4A857;
     --orange-dim: rgba(212,168,87,0.15);
@@ -14,8 +12,8 @@ export const SITE_CSS = `
     --text:  #F0EEE8;
     --muted: #888;
     --muted2: #555;
-    --display: 'Oswald', Impact, sans-serif;
-    --body:    'Barlow Condensed', sans-serif;
+    --display: var(--font-oswald), Impact, sans-serif;
+    --body:    var(--font-barlow), sans-serif;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }

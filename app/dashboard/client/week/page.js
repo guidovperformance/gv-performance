@@ -167,14 +167,16 @@ export default function WeekPage() {
                 if (daySess.length === 0) return null
                 return (
                   <button key={i} onClick={() => setSelectedDay(i)}
-                    style={{ background: i === selIdx ? 'var(--card)' : 'var(--dark2)', borderRadius: 12, border: `1px solid ${i === selIdx ? 'var(--border-orange)' : 'var(--border)'}`, padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'center', cursor: 'pointer', textAlign: 'left' }}>
-                    <div style={{ ...D, fontSize: 12, fontWeight: 700, color: 'var(--muted)', minWidth: 28 }}>{DAYS_SHORT[i]}</div>
-                    {daySess.map(s => (
-                      <div key={s.id} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: typeColor(s.session_type), flexShrink: 0 }} />
-                        <span style={{ ...B, fontSize: 13, color: 'var(--text)' }}>{s.session_name}</span>
-                      </div>
-                    ))}
+                    style={{ width: '100%', background: i === selIdx ? 'var(--card)' : 'var(--dark2)', borderRadius: 12, border: `1px solid ${i === selIdx ? 'var(--border-orange)' : 'var(--border)'}`, padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'center', cursor: 'pointer', textAlign: 'left' }}>
+                    <div style={{ ...D, fontSize: 12, fontWeight: 700, color: 'var(--muted)', minWidth: 28, flexShrink: 0 }}>{DAYS_SHORT[i]}</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0, flex: 1 }}>
+                      {daySess.map(s => (
+                        <div key={s.id} style={{ display: 'flex', gap: 8, alignItems: 'center', minWidth: 0 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: typeColor(s.session_type), flexShrink: 0 }} />
+                          <span style={{ ...B, fontSize: 13, color: 'var(--text)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.session_name}</span>
+                        </div>
+                      ))}
+                    </div>
                   </button>
                 )
               })}
