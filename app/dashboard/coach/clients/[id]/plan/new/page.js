@@ -110,7 +110,15 @@ export default function NewPlan({ params }) {
   const addSession = (weekIdx) => {
     setSessions(prev => ({
       ...prev,
-      [weekIdx]: [...(prev[weekIdx] || []), { name: '', type: 'kracht', day: 'Maandag', exercises: [] }]
+      [weekIdx]: [...(prev[weekIdx] || []), { name: '', type: 'kracht', day: 'Maandag', exercises: [], notes: '' }]
+    }))
+  }
+
+  const copyWeek = (fromIdx, toIdx) => {
+    if (fromIdx === toIdx) return
+    setSessions(prev => ({
+      ...prev,
+      [toIdx]: JSON.parse(JSON.stringify(prev[fromIdx] || []))
     }))
   }
 
@@ -186,6 +194,7 @@ export default function NewPlan({ params }) {
             day_of_week: dayOffset + 1,
             session_name: session.name || 'Training',
             session_type: session.type,
+            notes: session.notes || null,
           }).select().single()
 
           if (sessionData && session.exercises.length > 0) {
@@ -387,9 +396,22 @@ export default function NewPlan({ params }) {
               ))}
             </div>
 
-            <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
               <div style={{ ...D, fontSize: 20, fontWeight: 700, letterSpacing: 1 }}>WEEK {mesos[selectedMeso]?.week_number} — {mesos[selectedMeso]?.focus?.toUpperCase()}</div>
-              <button onClick={() => addSession(selectedMeso)} style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', padding: '8px 16px', border: 'none', cursor: 'pointer' }}>+ Dag toevoegen</button>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                {mesos.length > 1 && (sessions[selectedMeso] || []).length > 0 && (
+                  <>
+                    <span style={{ ...B, fontSize: 10, letterSpacing: 1, color: 'var(--muted)', textTransform: 'uppercase' }}>Kopieer naar:</span>
+                    {mesos.map((m, i) => i !== selectedMeso && (
+                      <button key={i} onClick={() => { if (confirm(`Week ${m.week_number} overschrijven met de trainingen van week ${mesos[selectedMeso].week_number}?`)) copyWeek(selectedMeso, i) }}
+                        style={{ background: 'var(--dark3)', color: 'var(--text)', ...B, fontSize: 11, letterSpacing: 1, padding: '7px 12px', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer' }}>
+                        W{m.week_number}
+                      </button>
+                    ))}
+                  </>
+                )}
+                <button onClick={() => addSession(selectedMeso)} style={{ background: 'var(--orange)', color: '#000', ...B, fontWeight: 700, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', padding: '8px 16px', border: 'none', cursor: 'pointer' }}>+ Dag toevoegen</button>
+              </div>
             </div>
 
             {(sessions[selectedMeso] || []).length === 0 ? (
@@ -419,6 +441,8 @@ export default function NewPlan({ params }) {
                       </div>
                       <button onClick={() => removeSession(selectedMeso, sIdx)} style={{ background: 'none', border: '1px solid rgba(255,107,107,0.3)', color: '#ff6b6b', cursor: 'pointer', padding: '0 12px', fontSize: 18, alignSelf: 'flex-end', height: 48 }}>✕</button>
                     </div>
+
+                    <input type="text" placeholder="Notitie voor deze training (optioneel)..." value={session.notes || ''} onChange={e => setSession(selectedMeso, sIdx, 'notes', e.target.value)} style={{ ...inp, marginBottom: 16, fontSize: 13, fontStyle: 'italic' }} />
 
                     <div style={{ background: 'var(--dark3)', padding: 16 }}>
                       <div style={{ ...B, fontSize: 10, letterSpacing: 3, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 10 }}>Oefeningen</div>

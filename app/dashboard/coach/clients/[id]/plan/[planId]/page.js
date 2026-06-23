@@ -80,7 +80,7 @@ export default function PlanView({ params }) {
   const saveSess = async (s) => {
     await supabase.from('training_sessions').update({
       session_name: s.session_name, session_type: s.session_type,
-      day_of_week: parseInt(s.day_of_week)||1
+      day_of_week: parseInt(s.day_of_week)||1, notes: s.notes || null
     }).eq('id', s.id)
   }
 
@@ -88,7 +88,7 @@ export default function PlanView({ params }) {
     // Sla sessie op
     await supabase.from('training_sessions').update({
       session_name: s.session_name, session_type: s.session_type,
-      day_of_week: parseInt(s.day_of_week)||1
+      day_of_week: parseInt(s.day_of_week)||1, notes: s.notes || null
     }).eq('id', s.id)
     // Sla alle oefeningen op
     for (const ex of s.session_exercises || []) {
@@ -162,6 +162,48 @@ export default function PlanView({ params }) {
       session_name:'Nieuwe training', session_type:'kracht', day_of_week:1
     })
     await loadWeek(mesoId)
+  }
+
+  const [copying, setCopying] = React.useState(false)
+
+  const copyWeek = async (targetIdx) => {
+    const targetMeso = mesos[targetIdx]
+    if (!targetMeso || sessions.length === 0) return
+    const ok = confirm(`Week ${targetMeso.week_number} overschrijven met de trainingen van week ${mesos[wi].week_number}? Bestaande trainingen in week ${targetMeso.week_number} gaan verloren.`)
+    if (!ok) return
+    setCopying(true)
+    try {
+      // Bestaande trainingen + oefeningen in doelweek opruimen
+      const { data: existing } = await supabase.from('training_sessions').select('id').eq('meso_cycle_id', targetMeso.id)
+      for (const s of existing || []) {
+        await supabase.from('session_exercises').delete().eq('session_id', s.id)
+      }
+      if (existing?.length) await supabase.from('training_sessions').delete().eq('meso_cycle_id', targetMeso.id)
+
+      // Trainingen van huidige week kopiëren naar doelweek
+      for (const s of sessions) {
+        const sessionDate = new Date(targetMeso.start_date)
+        sessionDate.setDate(sessionDate.getDate() + ((s.day_of_week || 1) - 1))
+        const { data: newSession } = await supabase.from('training_sessions').insert({
+          meso_cycle_id: targetMeso.id, client_id: ids.clientId,
+          session_date: sessionDate.toISOString().split('T')[0],
+          day_of_week: s.day_of_week || 1,
+          session_name: s.session_name, session_type: s.session_type,
+          notes: s.notes || null,
+        }).select().single()
+        for (const ex of s.session_exercises || []) {
+          await supabase.from('session_exercises').insert({
+            session_id: newSession.id,
+            exercise_name: ex.exercise_name, order_index: ex.order_index || 0,
+            sets: ex.sets, reps: ex.reps, weight_kg: ex.weight_kg,
+            rest_seconds: ex.rest_seconds, tempo: ex.tempo, notes: ex.notes,
+          })
+        }
+      }
+      if (targetIdx === wi) await loadWeek(targetMeso.id)
+    } finally {
+      setCopying(false)
+    }
   }
 
   const delSess = async (id) => {
@@ -314,9 +356,22 @@ export default function PlanView({ params }) {
               <div style={{ ...B, fontSize:9, letterSpacing:2, color:'var(--muted)', textTransform:'uppercase', marginBottom:2 }}>Intensiteit</div>
               <div style={{ ...D, fontSize:14, fontWeight:700, color:IC[mesos[wi].intensity]||'var(--orange)' }}>{IL[mesos[wi].intensity]||mesos[wi].intensity}</div>
             </div>
-            <button onClick={addSess} style={{ background:'var(--orange)', color:'#000', ...B, fontWeight:700, fontSize:11, letterSpacing:2, textTransform:'uppercase', padding:'8px 18px', border:'none', cursor:'pointer' }}>
-              + Dag toevoegen
-            </button>
+            <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
+              {mesos.length > 1 && sessions.length > 0 && (
+                <>
+                  <span style={{ ...B, fontSize:9, letterSpacing:1, color:'var(--muted)', textTransform:'uppercase' }}>Kopieer naar:</span>
+                  {mesos.map((m, i) => i !== wi && (
+                    <button key={m.id} disabled={copying} onClick={() => copyWeek(i)}
+                      style={{ background:'var(--dark3)', color:'var(--text)', ...B, fontSize:11, letterSpacing:1, padding:'7px 12px', border:'1px solid rgba(255,255,255,0.1)', cursor:'pointer' }}>
+                      W{m.week_number}
+                    </button>
+                  ))}
+                </>
+              )}
+              <button onClick={addSess} style={{ background:'var(--orange)', color:'#000', ...B, fontWeight:700, fontSize:11, letterSpacing:2, textTransform:'uppercase', padding:'8px 18px', border:'none', cursor:'pointer' }}>
+                + Dag toevoegen
+              </button>
+            </div>
           </div>
         )}
 
@@ -358,6 +413,11 @@ export default function PlanView({ params }) {
                     <button onClick={()=>delSess(s.id)} style={{ background:'none', border:'1px solid rgba(248,113,113,0.3)', color:'#f87171', cursor:'pointer', padding:'0 8px', fontSize:16, height:38 }}>✕</button>
                   </div>
 
+                  <div style={{ marginBottom:16 }}>
+                    <label style={lbl}>Notitie voor deze training</label>
+                    <input value={s.notes||''} onChange={e=>updSess(s.id,'notes',e.target.value)} onBlur={()=>saveSess(s)} style={{...inp, fontSize:13, fontStyle:'italic'}} placeholder="Optioneel..." />
+                  </div>
+
                   {/* Opslaan knop */}
                   <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:14 }}>
                     <button onClick={() => handleSave(s)}
@@ -369,7 +429,7 @@ export default function PlanView({ params }) {
                   {/* Oefeningen label */}
                   <div style={{ ...B, fontSize:10, letterSpacing:3, color:'var(--orange)', textTransform:'uppercase', marginBottom:10 }}>Oefeningen</div>
 
-                  {s.session_exercises?.map((ex) => {
+                  {s.session_exercises?.map((ex, eIdx) => {
                     const d = parseMode(ex.notes)
                     const mode = ex._mode || d?._mode || 'kracht'
                     const isC = mode==='conditie', isM = mode==='mobiliteit'

@@ -145,6 +145,12 @@ export default function SessionPage({ params }) {
             {session.session_exercises?.length} oefeningen · {totalSets} sets totaal
           </div>
 
+          {session.notes && (
+            <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderLeft: '2px solid var(--orange)', borderRadius: 'var(--r-card)', padding: '10px 14px', marginBottom: 16, ...B, fontSize: 13, color: 'var(--text)', fontStyle: 'italic' }}>
+              💬 {session.notes}
+            </div>
+          )}
+
           {/* Progress bar */}
           <div style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', ...B, fontSize: 10, color: 'var(--muted)', letterSpacing: 1, marginBottom: 6 }}>
