@@ -42,7 +42,7 @@ const CSS = `
   section{padding:80px 60px;}
   .section-label{font-size:10px;letter-spacing:4px;color:var(--orange);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
   .section-label::before{content:'';display:block;width:24px;height:2px;background:var(--orange);}
-  .section-title{font-family:var(--display);font-size:clamp(42px,5vw,68px);letter-spacing:0px;line-height:0.95;margin-bottom:24px;}
+  .section-title{font-family:var(--display);font-size:clamp(42px,5vw,68px);letter-spacing:0px;line-height:0.95;margin-bottom:24px;overflow-wrap:break-word;word-break:break-word;}
   .btn-primary{background:var(--orange);color:#000;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:16px 36px;text-decoration:none;display:inline-block;border:none;cursor:pointer;transition:background .2s,transform .15s;}
   .btn-primary:hover{background:#C99540;transform:translateY(-1px);}
   .btn-secondary{border:1px solid var(--muted2);color:var(--text);font-family:var(--body);font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:16px 36px;text-decoration:none;display:inline-block;transition:border-color .2s,color .2s;}
@@ -147,6 +147,7 @@ const CSS = `
   }
 
   @media(max-width:768px){
+    body{padding-top:112px;} /* mobiele nav is 2 regels hoog */
     nav{padding:14px 16px;flex-wrap:wrap;row-gap:10px;}
     .nav-logo{gap:10px;}
     .nav-logo svg{width:28px;height:26px;}
@@ -160,7 +161,12 @@ const CSS = `
     .addons-grid{grid-template-columns:1fr!important;}
     .bedrijven-grid{grid-template-columns:1fr!important;}
     footer{padding:30px 24px;flex-direction:column;align-items:flex-start;}
+    .footer-links{flex-wrap:wrap;gap:14px 20px;}
     .float-btn{bottom:20px;right:16px;left:16px;justify-content:center;}
+  }
+
+  @media(max-width:400px){
+    .section-title{font-size:clamp(32px,9vw,68px);}
   }
 `
 

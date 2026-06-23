@@ -106,6 +106,7 @@ export const SITE_CSS = `
   .section-title {
     font-family:var(--display); font-size:clamp(42px,5vw,68px);
     letter-spacing:0px; line-height:0.95; margin-bottom:24px;
+    overflow-wrap:break-word; word-break:break-word;
   }
   .section-intro { font-size:16px; color:#aaa; line-height:1.8; max-width:620px; margin-bottom:24px; }
 
@@ -126,6 +127,7 @@ export const SITE_CSS = `
   .page-hero-title {
     font-family:var(--display); font-size:clamp(48px,6vw,84px);
     line-height:0.95; letter-spacing:0px; color:var(--text); margin-bottom:20px;
+    overflow-wrap:break-word; word-break:break-word;
   }
   .page-hero-title span { color:var(--orange); }
   .page-hero-desc { font-size:16px; color:#aaa; max-width:560px; margin:0 auto; line-height:1.8; }
@@ -201,6 +203,7 @@ export const SITE_CSS = `
   @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.7); } }
 
   @media (max-width: 768px) {
+    body { padding-top: 112px; } /* mobiele nav is 2 regels hoog */
     nav { padding: 14px 16px; flex-wrap: wrap; row-gap: 10px; }
     .nav-logo { gap: 10px; }
     .nav-logo svg { width: 28px; height: 26px; }
@@ -212,7 +215,13 @@ export const SITE_CSS = `
     section { padding:60px 24px; }
     .page-hero { padding:110px 24px 60px; }
     footer { padding:30px 24px; flex-direction:column; align-items:flex-start; }
+    .footer-links { flex-wrap:wrap; gap:14px 20px; }
     .float-btn { bottom:20px; right:16px; left:16px; justify-content:center; }
+  }
+
+  @media (max-width: 400px) {
+    .section-title { font-size:clamp(28px,7.5vw,68px); }
+    .page-hero-title { font-size:clamp(28px,7.5vw,84px); }
   }
 `
 

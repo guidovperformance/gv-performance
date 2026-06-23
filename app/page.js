@@ -175,11 +175,13 @@ const CSS = `
   .hero-headline {
     font-family:var(--display); font-size:clamp(64px,7vw,96px);
     line-height:0.92; letter-spacing:0px; color:var(--text); margin-bottom:8px;
+    overflow-wrap:break-word; word-break:break-word;
   }
   .hero-headline span { color:var(--orange); }
   .hero-tagline {
     font-family:var(--display); font-size:clamp(28px,3vw,42px);
     letter-spacing:0px; color:var(--muted); margin-bottom:32px;
+    overflow-wrap:break-word; word-break:break-word;
   }
   .hero-desc { font-size:16px; color:#aaa; max-width:420px; line-height:1.7; margin-bottom:44px; }
   .hero-buttons { display:flex; gap:16px; flex-wrap:wrap; }
@@ -238,6 +240,7 @@ const CSS = `
   .section-title {
     font-family:var(--display); font-size:clamp(42px,5vw,68px);
     letter-spacing:0px; line-height:0.95; margin-bottom:24px;
+    overflow-wrap:break-word; word-break:break-word;
   }
 
   /* ── OVER GUIDO ── */
@@ -507,7 +510,12 @@ const CSS = `
     .form-row { grid-template-columns:1fr; }
     .ribbon { padding:16px 24px; }
     footer { padding:30px 24px; flex-direction:column; align-items:flex-start; }
+    .footer-links { flex-wrap:wrap; gap:14px 20px; }
     .float-btn { bottom:20px; right:16px; left:16px; justify-content:center; }
+  }
+
+  @media (max-width: 400px) {
+    .section-title { font-size: clamp(32px, 9vw, 68px); }
   }
 `
 
@@ -702,7 +710,7 @@ export default function Homepage() {
             { icon:'🏅', title:'TOPSPORT BEGELEIDING', desc:'Voor sporters met een specifiek doel en de gedrevenheid om het te halen. Periodisering, kracht, conditie en mentale weerbaarheid.',                              tag:'Seizoensvoorbereiding', photo:'/diensten-topsport.jpg' },
             { icon:'⚡', title:'HYROX VOORBEREIDING',  desc:'Van nulmeting tot race day. Opbouw, tijdverbetering en volledige race-specifieke conditionering. Gebaseerd op eigen Hyrox prestaties.',                          tag:'Beginners · Tijdverbetering', photo:'/diensten-hyrox.jpg' },
             { icon:'🏢', title:'TEAM & BEDRIJF',       desc:'Teamtrainingen, bootcamps en groepslessen voor bedrijven en sportclubs. Spinning, boxing en functionele training. Ook beschikbaar als externe instructeur.',  tag:'B2B · Sportscholen · Events', photo:'/diensten-team.jpg' },
-            { icon:'🏃', title:'LOOPCOACHING',         desc:'Techniek, opbouw en race-voorbereiding. Van beginners tot hardlopers met een tijdsdoel. KNAU gecertificeerd looptrainer niveau 3.',                              tag:'KNAU Gecertificeerd', photo:null },
+            { icon:'🏃', title:'LOOPCOACHING',         desc:'Techniek, opbouw en race-voorbereiding. Van beginners tot hardlopers met een tijdsdoel. KNAU gecertificeerd looptrainer niveau 3.',                              tag:'KNAU Gecertificeerd', photo:'/diensten-loopcoaching.png' },
           ].map((d, i) => (
             <div key={d.title} className={`dienst-card fade-in delay-${(i % 3) + 1}`}>
               {d.photo && (
