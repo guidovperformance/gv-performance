@@ -3,6 +3,7 @@ import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { BottomNav, TopBar } from '@/app/dashboard/client/components'
+import { fmtDateStr } from '@/lib/date-utils'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -54,7 +55,7 @@ export default function CheckIn() {
       const { data } = await supabase.from('client_profiles').select('id').eq('user_id', user.id).single()
       if (!data) { router.push('/dashboard'); return }
       setCp(data)
-      const today = new Date().toISOString().split('T')[0]
+      const today = fmtDateStr(new Date())
       const { data: ex } = await supabase.from('daily_checkins').select('id').eq('client_id', data.id).eq('checkin_date', today).single()
       if (ex) setAlreadyDone(true)
     }
@@ -68,7 +69,7 @@ export default function CheckIn() {
     setStatus('loading')
     const { error } = await supabase.from('daily_checkins').insert({
       client_id: cp.id,
-      checkin_date: new Date().toISOString().split('T')[0],
+      checkin_date: fmtDateStr(new Date()),
       morning_weight: form.morning_weight ? parseFloat(form.morning_weight) : null,
       morning_pulse: form.morning_pulse ? parseInt(form.morning_pulse) : null,
       sleep_quality: form.sleep_quality > 0 ? form.sleep_quality : null,

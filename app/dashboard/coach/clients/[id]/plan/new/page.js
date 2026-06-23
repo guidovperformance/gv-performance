@@ -3,6 +3,7 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { parseDateStr, fmtDateStr, addDaysStr, mondayOfStr, todayStr } from '@/lib/date-utils'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -37,7 +38,7 @@ export default function NewPlan({ params }) {
 
   const [macro, setMacro] = React.useState({
     name: '', goal: '', phase: 'opbouw',
-    start_date: new Date().toISOString().split('T')[0],
+    start_date: todayStr(),
     end_date: '', notes: ''
   })
   const [macroId, setMacroId] = React.useState(null)
@@ -84,19 +85,14 @@ export default function NewPlan({ params }) {
 
   const saveMesos = async () => {
     setLoading(true); setError('')
-    const startDate = new Date(macro.start_date)
-    const insertData = mesos.map((m, i) => {
-      const weekStart = new Date(startDate)
-      weekStart.setDate(startDate.getDate() + i * 7)
-      return {
-        macro_plan_id: macroId,
-        week_number: m.week_number,
-        focus: m.focus,
-        intensity: m.intensity,
-        start_date: weekStart.toISOString().split('T')[0],
-        notes: m.notes,
-      }
-    })
+    const insertData = mesos.map((m, i) => ({
+      macro_plan_id: macroId,
+      week_number: m.week_number,
+      focus: m.focus,
+      intensity: m.intensity,
+      start_date: addDaysStr(macro.start_date, i * 7),
+      notes: m.notes,
+    }))
     const { data, error: err } = await supabase.from('meso_cycles').insert(insertData).select()
     if (err) { setError(err.message); setLoading(false); return }
     setMesoIds(data.map(d => d.id))
@@ -175,22 +171,15 @@ export default function NewPlan({ params }) {
         const mesoId = mesoIds[weekIdx]
         for (const session of weekSessions) {
           // Snap startdatum altijd naar maandag van die week
-          const rawStart = new Date(macro.start_date)
-          const dow = rawStart.getDay() // 0=zo, 1=ma, ..., 6=za
-          const backToMonday = dow === 0 ? 6 : dow - 1
-          const monday = new Date(rawStart)
-          monday.setDate(rawStart.getDate() - backToMonday)
-
-          const weekStart = new Date(monday)
-          weekStart.setDate(monday.getDate() + weekIdx * 7)
+          const monday = mondayOfStr(macro.start_date)
+          const weekStart = addDaysStr(monday, weekIdx * 7)
           const days = ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag']
           const dayOffset = days.indexOf(session.day)
-          const sessionDate = new Date(weekStart)
-          sessionDate.setDate(weekStart.getDate() + (dayOffset >= 0 ? dayOffset : 0))
+          const sessionDate = addDaysStr(weekStart, dayOffset >= 0 ? dayOffset : 0)
 
           const { data: sessionData } = await supabase.from('training_sessions').insert({
             meso_cycle_id: mesoId, client_id: clientId,
-            session_date: sessionDate.toISOString().split('T')[0],
+            session_date: sessionDate,
             day_of_week: dayOffset + 1,
             session_name: session.name || 'Training',
             session_type: session.type,
@@ -248,6 +237,22 @@ export default function NewPlan({ params }) {
 
   return (
     <div style={{ background: 'var(--dark)', minHeight: '100vh', ...B }}>
+      <style>{`
+        @media (max-width: 640px) {
+          header { padding: 14px 16px !important; }
+          main { padding: 20px 16px !important; }
+          .macro-grid { grid-template-columns: 1fr !important; }
+          .meso-grid { grid-template-columns: 40px 1fr !important; }
+          .session-grid { grid-template-columns: 1fr 1fr !important; }
+          .session-grid > button { grid-column: 1 / -1 !important; width: 100% !important; height: 38px !important; }
+          .kracht-grid, .conditie-grid, .mob-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+          .step-indicator { padding: 14px 16px !important; }
+          .step-indicator span { font-size: 11px !important; }
+        }
+        @media (max-width: 400px) {
+          .session-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       <header style={{ background: 'var(--dark2)', borderBottom: '1px solid rgba(212,168,87,0.12)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <svg width="28" height="26" viewBox="0 0 36 34">
@@ -261,7 +266,7 @@ export default function NewPlan({ params }) {
       </header>
 
       {/* Stap indicator */}
-      <div style={{ background: 'var(--dark2)', padding: '20px 40px', display: 'flex', gap: 0, borderBottom: '1px solid rgba(212,168,87,0.1)' }}>
+      <div className="step-indicator" style={{ background: 'var(--dark2)', padding: '20px 40px', display: 'flex', gap: 0, borderBottom: '1px solid rgba(212,168,87,0.1)', overflowX: 'auto' }}>
         {[['01', 'MACRO PLAN'], ['02', 'WEKEN (MESO)'], ['03', 'TRAININGEN']].map(([num, label], i) => (
           <div key={num} style={{ display: 'flex', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -290,7 +295,7 @@ export default function NewPlan({ params }) {
                 <label style={lbl}>Hoofddoel</label>
                 <input type="text" placeholder="Kracht opbouwen, conditie verbeteren..." value={macro.goal} onChange={e => setMacro(p => ({...p, goal: e.target.value}))} style={inp} />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+              <div className="macro-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
                 <div>
                   <label style={lbl}>Fase</label>
                   <select value={macro.phase} onChange={e => setMacro(p => ({...p, phase: e.target.value}))} style={inp}>
@@ -302,17 +307,7 @@ export default function NewPlan({ params }) {
                   <input
                     type="date"
                     value={macro.start_date}
-                    onChange={e => {
-                        const d = new Date(e.target.value)
-                        const dow = d.getDay()
-                        if (dow !== 1) {
-                          const diff = dow === 0 ? -6 : 1 - dow
-                          d.setDate(d.getDate() + diff)
-                          setMacro(p => ({...p, start_date: d.toISOString().split('T')[0]}))
-                        } else {
-                          setMacro(p => ({...p, start_date: e.target.value}))
-                        }
-                      }}
+                    onChange={e => setMacro(p => ({...p, start_date: mondayOfStr(e.target.value)}))}
                     style={{ ...inp, cursor: 'pointer' }}
                   />
                 </div>
@@ -352,7 +347,7 @@ export default function NewPlan({ params }) {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 32 }}>
               {mesos.map((m, i) => (
-                <div key={i} style={{ background: 'var(--dark2)', padding: '16px 20px', display: 'grid', gridTemplateColumns: '50px 1fr 1fr 2fr', gap: 16, alignItems: 'center' }}>
+                <div key={i} className="meso-grid" style={{ background: 'var(--dark2)', padding: '16px 20px', display: 'grid', gridTemplateColumns: '50px 1fr 1fr 2fr', gap: 16, alignItems: 'center' }}>
                   <div style={{ ...D, fontSize: 20, fontWeight: 700, color: 'var(--orange)' }}>W{m.week_number}</div>
                   <div>
                     <label style={{ ...lbl, marginBottom: 4 }}>Focus</label>
@@ -422,7 +417,7 @@ export default function NewPlan({ params }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {(sessions[selectedMeso] || []).map((session, sIdx) => (
                   <div key={sIdx} style={{ background: 'var(--dark2)', padding: 20 }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 12, marginBottom: 16 }}>
+                    <div className="session-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 12, marginBottom: 16 }}>
                       <div>
                         <label style={lbl}>Naam</label>
                         <input type="text" placeholder="Kracht, Boven, Conditie..." value={session.name} onChange={e => setSession(selectedMeso, sIdx, 'name', e.target.value)} style={inp} />
@@ -474,7 +469,7 @@ export default function NewPlan({ params }) {
 
                                 {/* KRACHT velden */}
                                 {!isConditie && !isMobiliteit && (
-                                  <div style={{ display: 'grid', gridTemplateColumns: '60px 80px 80px 80px 1fr', gap: 6 }}>
+                                  <div className="kracht-grid" style={{ display: 'grid', gridTemplateColumns: '60px 80px 80px 80px 1fr', gap: 6 }}>
                                     {[['Sets','number','sets','3',''],['Reps','text','reps','8-10',''],['KG','number','weight','—','0.5'],['Rust(s)','number','rest','90',''],['Notities','text','notes','Bijv. RIR 2','']].map(([h,t,f,ph,step]) => (
                                       <div key={f}>
                                         <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>{h}</div>
@@ -513,7 +508,7 @@ export default function NewPlan({ params }) {
                                       </div>
                                     </div>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: '60px 110px 120px 90px', gap: 6, marginBottom: 6 }}>
+                                    <div className="conditie-grid" style={{ display: 'grid', gridTemplateColumns: '60px 110px 120px 90px', gap: 6, marginBottom: 6 }}>
                                       <div>
                                         <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Sets</div>
                                         <input type="number" value={ex.sets||4} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'sets', e.target.value)} style={{...exInp, textAlign:'center'}} placeholder="4" />
@@ -548,7 +543,7 @@ export default function NewPlan({ params }) {
                                 {/* MOBILITEIT velden */}
                                 {isMobiliteit && (
                                   <div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '60px 110px 90px', gap: 6, marginBottom: 8 }}>
+                                    <div className="mob-grid" style={{ display: 'grid', gridTemplateColumns: '60px 110px 90px', gap: 6, marginBottom: 8 }}>
                                       <div>
                                         <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Sets</div>
                                         <input type="number" value={ex.sets||3} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'sets', e.target.value)} style={{...exInp, textAlign:'center'}} />

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { todayStrNL } from '@/lib/date-utils'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -17,7 +18,7 @@ export default async function CoachDashboard() {
     .eq('coach_id', user.id)
     .order('created_at', { ascending: false })
 
-  const today = new Date().toISOString().split('T')[0]
+  const today = todayStrNL()
 
   const { data: recentCheckins } = await supabaseAdmin
     .from('daily_checkins')

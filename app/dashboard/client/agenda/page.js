@@ -3,6 +3,7 @@ import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { BottomNav, TopBar } from '@/app/dashboard/client/components'
+import { fmtDateStr } from '@/lib/date-utils'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -10,7 +11,7 @@ const MONTHS = ['Januari','Februari','Maart','April','Mei','Juni','Juli','August
 const DAYS_SHORT = ['Ma','Di','Wo','Do','Vr','Za','Zo']
 const TYPE_COLORS = { kracht: '#4ade80', conditie: '#38e8e8', gecombineerd: '#fb923c', mobiliteit: '#a78bfa', herstel: '#888' }
 
-function toDateStr(d) { return d.toISOString().split('T')[0] }
+function toDateStr(d) { return fmtDateStr(d) }
 
 function buildMonthGrid(year, month) {
   // month: 0-indexed. Geeft array van Date-objecten, week begint op maandag, vult vorige/volgende maand aan.

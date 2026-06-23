@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react"
+import { todayStr } from '@/lib/date-utils'
 
 const C = {
   bg:"#0A0A0A", bg2:"#141414", bd:"#222222",
@@ -246,7 +247,7 @@ function BJJPlan({ bjp, setBjp, bjpEval, setBjpEval, bjpShowEval, setBjpShowEval
     setBjp(p=>({ ...p, evaluations:[
       { phase:bjp.currentPhase, week:bjp.currentWeek, score:bjpEval.score,
         tekst:bjpEval.tekst.trim(), bijz:bjpEval.bijzonderheden.trim(),
-        datum:new Date().toISOString().split("T")[0] },
+        datum:todayStr() },
       ...p.evaluations].slice(0,40) }))
     setBjpEval({ score:3, tekst:"", bijzonderheden:"" })
     setBjpShowEval(false)

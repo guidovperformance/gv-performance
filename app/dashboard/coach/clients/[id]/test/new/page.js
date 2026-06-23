@@ -3,6 +3,7 @@
 import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { todayStr } from '@/lib/date-utils'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -100,7 +101,7 @@ export default function TestProtocol({ params }) {
   const supabase = createClient()
 
   const [f, setF] = React.useState({
-    test_date: new Date().toISOString().split('T')[0], test_type: 'intake',
+    test_date: todayStr(), test_type: 'intake',
     geslacht: 'man', leeftijd: '', functiecluster: '1-3',
     weight_kg: '', height_cm: '', body_fat_pct: '',
     blessure: 'nee', blessure_omschrijving: '',
@@ -246,11 +247,11 @@ export default function TestProtocol({ params }) {
 
   const Sets = ({ sets }) => (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr 1fr', gap: 2, marginBottom: 2 }}>
+      <div className="test-grid" style={{ display: 'grid', gridTemplateColumns: '150px 1fr 1fr', gap: 2, marginBottom: 2 }}>
         {['Set','Gewicht (kg)','Herhalingen'].map(h => <div key={h} style={{ ...B, fontSize: 9, letterSpacing: 2, color: 'var(--muted)', textTransform: 'uppercase', padding: '6px 10px', background: 'var(--dark4)' }}>{h}</div>)}
       </div>
       {sets.map((s, i) => (
-        <div key={i} style={{ display: 'grid', gridTemplateColumns: '150px 1fr 1fr', gap: 2, marginBottom: 2 }}>
+        <div key={i} className="test-grid" style={{ display: 'grid', gridTemplateColumns: '150px 1fr 1fr', gap: 2, marginBottom: 2 }}>
           <div style={{ ...B, fontSize: 13, padding: '10px', background: s.isTest ? 'rgba(212,168,87,0.08)' : 'var(--dark3)', color: s.isTest ? 'var(--orange)' : 'var(--muted)', border: s.isTest ? '1px solid rgba(212,168,87,0.2)' : 'none', fontWeight: s.isTest ? 700 : 400 }}>{s.label}</div>
           <input type="number" step="0.5" placeholder="Kg" value={f[s.kgKey]||''} onChange={e=>set(s.kgKey,e.target.value)} style={{ ...inp, padding: '10px', background: s.isTest ? 'rgba(212,168,87,0.04)' : 'var(--dark3)' }} />
           <input type="number" placeholder={s.repsHint||'Reps'} value={f[s.repsKey]||''} onChange={e=>set(s.repsKey,e.target.value)} style={{ ...inp, padding: '10px', background: s.isTest ? 'rgba(212,168,87,0.04)' : 'var(--dark3)' }} />
@@ -317,6 +318,15 @@ export default function TestProtocol({ params }) {
 
   return (
     <div style={{ background: 'var(--dark)', minHeight: '100vh', ...B }}>
+      <style>{`
+        @media (max-width: 640px) {
+          header { padding: 14px 16px !important; flex-wrap: wrap; gap: 8px; }
+          main { padding: 20px 16px !important; }
+          .test-grid { grid-template-columns: 70px 1fr 1fr !important; gap: 4px !important; }
+          .test-grid > div { font-size: 10px !important; padding: 6px 4px !important; }
+          .zone-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+      `}</style>
       <header style={{ background: 'var(--dark2)', borderBottom: '1px solid rgba(212,168,87,0.12)', padding: '16px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <svg width="28" height="26" viewBox="0 0 36 34"><polygon points="18,2 13,28 23,28" fill="#D4A857" /><polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5" /><polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5" /></svg>
@@ -552,7 +562,7 @@ export default function TestProtocol({ params }) {
                   const secPerKm = 1000 / speedMs
                   const pace = `\${Math.floor(secPerKm/60)}:\${String(Math.round(secPerKm%60)).padStart(2,'0')}`
                   const intervalDist = z.pct >= 0.90 ? Math.round(240 * speedMs) : null
-                  return <div key={z.zone} style={{ display: 'grid', gridTemplateColumns: '160px 80px 90px 1fr', gap: 8, alignItems: 'center', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  return <div key={z.zone} className="zone-grid" style={{ display: 'grid', gridTemplateColumns: '160px 80px 90px 1fr', gap: 8, alignItems: 'center', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <div style={{ ...D, fontSize: 13, fontWeight: 700 }}>{z.zone}</div>
                     <div style={{ ...B, fontSize: 12, color: 'var(--orange)' }}>{z.kmh} km/h</div>
                     <div style={{ ...B, fontSize: 12, color: 'var(--muted)' }}>{pace} /km</div>

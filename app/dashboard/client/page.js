@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { BottomNav, TopBar } from '@/app/dashboard/client/components'
+import { fmtDateStr } from '@/lib/date-utils'
 
 // ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
 const D = { fontFamily: "var(--font-oswald), Impact, sans-serif" }
@@ -13,13 +14,13 @@ function getWeekStart() {
   const d = new Date(), day = d.getDay()
   const mon = new Date(d)
   mon.setDate(d.getDate() - (day === 0 ? 6 : day - 1))
-  return mon.toISOString().split('T')[0]
+  return fmtDateStr(mon)
 }
 function getWeekEnd() {
   const d = new Date(), day = d.getDay()
   const sun = new Date(d)
   sun.setDate(d.getDate() + (day === 0 ? 0 : 7 - day))
-  return sun.toISOString().split('T')[0]
+  return fmtDateStr(sun)
 }
 
 // ─── MAIN DASHBOARD ───────────────────────────────────────────────────────────
@@ -37,7 +38,7 @@ export default function ClientDashboard() {
     const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
     const { data: cp } = await supabase.from('client_profiles').select('id').eq('user_id', user.id).single()
     if (!cp) { setLoading(false); return }
-    const today = new Date().toISOString().split('T')[0]
+    const today = fmtDateStr(new Date())
     const [todaySess, todayCI, recentCI, weekSess, feedback] = await Promise.all([
       supabase.from('training_sessions').select('*, session_exercises(*, exercises(*))').eq('client_id', cp.id).eq('session_date', today).maybeSingle(),
       supabase.from('daily_checkins').select('*').eq('client_id', cp.id).eq('checkin_date', today).maybeSingle(),
@@ -56,7 +57,7 @@ export default function ClientDashboard() {
   )
 
   const DAYS = ['Ma','Di','Wo','Do','Vr','Za','Zo']
-  const today = new Date().toISOString().split('T')[0]
+  const today = fmtDateStr(new Date())
 
   return (
     <div style={{ background: '#141414', minHeight: '100vh', paddingBottom: 80 }}>

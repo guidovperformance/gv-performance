@@ -3,6 +3,7 @@ import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { BottomNav, TopBar } from '@/app/dashboard/client/components'
+import { fmtDateStr } from '@/lib/date-utils'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -46,8 +47,8 @@ export default function WeekPage() {
     const load = async () => {
       setLoading(true)
       const dates = getWeekDates(offset)
-      const start = dates[0].toISOString().split('T')[0]
-      const end   = dates[6].toISOString().split('T')[0]
+      const start = fmtDateStr(dates[0])
+      const end   = fmtDateStr(dates[6])
       const { data } = await supabase.from('training_sessions').select('*, session_exercises(*, exercises(*))').eq('client_id', clientId).gte('session_date', start).lte('session_date', end).order('session_date')
       setSessions(data || [])
       setLoading(false)
@@ -57,9 +58,9 @@ export default function WeekPage() {
 
   const dates = getWeekDates(offset)
   const weekLabel = offset === 0 ? 'Deze week' : offset === 1 ? 'Volgende week' : offset === -1 ? 'Vorige week' : `Week ${offset > 0 ? '+' : ''}${offset}`
-  const todayStr = new Date().toISOString().split('T')[0]
+  const todayStr = fmtDateStr(new Date())
   const selIdx = selectedDay ?? (new Date().getDay() === 0 ? 6 : new Date().getDay() - 1)
-  const selDate = dates[selIdx]?.toISOString().split('T')[0]
+  const selDate = dates[selIdx] ? fmtDateStr(dates[selIdx]) : undefined
   const selSessions = sessions.filter(s => s.session_date === selDate)
   const typeColor = (t) => TYPE_COLORS[t?.toLowerCase()] || 'var(--orange)'
 
@@ -101,7 +102,7 @@ export default function WeekPage() {
         {/* Dag-pills */}
         <div style={{ display: 'flex', gap: 6, marginBottom: 20, overflowX: 'auto', paddingBottom: 4 }}>
           {dates.map((date, i) => {
-            const dStr = date.toISOString().split('T')[0]
+            const dStr = fmtDateStr(date)
             const hasSess = sessions.some(s => s.session_date === dStr)
             const isToday = dStr === todayStr
             const isSel = i === selIdx
@@ -162,7 +163,7 @@ export default function WeekPage() {
             <div className="section-label">Overzicht hele week</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {dates.map((date, i) => {
-                const dStr = date.toISOString().split('T')[0]
+                const dStr = fmtDateStr(date)
                 const daySess = sessions.filter(s => s.session_date === dStr)
                 if (daySess.length === 0) return null
                 return (

@@ -2,6 +2,7 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { mondayOfStr, addDaysStr } from '@/lib/date-utils'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -78,17 +79,23 @@ export default function PlanView({ params }) {
   const updSess = (id, f, v) => setSessions(p => p.map(s => s.id===id ? {...s,[f]:v} : s))
 
   const saveSess = async (s) => {
+    const dow = parseInt(s.day_of_week)||1
+    const weekStart = mesos[wi]?.start_date
     await supabase.from('training_sessions').update({
       session_name: s.session_name, session_type: s.session_type,
-      day_of_week: parseInt(s.day_of_week)||1, notes: s.notes || null
+      day_of_week: dow, notes: s.notes || null,
+      ...(weekStart ? { session_date: addDaysStr(weekStart, dow - 1) } : {}),
     }).eq('id', s.id)
   }
 
   const saveAll = async (s) => {
     // Sla sessie op
+    const dow = parseInt(s.day_of_week)||1
+    const weekStart = mesos[wi]?.start_date
     await supabase.from('training_sessions').update({
       session_name: s.session_name, session_type: s.session_type,
-      day_of_week: parseInt(s.day_of_week)||1, notes: s.notes || null
+      day_of_week: dow, notes: s.notes || null,
+      ...(weekStart ? { session_date: addDaysStr(weekStart, dow - 1) } : {}),
     }).eq('id', s.id)
     // Sla alle oefeningen op
     for (const ex of s.session_exercises || []) {
@@ -125,24 +132,21 @@ export default function PlanView({ params }) {
 
   const recalcDates = async (newStartDate) => {
     // Snap naar maandag
-    const raw = new Date(newStartDate)
-    const dow = raw.getDay()
-    const backToMonday = dow === 0 ? 6 : dow - 1
-    const monday = new Date(raw)
-    monday.setDate(raw.getDate() - backToMonday)
+    const monday = mondayOfStr(newStartDate)
 
     // Update start_date van het plan
-    await supabase.from('macro_plans').update({ start_date: monday.toISOString().split('T')[0] }).eq('id', ids.planId)
+    await supabase.from('macro_plans').update({ start_date: monday }).eq('id', ids.planId)
 
-    // Herbereken alle session_dates
+    // Herbereken alle session_dates én de start_date per week
     for (let wi = 0; wi < mesos.length; wi++) {
+      const weekStart = addDaysStr(monday, wi * 7)
+      await supabase.from('meso_cycles').update({ start_date: weekStart }).eq('id', mesos[wi].id)
       const { data: sessies } = await supabase
         .from('training_sessions').select('id, day_of_week').eq('meso_cycle_id', mesos[wi].id)
       for (const sess of sessies || []) {
-        const sessDate = new Date(monday)
-        sessDate.setDate(monday.getDate() + wi * 7 + (sess.day_of_week - 1))
+        const sessDate = addDaysStr(weekStart, (sess.day_of_week || 1) - 1)
         await supabase.from('training_sessions')
-          .update({ session_date: sessDate.toISOString().split('T')[0] })
+          .update({ session_date: sessDate })
           .eq('id', sess.id)
       }
     }
@@ -156,12 +160,13 @@ export default function PlanView({ params }) {
   }
 
   const addSess = async () => {
-    const mesoId = mesos[wi]?.id; if (!mesoId) return
+    const meso = mesos[wi]; if (!meso) return
     await supabase.from('training_sessions').insert({
-      meso_cycle_id:mesoId, client_id:ids.clientId,
-      session_name:'Nieuwe training', session_type:'kracht', day_of_week:1
+      meso_cycle_id:meso.id, client_id:ids.clientId,
+      session_name:'Nieuwe training', session_type:'kracht', day_of_week:1,
+      session_date: meso.start_date,
     })
-    await loadWeek(mesoId)
+    await loadWeek(meso.id)
   }
 
   const [copying, setCopying] = React.useState(false)
@@ -182,11 +187,10 @@ export default function PlanView({ params }) {
 
       // Trainingen van huidige week kopiëren naar doelweek
       for (const s of sessions) {
-        const sessionDate = new Date(targetMeso.start_date)
-        sessionDate.setDate(sessionDate.getDate() + ((s.day_of_week || 1) - 1))
+        const sessionDate = addDaysStr(targetMeso.start_date, (s.day_of_week || 1) - 1)
         const { data: newSession } = await supabase.from('training_sessions').insert({
           meso_cycle_id: targetMeso.id, client_id: ids.clientId,
-          session_date: sessionDate.toISOString().split('T')[0],
+          session_date: sessionDate,
           day_of_week: s.day_of_week || 1,
           session_name: s.session_name, session_type: s.session_type,
           notes: s.notes || null,
@@ -295,6 +299,16 @@ export default function PlanView({ params }) {
 
   return (
     <div style={{ background:'var(--dark)', minHeight:'100vh', ...B }}>
+      <style>{`
+        @media (max-width: 640px) {
+          .sess-grid { grid-template-columns: 1fr 1fr !important; }
+          .sess-grid > button { grid-column: 1 / -1 !important; width: 100% !important; height: 38px !important; }
+          .kracht-grid, .conditie-grid, .mob-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+        }
+        @media (max-width: 400px) {
+          .sess-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       <header style={{ background:'var(--dark2)', borderBottom:'1px solid rgba(212,168,87,0.12)', padding:'14px clamp(16px,4vw,40px)', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:50 }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <svg width="20" height="18" viewBox="0 0 36 34">
@@ -391,7 +405,7 @@ export default function PlanView({ params }) {
               return (
                 <div key={s.id} style={{ background:'var(--dark2)', padding:'20px 24px' }}>
                   {/* Sessie header — altijd bewerkbaar */}
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 180px 160px 36px', gap:10, marginBottom:16, alignItems:'end' }}>
+                  <div className="sess-grid" style={{ display:'grid', gridTemplateColumns:'1fr 180px 160px 36px', gap:10, marginBottom:16, alignItems:'end' }}>
                     <div>
                       <label style={lbl}>Naam training</label>
                       <input value={s.session_name||''} onChange={e=>updSess(s.id,'session_name',e.target.value)} onBlur={()=>saveSess(s)} style={{...inp,fontSize:15,fontWeight:600}} placeholder="Bijv. Kracht Boven..." />
@@ -472,7 +486,7 @@ export default function PlanView({ params }) {
                         </div>
                         {/* KRACHT */}
                         {!isC && !isM && (
-                          <div style={{ display:'grid', gridTemplateColumns:'60px 80px 80px 80px 1fr', gap:8 }}>
+                          <div className="kracht-grid" style={{ display:'grid', gridTemplateColumns:'60px 80px 80px 80px 1fr', gap:8 }}>
                             {[['Sets','number','sets','3'],['Reps','text','reps','8-10'],['KG','number','weight_kg','—'],['Rust(s)','number','rest_seconds','90']].map(([h,t,f,ph])=>(
                               <div key={f}>
                                 <label style={lbl}>{h}</label>
@@ -531,7 +545,7 @@ export default function PlanView({ params }) {
                               </div>
                             </div>
 
-                            <div style={{ display:'grid', gridTemplateColumns:'60px 110px 120px 90px', gap:8, marginBottom:6 }}>
+                            <div className="conditie-grid" style={{ display:'grid', gridTemplateColumns:'60px 110px 120px 90px', gap:8, marginBottom:6 }}>
                               <div>
                                 <label style={lbl}>Sets</label>
                                 <input type="number" value={ex.sets||4}
@@ -586,7 +600,7 @@ export default function PlanView({ params }) {
                         {/* MOBILITEIT */}
                         {isM && (
                           <div>
-                            <div style={{ display:'grid', gridTemplateColumns:'60px 120px 90px', gap:8, marginBottom:8 }}>
+                            <div className="mob-grid" style={{ display:'grid', gridTemplateColumns:'60px 120px 90px', gap:8, marginBottom:8 }}>
                               <div><label style={lbl}>Sets</label><input type="number" value={ex.sets||3} onChange={e=>updEx(s.id,ex.id,'sets',e.target.value)} onBlur={()=>saveEx({...ex,_mode:'mobiliteit',_hold:ex._hold||d?.hold_s,_htype:ex._htype||d?.hold_type},s.session_type)} style={{...inp,textAlign:'center'}} /></div>
                               <div><label style={lbl}>Vasthoud (sec)</label><input type="number" placeholder="30" value={ex._hold??d?.hold_s??30} onChange={e=>updEx(s.id,ex.id,'_hold',e.target.value)} onBlur={()=>saveEx({...ex,_mode:'mobiliteit'},s.session_type)} style={{...inp,textAlign:'center'}} /></div>
                               <div><label style={lbl}>Rust (s)</label><input type="number" value={ex.rest_seconds||d?.rest_s||30} onChange={e=>updEx(s.id,ex.id,'rest_seconds',e.target.value)} onBlur={()=>saveEx({...ex,_mode:'mobiliteit'},s.session_type)} style={{...inp,textAlign:'center'}} /></div>
