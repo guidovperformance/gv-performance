@@ -113,24 +113,31 @@ function buildWeek(ph, dlORM, bpORM, MAS, st) {
   const iDist=MAS?Math.round(240*MAS*.90):null
   const W=p=>dlORM?`${r25(dlORM*p)} kg`:`${Math.round(p*100)}%*`
   const B=p=>bpORM?`${r25(bpORM*p)} kg`:`${Math.round(p*100)}%*`
+  // Row 1RM = Hexbar DL 1RM × 0.65 (beter biomechanisch verwant dan bench)
+  const rowORM=dlORM?dlORM*.65:null
+  const R=p=>rowORM?`${r25(rowORM*p)} kg`:`${Math.round(p*100)}%*`
+  // OHP 1RM = Bench 1RM × 0.62
+  const ohpORM=bpORM?bpORM*.62:null
+  const O=p=>ohpORM?`${r25(ohpORM*p)} kg`:`${Math.round(p*100)}%*`
   const masLvl=MAS?(MAS<=2.84?"Beginner":MAS<=3.89?"Gemiddeld":MAS<=4.96?"Gevorderd":"Elite"):null
   const WU_L=["5 min roeien @ lage intensiteit","Hip circles 10×, leg swings 10×","McGill Big 3: bird dog 3×8, curl-up 3×8, side plank 3×20 sec"]
   const WU_U=["5 min roeier of bike","Schouder rotaties 15×, band pull-aparts 15×","Push-up variaties 10×"]
   const CD_L=["Piriformis stretch 3×60 sec","90/90 heup mobiliteit 3×60 sec","Cat-cow lumbaal 2×10"]
   const CD_U=["Schouder/pec stretch 3×60 sec","Lat stretch aan pull-up stang 2×45 sec"]
+  const ARM=["Barbell of DB Curl: 3×10-12 RPE 7 (rust 60 sec)","Tricep overhead extension of dips: 3×10-12 RPE 7 (rust 60 sec)"]
   const MA={
-    1:[`Hexbar DL: 4×10 @ ${W(.65)}`,`Romanian DL: 3×12 @ ${W(.60)}`,"Split squat: 3×12/been","Hip thrust: 3×15","Dead bug: 3×10"],
-    2:[`Hexbar DL: 4×5 @ ${W(.82)}`,`Romanian DL: 3×5 @ ${W(.76)}`,"Split squat: 4×6/been",`Farmer's Walk: 3×30m @ ${bwH}kg/hand`],
-    3:[`Hexbar DL EXPLOSIEF: 4×3 @ ${W(.87)}`,`Jump squat: 4×4 @ ${dlORM?r25(dlORM*.30)+"kg":"30%*"}`,"Box jump: 3×5",`Farmer sprint: 3×20m @ ${bwH}kg`],
-    4:[`Hexbar DL: 3×3 @ ${W(.90)}`,"KB swing zwaar: 4×10",`Farmer carry: 4×30m @ ${bwH}kg/hand`],
+    1:[`Hexbar DL: 4×10 @ ${W(.65)} (rust 90 sec)`,`Romanian DL: 3×12 @ ${W(.60)} RPE 7 (rust 90 sec)`,"Split squat: 3×12/been RPE 7 (rust 90 sec)","Hip thrust: 3×15 RPE 6-7 (rust 60 sec)","Dead bug: 3×10"],
+    2:[`Hexbar DL: 4×5 @ ${W(.82)} (rust 2-3 min)`,`Romanian DL: 3×5 @ ${W(.76)} RPE 8 (rust 2 min)`,"Split squat: 4×6/been RPE 8 (rust 2 min)",`Farmer's Walk: 3×30m @ ${bwH}kg/hand (rust 90 sec)`],
+    3:[`Hexbar DL EXPLOSIEF: 4×3 @ ${W(.87)} (rust 3-5 min)`,`Jump squat: 4×4 @ ${dlORM?r25(dlORM*.30)+"kg":"30%*"} (rust 2-3 min)`,"Box jump: 3×5 (rust 2-3 min)",`Farmer sprint: 3×20m @ ${bwH}kg (rust 90 sec)`],
+    4:[`Hexbar DL: 3×3 @ ${W(.90)} (rust 3-5 min)`,"KB swing zwaar: 4×10",`Farmer carry: 4×30m @ ${bwH}kg/hand`],
     5:[`Hexbar DL: 2×4 @ ${W(.82)}`,"Hip thrust: 2×8"],
   }
   const WO={
-    1:[`Bench Press: 4×10 @ ${B(.65)}`,`Barbell Row: 4×10 @ ${B(.65)}`,"Pull-ups: 4×8",`DB Shoulder Press: 3×12 @ ${B(.55)}`,`Farmer's Walk: 3×25m @ ${bwH}kg`],
-    2:[`Bench Press: 5×5 @ ${B(.82)}`,`Barbell Row: 5×5 @ ${B(.82)}`,`Weighted Pull-up: 4×4 (+${bpORM?r25(bpORM*.10):"10%*"}kg)`,`OHP: 4×5 @ ${B(.65)}`,`Farmer's Walk: 4×30m @ ${bwH}kg`],
-    3:[`Bench Press EXPLOSIEF: 4×3 @ ${B(.87)}`,`Barbell Row: 4×4 @ ${B(.83)}`,`Weighted Pull-up: 4×3 (+${bpORM?r25(bpORM*.12):"12%*"}kg)`,`OHP: 3×4 @ ${B(.72)}`],
-    4:[`Bench Press: 4×4 @ ${B(.82)}`,`Barbell Row: 4×4 @ ${B(.80)}`,`Weighted Pull-up: 4×3 (+${bpORM?r25(bpORM*.15):"15%*"}kg)`],
-    5:[`Bench Press: 2×4 @ ${B(.82)}`,`Barbell Row: 2×4 @ ${B(.80)}`,"Pull-ups: 2×max"],
+    1:[`Bench Press: 4×10 @ ${B(.65)} (rust 90 sec)`,`Barbell Row: 4×10 @ ${R(.65)} (rust 90 sec)`,"Pull-ups: 4×8 (rust 90 sec)",`DB Shoulder Press: 3×12 RPE 7 (rust 60 sec)`,`Farmer's Walk: 3×25m @ ${bwH}kg (rust 90 sec)`,...ARM],
+    2:[`Bench Press: 5×5 @ ${B(.82)} (rust 2-3 min)`,`Barbell Row: 5×5 @ ${R(.82)} (rust 2-3 min)`,`Weighted Pull-up: 4×4 (+${bpORM?r25(bpORM*.10):"10%*"}kg) (rust 2 min)`,`OHP: 4×5 @ ${O(.65)} (rust 2 min)`,`Farmer's Walk: 4×30m @ ${bwH}kg`],
+    3:[`Bench Press EXPLOSIEF: 4×3 @ ${B(.87)} (rust 2-3 min)`,`Barbell Row: 4×4 @ ${R(.83)} (rust 2-3 min)`,`Weighted Pull-up: 4×3 (+${bpORM?r25(bpORM*.12):"12%*"}kg) (rust 2-3 min)`,"OHP: 3×4 RPE 8"],
+    4:[`Bench Press: 4×4 @ ${B(.82)}`,`Barbell Row: 4×4 @ ${R(.80)}`,`Weighted Pull-up: 4×3 (+${bpORM?r25(bpORM*.15):"15%*"}kg)`],
+    5:[`Bench Press: 2×4 @ ${B(.82)}`,`Barbell Row: 2×4 @ ${R(.80)}`,"Pull-ups: 2×max",...ARM],
   }
   const VR={
     1:[`Push press: 3×10 @ ${B(.60)}`,"KB swing: 3×15","TRX row: 3×12","MB rotational slam: 3×10/kant"],
@@ -449,6 +456,7 @@ function Schema() {
   const [bjpEval,setBjpEval]=useState({ score:3, tekst:"", bijzonderheden:"" })
   const [bjpShowEval,setBjpShowEval]=useState(false)
   const [bjpActivePhase,setBjpActivePhase]=useState(null)
+  const [weekLog,setWeekLog]=useState({})
 
   useEffect(()=>{
     setMounted(true)
@@ -467,7 +475,23 @@ function Schema() {
       const savedBjp=localStorage.getItem("bjj_plan_v1")
       if(savedBjp) setBjp(p=>({...BJP_DEFAULT,...JSON.parse(savedBjp)}))
     } catch(e){}
+    try {
+      const savedLog=localStorage.getItem("megafit_weeklog_v1")
+      if(savedLog) setWeekLog(JSON.parse(savedLog))
+    } catch(e){}
   },[])
+
+  useEffect(()=>{
+    if(!mounted) return
+    try { localStorage.setItem("megafit_weeklog_v1",JSON.stringify(weekLog)) }
+    catch(e){}
+  },[weekLog,mounted])
+
+  const updLog=(key,weekIdx,val)=>setWeekLog(prev=>{
+    const cur=prev[key]||["","","",""]
+    const next=[...cur]; next[weekIdx]=val
+    return {...prev,[key]:next}
+  })
 
   useEffect(()=>{
     if(!mounted) return
@@ -826,12 +850,26 @@ function Schema() {
               {tod.ss.map((s,i)=>(
                 <div key={i} style={{background:C.bg,borderRadius:6,padding:"9px 10px",border:`1px solid ${C.bd}`,marginBottom:6}}>
                   <div style={M({fontSize:10,fontWeight:700,color:dc.bd,marginBottom:5})}>{s.n}</div>
-                  {s.it.map((item,j)=>(
-                    <div key={j} style={{display:"flex",gap:6,marginBottom:3}}>
-                      <span style={M({color:dc.bd,fontSize:9,flexShrink:0,marginTop:1})}>→</span>
-                      <span style={M({fontSize:10,color:"#aaaaaa",lineHeight:1.5})}>{item}</span>
-                    </div>
-                  ))}
+                  {s.it.map((item,j)=>{
+                    const logKey=`${activeDay}-${phase}-${i}-${j}`
+                    const logVals=weekLog[logKey]||["","","",""]
+                    return (
+                      <div key={j} style={{display:"flex",gap:6,marginBottom:3,alignItems:"flex-start",flexWrap:"wrap"}}>
+                        <span style={M({color:dc.bd,fontSize:9,flexShrink:0,marginTop:1})}>→</span>
+                        <span style={M({fontSize:10,color:"#aaaaaa",lineHeight:1.5,flex:"1 1 auto",minWidth:120})}>{item}</span>
+                        {phase>0 && (
+                          <div style={{display:"flex",gap:2,flexShrink:0}}>
+                            {[0,1,2,3].map(w=>(
+                              <input key={w} value={logVals[w]} placeholder={`W${w+1}`}
+                                onChange={e=>updLog(logKey,w,e.target.value)}
+                                title={`Week ${w+1}`}
+                                style={M({width:26,background:C.bg2,border:`1px solid ${C.bd}`,borderRadius:3,color:C.tx,fontSize:8,padding:"2px 1px",textAlign:"center",outline:"none"})}/>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               ))}
               {(!dlORM||!bpORM||!MAS)&&phase>0&&(
@@ -890,6 +928,43 @@ function Schema() {
                 ))}
               </div>
             ))}
+
+            {/* RPE referentie + formules */}
+            <div style={{background:C.bg2,border:`1px solid ${C.bd}`,borderRadius:9,padding:"13px 14px",marginBottom:10}}>
+              <div style={SY({fontSize:12,fontWeight:700,color:C.wh,marginBottom:10})}>RPE Referentie</div>
+              <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12}}>
+                {[
+                  ["10","Maximaal — geen rep meer mogelijk","0 in reserve","~100%"],
+                  ["9","Bijna maximaal","1 in reserve","~95%"],
+                  ["8","Zwaar maar gecontroleerd","2 in reserve","~90%"],
+                  ["7","Matig zwaar, goede vorm","3 in reserve","~85%"],
+                  ["6","Comfortabel zwaar","4+ in reserve","~80%"],
+                  ["5","Matig","5+ in reserve","~75%"],
+                ].map(([rpe,label,reserve,pct])=>(
+                  <div key={rpe} style={{display:"grid",gridTemplateColumns:"24px 1fr auto",gap:8,alignItems:"baseline"}}>
+                    <span style={SY({fontSize:13,fontWeight:700,color:C.or})}>{rpe}</span>
+                    <span style={M({fontSize:11,color:C.tx})}>{label} <span style={M({color:C.mt,fontSize:10})}>({reserve})</span></span>
+                    <span style={M({fontSize:10,color:C.mt})}>{pct}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={M({fontSize:10,color:C.mt,lineHeight:1.6,marginBottom:8})}>
+                Hoofdliften &amp; compound accessory: target RPE 7–8 op de laatste set. Isolatie: target RPE 7, nooit tot falen.
+                RPE op set 1 al &gt;8? Gewicht 5–10% omlaag. Laatste set RPE &lt;6? Pas de 2-voor-2-regel toe.
+              </div>
+              <div style={{borderTop:`1px solid ${C.bd}`,paddingTop:10,marginBottom:10}}>
+                <div style={M({fontSize:10,fontWeight:700,color:C.tx,marginBottom:4})}>2-voor-2 progressieregel (NSCA)</div>
+                <div style={M({fontSize:10,color:C.mt,lineHeight:1.6})}>
+                  Haal je 2 trainingen op rij de voorgeschreven reps + 2 extra reps? Verhoog dan: compound +2.5kg, isolatie +1.25–2.5kg.
+                </div>
+              </div>
+              <div style={{borderTop:`1px solid ${C.bd}`,paddingTop:10}}>
+                <div style={M({fontSize:10,fontWeight:700,color:C.tx,marginBottom:4})}>Afgeleide 1RM's</div>
+                <div style={M({fontSize:10,color:C.mt,lineHeight:1.6})}>
+                  Row 1RM = Hexbar DL 1RM × 0.65 · OHP 1RM = Bench 1RM × 0.62 · Romanian DL en DB Shoulder Press zijn RPE-based (geen vaste 1RM).
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
