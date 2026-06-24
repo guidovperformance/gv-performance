@@ -52,6 +52,13 @@ export default async function ClientDetail({ params }) {
     .limit(1)
     .maybeSingle()
 
+  const { data: sessionLogs } = await supabaseAdmin
+    .from('session_logs')
+    .select('*, training_sessions(session_name, session_type, session_date), exercise_logs(*, session_exercises(exercise_name))')
+    .eq('client_id', id)
+    .order('logged_at', { ascending: false })
+    .limit(15)
+
   const naam = client.profiles?.full_name || 'Onbekend'
   const initialen = naam.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 
@@ -213,6 +220,67 @@ export default async function ClientDetail({ params }) {
           ) : (
             <div style={{ background: 'var(--dark2)', padding: 32, textAlign: 'center', ...B, fontSize: 14, color: 'var(--muted)' }}>
               Nog geen check-ins van deze klant
+            </div>
+          )}
+        </div>
+
+        {/* Voltooide trainingen */}
+        <div style={{ marginTop: 24 }}>
+          <div style={{ ...B, fontSize: 10, letterSpacing: 4, color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ display: 'block', width: 20, height: 2, background: 'var(--orange)' }} />Voltooide trainingen
+          </div>
+          {sessionLogs && sessionLogs.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {sessionLogs.map(log => {
+                const sess = log.training_sessions
+                const exLogs = log.exercise_logs || []
+                const grouped = exLogs.reduce((acc, e) => {
+                  const name = e.session_exercises?.exercise_name || 'Oefening'
+                  if (!acc[name]) acc[name] = []
+                  acc[name].push(e)
+                  return acc
+                }, {})
+                return (
+                  <div key={log.id} style={{ background: 'var(--dark2)', padding: '20px 24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
+                      <div>
+                        <div style={{ ...D, fontSize: 18, fontWeight: 700, letterSpacing: 1 }}>{sess?.session_name || 'Training'}</div>
+                        <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
+                          {sess?.session_date ? new Date(sess.session_date + 'T12:00:00').toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }) : '—'}
+                          {sess?.session_type ? ` · ${sess.session_type}` : ''}
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 14 }}>
+                        {log.rpe && <div style={{ textAlign: 'center' }}><div style={{ ...B, fontSize: 9, letterSpacing: 1, color: 'var(--muted)', textTransform: 'uppercase' }}>RPE</div><div style={{ ...D, fontSize: 16, fontWeight: 700, color: 'var(--orange)' }}>{log.rpe}</div></div>}
+                        {log.feeling && <div style={{ textAlign: 'center' }}><div style={{ ...B, fontSize: 9, letterSpacing: 1, color: 'var(--muted)', textTransform: 'uppercase' }}>Gevoel</div><div style={{ ...D, fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>{log.feeling}</div></div>}
+                      </div>
+                    </div>
+
+                    {log.notes && (
+                      <div style={{ background: 'var(--dark3)', borderLeft: '2px solid var(--orange)', padding: '10px 14px', marginBottom: 12, ...B, fontSize: 13, color: 'var(--text)', fontStyle: 'italic' }}>
+                        💬 {log.notes}
+                      </div>
+                    )}
+
+                    {Object.keys(grouped).length > 0 && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        {Object.entries(grouped).map(([name, sets]) => (
+                          <div key={name} style={{ display: 'flex', gap: 10, alignItems: 'baseline', flexWrap: 'wrap' }}>
+                            <span style={{ ...B, fontSize: 13, fontWeight: 600, color: 'var(--text)', minWidth: 140 }}>{name}</span>
+                            <span style={{ ...B, fontSize: 12, color: 'var(--muted)' }}>
+                              {sets.sort((a,b)=>(a.set_number||0)-(b.set_number||0)).map(s => `${s.reps_performed ?? '—'}${s.weight_kg ? `×${s.weight_kg}kg` : ''}`).join(' · ')}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div style={{ background: 'var(--dark2)', padding: 32, textAlign: 'center', ...B, fontSize: 14, color: 'var(--muted)' }}>
+              Nog geen voltooide trainingen van deze klant
             </div>
           )}
         </div>
