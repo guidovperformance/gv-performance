@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
-import { CascadeText, SiteNav, SiteFooter } from './site-shared'
+import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows } from './site-shared'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -363,21 +363,30 @@ const CSS = `
   /* ── TESTIMONIALS ── I: lege sectie klaar voor klant-quotes ── */
   .testimonials { background:var(--dark); }
   .testimonials-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:2px; margin-top:60px; }
-  .testimonial-card {
-    background:var(--dark2); padding:40px 36px;
+
+  /* ── TESTIMONIAL CARD (data-gedreven) ── */
+  .testi-card {
+    background:var(--dark2); padding:36px 32px;
     border-left:3px solid var(--orange-dim);
     transition: border-color .25s, transform .25s;
-    min-height:200px; display:flex; flex-direction:column; justify-content:space-between;
+    display:flex; flex-direction:column; justify-content:space-between; gap:24px;
   }
-  .testimonial-card:hover { border-color:var(--orange); transform:translateY(-4px); }
-  .testimonial-placeholder {
-    display:flex; align-items:center; justify-content:center;
-    flex:1; flex-direction:column; gap:10px;
+  .testi-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .testi-quote { font-size:15px; color:#ccc; line-height:1.7; }
+  .testi-footer { display:flex; align-items:center; gap:14px; }
+  .testi-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--dark3); }
+  .testi-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .testi-name { font-family:var(--display); font-size:15px; letter-spacing:1px; color:var(--text); }
+  .testi-role { font-size:12px; color:var(--muted); margin-top:2px; }
+  .testi-metric { font-size:11px; color:var(--orange); letter-spacing:1px; margin-top:4px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;
+    padding:48px 24px; grid-column:1/-1;
   }
-  .testimonial-placeholder-text {
-    font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center;
-  }
-  .testimonial-placeholder-icon { font-size:28px; opacity:0.3; }
+  .empty-state-icon { font-size:28px; opacity:0.3; }
+  .empty-state-text { font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center; }
 
   /* ── CERTIFICATEN ── */
   .certs { background:var(--dark2); }
@@ -578,6 +587,7 @@ export default function Homepage() {
   const [form, setForm] = React.useState({ voornaam:'', achternaam:'', email:'', dienst:'', bericht:'' })
   const [status, setStatus] = React.useState('idle')
   const floatBtnRef = React.useRef(null)
+  const { rows: testimonials, loading: testimonialsLoading } = usePublishedRows('testimonials')
 
   // D: Fade-in observer
   React.useEffect(() => {
@@ -587,7 +597,7 @@ export default function Homepage() {
     )
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el))
     return () => observer.disconnect()
-  }, [])
+  }, [testimonials])
 
   // Verberg de zwevende knop zodra de footer in beeld komt
   React.useEffect(() => {
@@ -739,12 +749,12 @@ export default function Homepage() {
         <div className="section-label fade-in">Bewijs</div>
         <h2 className="section-title fade-in delay-1">WAT KLANTEN ZEGGEN</h2>
         <div className="testimonials-grid">
-          {[1, 2].map(n => (
-            <div key={n} className="testimonial-card fade-in">
-              <div className="testimonial-placeholder">
-                <div className="testimonial-placeholder-icon">💬</div>
-                <div className="testimonial-placeholder-text">Testimonial volgt binnenkort</div>
-              </div>
+          {!testimonialsLoading && testimonials.length === 0 && (
+            <EmptyState text="Binnenkort delen we resultaten." />
+          )}
+          {testimonials.map(t => (
+            <div key={t.id} className="fade-in">
+              <TestimonialCard t={t} compact />
             </div>
           ))}
         </div>

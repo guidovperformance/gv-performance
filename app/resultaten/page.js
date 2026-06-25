@@ -1,22 +1,20 @@
 'use client'
 import React from 'react'
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton } from '../site-shared'
+import { SITE_CSS, SiteNav, SiteFooter, FloatButton, EmptyState, usePublishedRows, SEGMENT_LABELS } from '../site-shared'
 
 const CSS = `
   ${SITE_CSS}
 
   .transform-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; border:2px solid var(--dark3); }
-  .transform-card { background:var(--dark2); transition: border-color .25s, transform .25s; border:1px solid transparent; }
+  .transform-card { background:var(--dark2); transition: border-color .25s, transform .25s; border:1px solid transparent; padding:28px 26px; }
   .transform-card:hover { border-color: var(--orange); transform: translateY(-6px); }
-  .transform-photo {
-    aspect-ratio: 4/5; background:var(--dark3); display:flex; align-items:center; justify-content:center;
-    flex-direction:column; gap:10px; border-bottom:1px solid var(--dark4);
-  }
-  .transform-photo-label { font-size:11px; letter-spacing:2px; color:var(--muted2); text-transform:uppercase; }
-  .transform-body { padding:24px 26px; }
   .transform-name { font-family:var(--display); font-size:20px; letter-spacing:1px; color:var(--text); margin-bottom:6px; }
-  .transform-goal { font-size:10px; letter-spacing:2px; color:var(--orange); text-transform:uppercase; margin-bottom:12px; }
-  .transform-desc { font-size:14px; color:var(--muted); line-height:1.6; }
+  .transform-goal { font-size:10px; letter-spacing:2px; color:var(--orange); text-transform:uppercase; margin-bottom:14px; }
+  .transform-baseline-result { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .transform-baseline, .transform-result { font-size:13px; color:var(--muted); }
+  .transform-result { color:var(--text); font-weight:700; }
+  .transform-arrow { color:var(--orange); }
+  .transform-weeks { font-size:11px; color:var(--muted2); letter-spacing:1px; text-transform:uppercase; }
 
   .stats-strip { background:var(--dark2); border-top:1px solid rgba(212,168,87,0.1); border-bottom:1px solid rgba(212,168,87,0.1); padding:60px 60px; display:grid; grid-template-columns:repeat(4,1fr); gap:32px; text-align:center; }
   .stat-num { font-family:var(--display); font-size:clamp(36px,4vw,56px); color:var(--orange); letter-spacing:1px; line-height:1; margin-bottom:8px; }
@@ -28,16 +26,9 @@ const CSS = `
   }
 `
 
-const transformaties = [
-  { naam: 'Cliënt A', doel: 'Hyrox tijdverbetering', desc: '12 weken gericht op race-specifieke conditionering. Resultaat: persoonlijk record op race day.' },
-  { naam: 'Cliënt B', doel: 'Tactical athlete selectie', desc: 'Volledige voorbereiding op fysieke selectietesten — fysiek en mentaal klaar binnen 16 weken.' },
-  { naam: 'Cliënt C', doel: 'Topsport terugkeer', desc: 'Na een blessure terug naar het oude niveau via gefaseerde opbouw en periodisering.' },
-  { naam: 'Cliënt D', doel: 'Lichaamssamenstelling', desc: 'Duurzame verandering in kracht en lichaamscompositie over een traject van 6 maanden.' },
-  { naam: 'Cliënt E', doel: 'Loopcoaching 10km', desc: 'Van blessuregevoelig naar een sub-45 minuten 10km, met techniektraining en opbouwschema.' },
-  { naam: 'Cliënt F', doel: 'Bedrijfstraining', desc: 'Teamtraject voor een lokaal bedrijf in Den Haag — conditie, teamspirit en meetbare progressie.' },
-]
-
 export default function ResultatenPage() {
+  const { rows: cases, loading } = usePublishedRows('case_results')
+
   React.useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') }),
@@ -45,7 +36,7 @@ export default function ResultatenPage() {
     )
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el))
     return () => observer.disconnect()
-  }, [])
+  }, [cases])
 
   return (
     <>
@@ -82,16 +73,21 @@ export default function ResultatenPage() {
           Onderstaande trajecten geven een beeld van de aanpak. Foto-/videomateriaal en concrete cijfers worden per cliënt toegevoegd zodra toestemming is verleend.
         </p>
         <div className="transform-grid">
-          {transformaties.map((t, i) => (
-            <div key={t.naam} className={`transform-card fade-in delay-${(i % 3) + 1}`}>
-              <div className="transform-photo">
-                <div className="transform-photo-label">Foto volgt</div>
-              </div>
-              <div className="transform-body">
-                <div className="transform-name">{t.naam}</div>
-                <div className="transform-goal">{t.doel}</div>
-                <div className="transform-desc">{t.desc}</div>
-              </div>
+          {!loading && cases.length === 0 && (
+            <EmptyState icon="📈" text="Binnenkort delen we concrete trajecten en cijfers." />
+          )}
+          {cases.map((c, i) => (
+            <div key={c.id} className={`transform-card fade-in delay-${(i % 3) + 1}`}>
+              <div className="transform-name">{c.client_label}</div>
+              <div className="transform-goal">{c.segment ? SEGMENT_LABELS[c.segment] : ''}{c.segment && c.goal ? ' · ' : ''}{c.goal}</div>
+              {(c.baseline || c.result) && (
+                <div className="transform-baseline-result">
+                  {c.baseline && <span className="transform-baseline">{c.baseline}</span>}
+                  {c.baseline && c.result && <span className="transform-arrow">→</span>}
+                  {c.result && <span className="transform-result">{c.result}</span>}
+                </div>
+              )}
+              {c.duration_weeks && <div className="transform-weeks">{c.duration_weeks} weken</div>}
             </div>
           ))}
         </div>

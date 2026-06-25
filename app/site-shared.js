@@ -1,5 +1,6 @@
 'use client'
 import React from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export const SITE_CSS = `
   :root {
@@ -223,6 +224,30 @@ export const SITE_CSS = `
     .section-title { font-size:clamp(28px,7.5vw,68px); }
     .page-hero-title { font-size:clamp(28px,7.5vw,84px); }
   }
+
+  /* ── TESTIMONIAL CARD (data-gedreven) ── */
+  .testi-card {
+    background:var(--dark2); padding:36px 32px;
+    border-left:3px solid var(--orange-dim);
+    transition: border-color .25s, transform .25s;
+    display:flex; flex-direction:column; justify-content:space-between; gap:24px;
+  }
+  .testi-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .testi-quote { font-size:15px; color:#ccc; line-height:1.7; }
+  .testi-footer { display:flex; align-items:center; gap:14px; }
+  .testi-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--dark3); }
+  .testi-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .testi-name { font-family:var(--display); font-size:15px; letter-spacing:1px; color:var(--text); }
+  .testi-role { font-size:12px; color:var(--muted); margin-top:2px; }
+  .testi-metric { font-size:11px; color:var(--orange); letter-spacing:1px; margin-top:4px; }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;
+    padding:48px 24px; grid-column:1/-1;
+  }
+  .empty-state-icon { font-size:28px; opacity:0.3; }
+  .empty-state-text { font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center; }
 `
 
 const ICON = {
@@ -401,3 +426,58 @@ export const CascadeText = React.memo(function CascadeText({
     </Component>
   )
 })
+
+export const SEGMENT_LABELS = {
+  tactical: 'Tactical Athlete',
+  topsport: 'Topsport',
+  amateur: 'Serieuze Amateur',
+}
+
+/**
+ * Haalt published rijen op uit een publieke contenttabel (testimonials,
+ * case_results), gesorteerd op sort_order. Geeft { rows, loading } terug.
+ */
+export function usePublishedRows(table) {
+  const [rows, setRows] = React.useState([])
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    let active = true
+    const supabase = createClient()
+    supabase.from(table).select('*').eq('published', true).order('sort_order', { ascending: true })
+      .then(({ data }) => { if (active) { setRows(data || []); setLoading(false) } })
+    return () => { active = false }
+  }, [table])
+
+  return { rows, loading }
+}
+
+export function EmptyState({ icon = '💬', text }) {
+  return (
+    <div className="empty-state">
+      <div className="empty-state-icon">{icon}</div>
+      <div className="empty-state-text">{text}</div>
+    </div>
+  )
+}
+
+export function TestimonialCard({ t, compact = false }) {
+  const quote = compact && t.quote?.length > 220 ? t.quote.slice(0, 220).trim() + '…' : t.quote
+  return (
+    <div className="testi-card">
+      <div className="testi-quote">&ldquo;{quote}&rdquo;</div>
+      <div className="testi-footer">
+        {t.avatar_url && (
+          <div className="testi-avatar">
+            <img src={t.avatar_url} alt={t.name} />
+          </div>
+        )}
+        <div>
+          <div className="testi-name">{t.name}</div>
+          {t.role && <div className="testi-role">{t.role}</div>}
+          {t.result_metric && <div className="testi-metric">{t.result_metric}</div>}
+        </div>
+      </div>
+    </div>
+  )
+}
