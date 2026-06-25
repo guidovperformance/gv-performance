@@ -326,7 +326,10 @@ const CSS = `
   /* ── METHODE ── */
   .methode { background:var(--dark2); }
   .methode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; border:2px solid var(--dark3); }
-  .methode-card { background:var(--dark3); padding:44px 32px; transition: border-color .25s, transform .25s; border:1px solid transparent; }
+  .methode-card {
+    background:var(--dark3); padding:44px 32px; transition: border-color .25s, transform .25s;
+    border:1px solid transparent; display:block; text-decoration:none; cursor:pointer;
+  }
   .methode-card:hover { border-color:var(--orange); transform:translateY(-4px); }
   .methode-num { font-family:var(--display); font-size:13px; letter-spacing:3px; color:var(--orange); margin-bottom:16px; }
   .methode-title { font-family:var(--display); font-size:26px; letter-spacing:1px; color:var(--text); margin-bottom:12px; }
@@ -706,19 +709,19 @@ export default function Homepage() {
 
       {/* METHODE */}
       <section className="methode" id="werkwijze">
-        <div className="section-label fade-in" style={{justifyContent:'center'}}>De methode</div>
+        <div className="section-label fade-in" style={{justifyContent:'center'}}>Het GV Performance Systeem</div>
         <h2 className="section-title fade-in delay-1" style={{textAlign:'center'}}>PERIODISERING · DATA · MENTAAL</h2>
         <div className="methode-grid">
           {[
-            ['01','PERIODISERING','Elk traject is opgebouwd in fases, afgestemd op jouw doel en kalender. Geen losse trainingen, maar een opbouw die naar een piekmoment toewerkt.'],
-            ['02','DATA','Nulmeting, voortgangsmetingen en herstelmonitoring. Beslissingen op basis van wat jouw lichaam laat zien — niet op aannames.'],
-            ['03','MENTAAL','Prestatie is net zo goed mentaal als fysiek. Vaste check-ins en mentale coaching houden je scherp als het zwaar wordt.'],
-          ].map(([n, t, d], i) => (
-            <div key={n} className={`methode-card fade-in delay-${i + 1}`}>
+            ['01','PERIODISERING','Elk traject is opgebouwd in fases, afgestemd op jouw doel en kalender. Geen losse trainingen, maar een opbouw die naar een piekmoment toewerkt.','periodisering'],
+            ['02','DATA','Nulmeting, voortgangsmetingen en herstelmonitoring. Beslissingen op basis van wat jouw lichaam laat zien — niet op aannames.','data'],
+            ['03','MENTAAL','Prestatie is net zo goed mentaal als fysiek. Vaste check-ins en mentale coaching houden je scherp als het zwaar wordt.','mentaal'],
+          ].map(([n, t, d, anchor], i) => (
+            <a key={n} href={`/methode#${anchor}`} className={`methode-card fade-in delay-${i + 1}`}>
               <div className="methode-num">{n}</div>
               <div className="methode-title">{t}</div>
               <div className="methode-desc">{d}</div>
-            </div>
+            </a>
           ))}
         </div>
         <div style={{textAlign:'center'}}>
