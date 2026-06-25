@@ -172,6 +172,7 @@ const CSS = `
     letter-spacing:0px; color:var(--muted); margin-bottom:32px;
     overflow-wrap:break-word; word-break:break-word;
   }
+  .hero-proof { font-size:14px; color:var(--text); font-weight:700; margin-bottom:18px; }
   .hero-desc { font-size:16px; color:#aaa; max-width:420px; line-height:1.7; margin-bottom:44px; }
   .hero-buttons { display:flex; gap:16px; flex-wrap:wrap; }
 
@@ -317,6 +318,48 @@ const CSS = `
   .step-desc   { font-size:14px; color:var(--muted); line-height:1.7; max-width:260px; margin:0 auto; }
   .step-arrow  { position:absolute; right:-18px; top:50%; transform:translateY(-50%); font-size:28px; color:var(--orange); z-index:2; }
 
+  /* ── PROBLEEM/BELOFTE ── */
+  .probleem { background:var(--dark); text-align:center; }
+  .probleem-text { font-size:17px; color:#aaa; line-height:1.8; max-width:680px; margin:0 auto 20px; }
+  .probleem-text strong { color:var(--text); font-weight:700; }
+
+  /* ── METHODE ── */
+  .methode { background:var(--dark2); }
+  .methode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; border:2px solid var(--dark3); }
+  .methode-card { background:var(--dark3); padding:44px 32px; transition: border-color .25s, transform .25s; border:1px solid transparent; }
+  .methode-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .methode-num { font-family:var(--display); font-size:13px; letter-spacing:3px; color:var(--orange); margin-bottom:16px; }
+  .methode-title { font-family:var(--display); font-size:26px; letter-spacing:1px; color:var(--text); margin-bottom:12px; }
+  .methode-desc { font-size:14px; color:var(--muted); line-height:1.7; }
+  .methode-link { display:inline-block; margin-top:32px; }
+
+  /* ── STATS / DASHBOARD SHOWCASE ── */
+  .stats-strip { background:var(--dark2); border-top:1px solid rgba(212,168,87,0.1); border-bottom:1px solid rgba(212,168,87,0.1); padding:48px 60px; display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center; }
+  .stat-num { font-family:var(--display); font-size:clamp(32px,4vw,48px); color:var(--orange); letter-spacing:1px; line-height:1; margin-bottom:8px; }
+  .stat-label { font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
+  .dashboard-showcase { background:var(--dark); }
+  .showcase-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; border:2px solid var(--dark3); }
+  .showcase-placeholder {
+    aspect-ratio:9/16; background:var(--dark2); display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:10px;
+  }
+  .showcase-placeholder-icon { font-size:28px; opacity:0.3; }
+  .showcase-placeholder-text { font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center; }
+
+  /* ── PAKKETTEN TEASER ── */
+  .pakketten-teaser { background:var(--dark2); text-align:center; }
+  .pakket-teaser-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; border:2px solid var(--dark3); }
+  .pakket-teaser-card { background:var(--dark3); padding:36px 28px; transition: border-color .25s, transform .25s; border:1px solid transparent; }
+  .pakket-teaser-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .pakket-teaser-card.popular { border-color:rgba(212,168,87,0.4); background:var(--orange-dim); }
+  .pakket-teaser-name { font-family:var(--display); font-size:22px; letter-spacing:2px; color:var(--text); margin-bottom:8px; }
+  .pakket-teaser-price { font-family:var(--display); font-size:32px; color:var(--orange); margin-bottom:4px; }
+  .pakket-teaser-price span { font-size:13px; color:var(--muted); font-family:var(--body); }
+  .pakket-teaser-sub { font-size:11px; letter-spacing:1px; color:var(--muted); text-transform:uppercase; }
+
+  .dienst-cta { display:inline-block; margin-top:16px; font-size:11px; letter-spacing:1px; color:var(--orange); text-decoration:none; border-bottom:1px solid var(--orange); padding-bottom:2px; }
+  .dienst-cta:hover { color:var(--text); border-color:var(--text); }
+
   /* ── TESTIMONIALS ── I: lege sectie klaar voor klant-quotes ── */
   .testimonials { background:var(--dark); }
   .testimonials-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:2px; margin-top:60px; }
@@ -394,7 +437,7 @@ const CSS = `
   @media (prefers-reduced-motion: reduce) { .fade-in { transition: none !important; opacity: 1 !important; transform: none !important; } }
 
   /* ── HERO ENTRANCE ── */
-  .hero-eyebrow, .hero-headline, .hero-tagline, .hero-desc, .hero-buttons {
+  .hero-eyebrow, .hero-headline, .hero-tagline, .hero-proof, .hero-desc, .hero-buttons {
     opacity: 0;
     transform: translateY(20px);
     animation: heroIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -402,6 +445,7 @@ const CSS = `
   .hero-eyebrow  { animation-delay: 0.05s; }
   .hero-headline { animation-delay: 0.15s; }
   .hero-tagline  { animation-delay: 0.25s; }
+  .hero-proof    { animation-delay: 0.32s; }
   .hero-desc     { animation-delay: 0.35s; }
   .hero-buttons  { animation-delay: 0.45s; }
   @keyframes heroIn {
@@ -418,7 +462,7 @@ const CSS = `
 
   /* ── REDUCED MOTION ── */
   @media (prefers-reduced-motion: reduce) {
-    .fade-in, .hero-eyebrow, .hero-headline, .hero-tagline, .hero-desc, .hero-buttons, .hero-right img {
+    .fade-in, .hero-eyebrow, .hero-headline, .hero-tagline, .hero-proof, .hero-desc, .hero-buttons, .hero-right img {
       animation: none !important;
       transition: none !important;
       opacity: 1 !important;
@@ -486,7 +530,7 @@ const CSS = `
       padding: 0;
     }
     .hero-right {
-      position: relative; inset: auto; height: 46vh; min-height: 280px; z-index: 0;
+      position: relative; inset: auto; height: 34vh; min-height: 220px; z-index: 0;
       order: -1;
     }
     .hero-right::after {
@@ -509,6 +553,10 @@ const CSS = `
     .process-steps { grid-template-columns:1fr; }
     .step-arrow { display:none; }
     .testimonials-grid { grid-template-columns:1fr; }
+    .methode-grid { grid-template-columns:1fr; }
+    .stats-strip { grid-template-columns:1fr 1fr; padding:32px 24px; }
+    .showcase-grid { grid-template-columns:1fr; }
+    .pakket-teaser-grid { grid-template-columns:1fr; }
     .form-row { grid-template-columns:1fr; }
     .ribbon { padding:16px 24px; }
     footer { padding:30px 24px; flex-direction:column; align-items:flex-start; }
@@ -518,6 +566,11 @@ const CSS = `
 
   @media (max-width: 400px) {
     .section-title { font-size: clamp(32px, 9vw, 68px); }
+  }
+
+  @media (max-width: 768px) and (max-height: 700px) {
+    .hero-desc { display: none; }
+    .hero-right { height: 28vh; min-height: 180px; }
   }
 `
 
@@ -588,12 +641,13 @@ export default function Homepage() {
             <span><CascadeText text="ONS PLAN" fontSize="inherit" color="var(--orange)" hoverColor="var(--text)" /></span>
           </h1>
           <div className="hero-tagline">GV PERFORMANCE</div>
+          <div className="hero-proof">Sporters begeleid van blessureherstel tot het podium.</div>
           {/* F: "Den Haag en online" verwerkt in bestaande tekst */}
           <p className="hero-desc">
             Van topsporters tot tactische professionals in Den Haag en online — elk traject begint met een grondige analyse en eindigt met meetbaar resultaat. Geen generieke schema's. Alleen wat werkt voor jou.
           </p>
           <div className="hero-buttons">
-            <a href="#contact" className="btn-primary">Plan je kennismaking</a>
+            <a href="#contact" className="btn-primary">Vraag je traject aan</a>
             <a href="#diensten" className="btn-secondary">Bekijk diensten</a>
           </div>
         </div>
@@ -625,6 +679,137 @@ export default function Homepage() {
           </div>
         ))}
       </div>
+
+      {/* PROBLEEM/BELOFTE */}
+      <section className="probleem">
+        <div className="section-label fade-in" style={{justifyContent:'center'}}>De uitdaging</div>
+        <h2 className="section-title fade-in delay-1">GENERIEKE SCHEMA&apos;S FALEN</h2>
+        <p className="probleem-text fade-in delay-1">
+          Generieke schema&apos;s falen omdat ze geen rekening houden met jouw startpunt, herstel of doel — ze werken voor een gemiddelde dat niet bestaat.
+        </p>
+        <p className="probleem-text fade-in delay-2">
+          Daarom begin ik met een grondige nulmeting en bouw ik een traject dat <strong>meegroeit met jouw voortgang</strong> — geperiodiseerd, meetbaar, en bijgestuurd waar nodig.
+        </p>
+      </section>
+
+      {/* METHODE */}
+      <section className="methode" id="werkwijze">
+        <div className="section-label fade-in" style={{justifyContent:'center'}}>De methode</div>
+        <h2 className="section-title fade-in delay-1" style={{textAlign:'center'}}>PERIODISERING · DATA · MENTAAL</h2>
+        <div className="methode-grid">
+          {[
+            ['01','PERIODISERING','Elk traject is opgebouwd in fases, afgestemd op jouw doel en kalender. Geen losse trainingen, maar een opbouw die naar een piekmoment toewerkt.'],
+            ['02','DATA','Nulmeting, voortgangsmetingen en herstelmonitoring. Beslissingen op basis van wat jouw lichaam laat zien — niet op aannames.'],
+            ['03','MENTAAL','Prestatie is net zo goed mentaal als fysiek. Vaste check-ins en mentale coaching houden je scherp als het zwaar wordt.'],
+          ].map(([n, t, d], i) => (
+            <div key={n} className={`methode-card fade-in delay-${i + 1}`}>
+              <div className="methode-num">{n}</div>
+              <div className="methode-title">{t}</div>
+              <div className="methode-desc">{d}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{textAlign:'center'}}>
+          <a href="/methode" className="dienst-cta methode-link fade-in delay-3">Meer over de methode →</a>
+        </div>
+      </section>
+
+      {/* HOE HET WERKT */}
+      <section className="process">
+        <div className="section-label fade-in" style={{justifyContent:'center'}}>Werkwijze</div>
+        <h2 className="section-title fade-in delay-1">HOE HET WERKT</h2>
+        <div className="process-steps">
+          {[
+            ['01','INTAKE & ANALYSE','Een grondige kennismaking. We brengen jouw uitgangssituatie, doelen en leefstijl in kaart. Nulmeting waar relevant.', true],
+            ['02','JOUW PLAN','Op basis van de intake maak ik een volledig uitgestippeld traject. Geperiodiseerd, meetbaar, realistisch.', true],
+            ['03','UITVOERING & GROEI','We gaan aan de slag. Continue monitoring, bijsturing waar nodig, en vaste check-ins om op koers te blijven.', false],
+          ].map(([n, t, d, arrow], i) => (
+            <div key={n} className={`process-step fade-in delay-${i + 1}`}>
+              <div className="step-number">{n}</div>
+              <div className="step-title">{t}</div>
+              <div className="step-desc">{d}</div>
+              {arrow && <div className="step-arrow">›</div>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* BEWIJS — testimonials + resultaat-cijfers */}
+      <section className="testimonials" id="resultaten">
+        <div className="section-label fade-in">Bewijs</div>
+        <h2 className="section-title fade-in delay-1">WAT KLANTEN ZEGGEN</h2>
+        <div className="testimonials-grid">
+          {[1, 2].map(n => (
+            <div key={n} className="testimonial-card fade-in">
+              <div className="testimonial-placeholder">
+                <div className="testimonial-placeholder-icon">💬</div>
+                <div className="testimonial-placeholder-text">Testimonial volgt binnenkort</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      <div className="stats-strip">
+        {[
+          ['50+', 'Begeleide trajecten'],
+          ['13+', 'Certificeringen'],
+          ['24u', 'Reactietijd'],
+          ['100%', 'Op maat gemaakt'],
+        ].map(([num, label]) => (
+          <div key={label} className="fade-in">
+            <div className="stat-num">{num}</div>
+            <div className="stat-label">{label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* DIENSTEN / VOOR WIE */}
+      <section className="diensten" id="diensten">
+        <div className="section-label fade-in">Voor wie</div>
+        <h2 className="section-title fade-in delay-1">VOOR WIE</h2>
+        <div className="diensten-grid">
+          {[
+            { icon:'🪖', title:'TACTICAL ATHLETE',     desc:'Voorbereiding op Defensie, politie, brandweer of speciale eenheden. Fysiek én mentaal klaar voor selectie en opleiding.',                                       tag:'Defensie · Politie · Brandweer', photo:'/diensten-tactical.jpg' },
+            { icon:'🏅', title:'TOPSPORT BEGELEIDING', desc:'Voor sporters met een specifiek doel en de gedrevenheid om het te halen. Periodisering, kracht, conditie en mentale weerbaarheid.',                              tag:'Seizoensvoorbereiding', photo:'/diensten-topsport.jpg' },
+            { icon:'🎯', title:'SERIEUZE AMATEUR',      desc:'Persoonlijk 1-op-1 traject op maat — van intake en doelstelling tot periodisering en uitvoering. Online, in-person of hybrid.',                                 tag:'1-op-1 · Hybrid', photo:'/diensten-coaching.jpg' },
+          ].map((d, i) => (
+            <div key={d.title} className={`dienst-card fade-in delay-${(i % 3) + 1}`}>
+              {d.photo && (
+                <div className="dienst-photo">
+                  <Image src={d.photo} alt={d.title} fill loading="lazy" sizes="(max-width: 768px) 100vw, 33vw" />
+                </div>
+              )}
+              <div className="dienst-body">
+                <div className="dienst-icon">{d.icon}</div>
+                <div className="dienst-title">{d.title}</div>
+                <div className="dienst-desc">{d.desc}</div>
+                <div className="dienst-tag">{d.tag}</div>
+                <div><a href="/pakketten" className="dienst-cta">Meer weten →</a></div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="ook-voor fade-in delay-3">
+          <span className="ook-voor-label">Ook voor:</span>
+          <a href="/pakketten" className="ook-voor-pill">⚡ Hyrox voorbereiding</a>
+          <a href="/pakketten" className="ook-voor-pill">🏃 Loopcoaching</a>
+          <a href="/pakketten" className="ook-voor-pill">🏢 Team &amp; bedrijf</a>
+        </div>
+      </section>
+
+      {/* DASHBOARD SHOWCASE */}
+      <section className="dashboard-showcase">
+        <div className="section-label fade-in" style={{justifyContent:'center'}}>Het platform</div>
+        <h2 className="section-title fade-in delay-1" style={{textAlign:'center'}}>ZO ZIET JOUW TRAJECT ERUIT</h2>
+        <div className="showcase-grid">
+          {['Trainingsplan', 'Voortgang & data', 'Dagelijkse check-in'].map((label, i) => (
+            <div key={label} className={`showcase-placeholder fade-in delay-${i + 1}`}>
+              <div className="showcase-placeholder-icon">📱</div>
+              <div className="showcase-placeholder-text">Screenshot volgt — {label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* OVER GUIDO */}
       <section className="about" id="over">
@@ -667,75 +852,6 @@ export default function Homepage() {
         </div>
       </section>
 
-      {/* DIENSTEN */}
-      <section className="diensten" id="diensten">
-        <div className="section-label fade-in">Voor wie</div>
-        <h2 className="section-title fade-in delay-1">VOOR WIE</h2>
-        <div className="diensten-grid">
-          {[
-            { icon:'🪖', title:'TACTICAL ATHLETE',     desc:'Voorbereiding op Defensie, politie, brandweer of speciale eenheden. Fysiek én mentaal klaar voor selectie en opleiding.',                                       tag:'Defensie · Politie · Brandweer', photo:'/diensten-tactical.jpg' },
-            { icon:'🏅', title:'TOPSPORT BEGELEIDING', desc:'Voor sporters met een specifiek doel en de gedrevenheid om het te halen. Periodisering, kracht, conditie en mentale weerbaarheid.',                              tag:'Seizoensvoorbereiding', photo:'/diensten-topsport.jpg' },
-            { icon:'🎯', title:'SERIEUZE AMATEUR',      desc:'Persoonlijk 1-op-1 traject op maat — van intake en doelstelling tot periodisering en uitvoering. Online, in-person of hybrid.',                                 tag:'1-op-1 · Hybrid', photo:'/diensten-coaching.jpg' },
-          ].map((d, i) => (
-            <div key={d.title} className={`dienst-card fade-in delay-${(i % 3) + 1}`}>
-              {d.photo && (
-                <div className="dienst-photo">
-                  <Image src={d.photo} alt={d.title} fill loading="lazy" sizes="(max-width: 768px) 100vw, 33vw" />
-                </div>
-              )}
-              <div className="dienst-body">
-                <div className="dienst-icon">{d.icon}</div>
-                <div className="dienst-title">{d.title}</div>
-                <div className="dienst-desc">{d.desc}</div>
-                <div className="dienst-tag">{d.tag}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="ook-voor fade-in delay-3">
-          <span className="ook-voor-label">Ook voor:</span>
-          <a href="/pakketten" className="ook-voor-pill">⚡ Hyrox voorbereiding</a>
-          <a href="/pakketten" className="ook-voor-pill">🏃 Loopcoaching</a>
-          <a href="/pakketten" className="ook-voor-pill">🏢 Team &amp; bedrijf</a>
-        </div>
-      </section>
-
-      {/* HOE HET WERKT */}
-      <section className="process" id="werkwijze">
-        <div className="section-label fade-in" style={{justifyContent:'center'}}>Werkwijze</div>
-        <h2 className="section-title fade-in delay-1">HOE HET WERKT</h2>
-        <div className="process-steps">
-          {[
-            ['01','INTAKE & ANALYSE','Een grondige kennismaking. We brengen jouw uitgangssituatie, doelen en leefstijl in kaart. Nulmeting waar relevant.', true],
-            ['02','JOUW PLAN','Op basis van de intake maak ik een volledig uitgestippeld traject. Geperiodiseerd, meetbaar, realistisch.', true],
-            ['03','UITVOERING & GROEI','We gaan aan de slag. Continue monitoring, bijsturing waar nodig, en vaste check-ins om op koers te blijven.', false],
-          ].map(([n, t, d, arrow], i) => (
-            <div key={n} className={`process-step fade-in delay-${i + 1}`}>
-              <div className="step-number">{n}</div>
-              <div className="step-title">{t}</div>
-              <div className="step-desc">{d}</div>
-              {arrow && <div className="step-arrow">›</div>}
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* I: TESTIMONIALS — lege sectie, tekst volgt van klant */}
-      <section className="testimonials" id="resultaten">
-        <div className="section-label fade-in">Resultaten</div>
-        <h2 className="section-title fade-in delay-1">WAT KLANTEN ZEGGEN</h2>
-        <div className="testimonials-grid">
-          {[1, 2].map(n => (
-            <div key={n} className="testimonial-card fade-in">
-              <div className="testimonial-placeholder">
-                <div className="testimonial-placeholder-icon">💬</div>
-                <div className="testimonial-placeholder-text">Testimonial volgt binnenkort</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* CERTIFICATEN */}
       <section className="certs">
         <div className="section-label fade-in">Achtergrond & Kwalificaties</div>
@@ -762,6 +878,28 @@ export default function Homepage() {
               {c.t}
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* PAKKETTEN TEASER */}
+      <section className="pakketten-teaser">
+        <div className="section-label fade-in" style={{justifyContent:'center'}}>Investering</div>
+        <h2 className="section-title fade-in delay-1" style={{textAlign:'center'}}>KIES JOUW PAKKET</h2>
+        <div className="pakket-teaser-grid">
+          {[
+            ['STARTER', 'Online', 119, false],
+            ['PERFORMANCE', 'Hybrid · Meest gekozen', 229, true],
+            ['ELITE', 'Full Service', 399, false],
+          ].map(([name, sub, price, popular], i) => (
+            <div key={name} className={`pakket-teaser-card fade-in delay-${i + 1} ${popular ? 'popular' : ''}`}>
+              <div className="pakket-teaser-name">{name}</div>
+              <div className="pakket-teaser-price">€{price}<span>/maand</span></div>
+              <div className="pakket-teaser-sub">{sub}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{textAlign:'center', marginTop:36}}>
+          <a href="/pakketten" className="btn-primary fade-in delay-3">Bekijk alle pakketten</a>
         </div>
       </section>
 
