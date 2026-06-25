@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
-import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows } from './site-shared'
+import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton } from './site-shared'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -379,6 +379,8 @@ const CSS = `
   .testi-name { font-family:var(--display); font-size:15px; letter-spacing:1px; color:var(--text); }
   .testi-role { font-size:12px; color:var(--muted); margin-top:2px; }
   .testi-metric { font-size:11px; color:var(--orange); letter-spacing:1px; margin-top:4px; }
+  .testi-readmore { display:inline-block; font-size:12px; color:var(--orange); text-decoration:none; border-bottom:1px solid var(--orange); padding-bottom:2px; }
+  .testi-readmore:hover { color:var(--text); border-color:var(--text); }
 
   /* ── EMPTY STATE ── */
   .empty-state {
@@ -918,9 +920,10 @@ export default function Homepage() {
         <div className="contact-info fade-in">
           <div className="section-label">Kennismaking</div>
           <h2 className="section-title">KLAAR OM TE STARTEN?</h2>
-          <p style={{fontSize:16, color:'#aaa', lineHeight:1.8, marginBottom:36}}>
-            Stuur een bericht en ik neem binnen 24 uur contact op voor een vrijblijvend kennismakingsgesprek. We kijken samen wat het beste bij jou past.
+          <p style={{fontSize:16, color:'#aaa', lineHeight:1.8, marginBottom:28}}>
+            Plan direct een gratis kennismakingsgesprek van 30 minuten — geen wachttijd, kies zelf een moment dat past.
           </p>
+          <CalendlyButton style={{marginBottom:36}} />
           {[
             { icon:'📍', label:'Locatie',     text:'Den Haag & omgeving · Online beschikbaar' },
             { icon:'⚡', label:'Reactietijd', text:'Binnen 24 uur op werkdagen' },
@@ -945,6 +948,9 @@ export default function Homepage() {
             </div>
           ) : (
             <form className="form" onSubmit={handleSubmit}>
+              <div style={{ fontFamily:'var(--font-oswald), Impact, sans-serif', fontSize:14, letterSpacing:2, color:'var(--muted)', textTransform:'uppercase', marginBottom:4 }}>
+                Of stuur eerst een bericht
+              </div>
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Voornaam</label>

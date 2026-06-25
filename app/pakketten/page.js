@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { SiteNav, SiteFooter } from '../site-shared'
+import { SiteNav, SiteFooter, CalendlyButton } from '../site-shared'
 
 const CSS = `
   :root {
@@ -363,8 +363,11 @@ export default function Pakketten() {
         <p style={{fontFamily:'var(--body)', fontSize:16, color:'#aaa', maxWidth:480, margin:'0 auto 36px', lineHeight:1.7}}>
           Plan een gratis kennismakingsgesprek van 30 minuten. We kijken samen naar jouw situatie en doel, en kiezen het pakket dat het beste past.
         </p>
-        <a href="/#contact" className="btn-primary" style={{padding:'18px 48px', fontSize:14}}>PLAN GRATIS KENNISMAKING</a>
-        <div style={{fontFamily:'var(--body)', fontSize:12, color:'var(--muted)', marginTop:16, letterSpacing:1}}>Geen verplichtingen · Binnen 24 uur reactie</div>
+        <CalendlyButton style={{padding:'18px 48px', fontSize:14}}>PLAN GRATIS KENNISMAKING</CalendlyButton>
+        <div style={{fontFamily:'var(--body)', fontSize:12, color:'var(--muted)', marginTop:16, letterSpacing:1}}>Geen verplichtingen · Direct een moment kiezen</div>
+        <div style={{marginTop:14}}>
+          <a href="/#contact" style={{fontFamily:'var(--body)', fontSize:12, color:'var(--muted)', textDecoration:'underline'}}>Of stuur eerst een bericht</a>
+        </div>
       </section>
 
       {/* FOOTER */}

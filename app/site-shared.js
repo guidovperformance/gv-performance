@@ -1,6 +1,9 @@
 'use client'
 import React from 'react'
+import Script from 'next/script'
 import { createClient } from '@/lib/supabase/client'
+
+export const CALENDLY_URL = 'https://calendly.com/guidovperformance/30min'
 
 export const SITE_CSS = `
   :root {
@@ -240,6 +243,8 @@ export const SITE_CSS = `
   .testi-name { font-family:var(--display); font-size:15px; letter-spacing:1px; color:var(--text); }
   .testi-role { font-size:12px; color:var(--muted); margin-top:2px; }
   .testi-metric { font-size:11px; color:var(--orange); letter-spacing:1px; margin-top:4px; }
+  .testi-readmore { display:inline-block; font-size:12px; color:var(--orange); text-decoration:none; border-bottom:1px solid var(--orange); padding-bottom:2px; }
+  .testi-readmore:hover { color:var(--text); border-color:var(--text); }
 
   /* ── EMPTY STATE ── */
   .empty-state {
@@ -427,6 +432,33 @@ export const CascadeText = React.memo(function CascadeText({
   )
 })
 
+/**
+ * Officiële Calendly popup-widget — laadt het externe widget-script
+ * (assets.calendly.com) lazy en opent op klik een booking-popup. Geen
+ * npm-package, geen API-key: puur de publieke embed die Calendly zelf
+ * documenteert.
+ */
+export function CalendlyButton({ children = 'Plan direct je gratis kennismaking', className = 'btn-primary', style }) {
+  return (
+    <>
+      <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
+      <Script src="https://assets.calendly.com/assets/external/widget.js" strategy="lazyOnload" />
+      <button
+        type="button"
+        onClick={() => {
+          if (typeof window !== 'undefined' && window.Calendly) {
+            window.Calendly.initPopupWidget({ url: CALENDLY_URL })
+          }
+        }}
+        className={className}
+        style={style}
+      >
+        {children}
+      </button>
+    </>
+  )
+}
+
 export const SEGMENT_LABELS = {
   tactical: 'Tactical Athlete',
   topsport: 'Topsport',
@@ -462,10 +494,12 @@ export function EmptyState({ icon = '💬', text }) {
 }
 
 export function TestimonialCard({ t, compact = false }) {
-  const quote = compact && t.quote?.length > 220 ? t.quote.slice(0, 220).trim() + '…' : t.quote
+  const isTruncated = compact && t.quote?.length > 220
+  const quote = isTruncated ? t.quote.slice(0, 220).trim() + '…' : t.quote
   return (
     <div className="testi-card">
       <div className="testi-quote">&ldquo;{quote}&rdquo;</div>
+      {isTruncated && <a href="/testimonials" className="testi-readmore">Lees het volledige verhaal →</a>}
       <div className="testi-footer">
         {t.avatar_url && (
           <div className="testi-avatar">
