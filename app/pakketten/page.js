@@ -1,12 +1,6 @@
 'use client'
 import React from 'react'
-
-const ICON = {
-  over:      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>,
-  diensten:  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6.5 6.5l11 11M5 5l2 2M19 19l-2-2M3 14l3-3M18 9l3-3M14 3l-3 3M9 18l-3 3M9.5 9.5l5 5"/></svg>,
-  werkwijze: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.2 7.2 10 16M15.8 7.2 14 16"/></svg>,
-  pakketten: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.6 12.6 12.6 20.6a2 2 0 0 1-2.8 0l-7.4-7.4a2 2 0 0 1 0-2.8L10.4 2.4a2 2 0 0 1 2.8 0l7.4 7.4a2 2 0 0 1 0 2.8z"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>,
-}
+import { SiteNav, SiteFooter } from '../site-shared'
 
 const CSS = `
   :root {
@@ -247,37 +241,7 @@ export default function Pakketten() {
       </a>
 
       {/* NAV */}
-      <nav>
-        <a href="/" className="nav-logo">
-          <svg width="36" height="34" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
-            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
-            <rect x="0" y="31" width="36" height="2" fill="#D4A857" opacity="0.2"/>
-          </svg>
-          <div>
-            <div className="nav-logo-text">GV PERFORMANCE</div>
-            <div className="nav-logo-sub">GUIDO VOLS</div>
-          </div>
-        </a>
-        <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: '1 1 auto', justifyContent: 'flex-end' }}>
-          <div className="nav-icons" style={{ minWidth: 0 }}>
-            {[
-              { href: '/#over', label: 'Over Guido', icon: ICON.over },
-              { href: '/#diensten', label: 'Diensten', icon: ICON.diensten },
-              { href: '/#werkwijze', label: 'Werkwijze', icon: ICON.werkwijze },
-              { href: '/pakketten', label: 'Pakketten', icon: ICON.pakketten },
-            ].map(l => (
-              <a key={l.href} href={l.href} className="nav-icon-item">
-                <span className="nav-icon-item-bg" aria-hidden="true" />
-                <span className="nav-icon-item-icon">{l.icon}</span>
-                <span className="nav-icon-item-label">{l.label}</span>
-              </a>
-            ))}
-          </div>
-          <a href="/#contact" className="nav-cta nav-cta-desktop">Kennismaking</a>
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* HERO */}
       <section style={{textAlign:'center', borderBottom:'1px solid rgba(212,168,87,0.1)', paddingBottom:60}}>
@@ -404,24 +368,7 @@ export default function Pakketten() {
       </section>
 
       {/* FOOTER */}
-      <footer>
-        <div style={{display:'flex', alignItems:'center', gap:12}}>
-          <svg width="24" height="22" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
-            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
-          </svg>
-          <span style={{fontFamily:'Oswald,sans-serif', fontSize:16, letterSpacing:3, color:'var(--muted)'}}>GV PERFORMANCE</span>
-        </div>
-        <div className="footer-copy">© 2025 GV Performance — Guido Vols · Den Haag</div>
-        <div className="footer-links">
-          <a href="/">Home</a>
-          <a href="/#diensten">Diensten</a>
-          <a href="/#contact">Contact</a>
-          <a href="#">Privacybeleid</a>
-          <a href="/login">Inloggen</a>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   )
 }

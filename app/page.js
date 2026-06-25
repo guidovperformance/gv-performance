@@ -1,18 +1,7 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
-import { CascadeText } from './site-shared'
-
-const ICON = {
-  over:      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>,
-  diensten:  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6.5 6.5l11 11M5 5l2 2M19 19l-2-2M3 14l3-3M18 9l3-3M14 3l-3 3M9 18l-3 3M9.5 9.5l5 5"/></svg>,
-  expertise: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6"/><path d="M9 13.5 7 22l5-3 5 3-2-8.5"/></svg>,
-  resultaten:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="6" y1="20" x2="6" y2="12"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg>,
-  reviews:   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>,
-  blog:      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>,
-  faq:       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.83 1c0 2-2.93 2-2.93 4"/><line x1="12" y1="17" x2="12" y2="17"/></svg>,
-  pakketten: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.6 12.6 12.6 20.6a2 2 0 0 1-2.8 0l-7.4-7.4a2 2 0 0 1 0-2.8L10.4 2.4a2 2 0 0 1 2.8 0l7.4 7.4a2 2 0 0 1 0 2.8z"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>,
-}
+import { CascadeText, SiteNav, SiteFooter } from './site-shared'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -305,6 +294,19 @@ const CSS = `
     display:inline-block; margin-top:14px; font-size:10px; letter-spacing:2px;
     color:var(--orange); text-transform:uppercase; border:1px solid rgba(212,168,87,0.3); padding:4px 10px;
   }
+  .ook-voor {
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    margin-top:28px; padding-top:24px; border-top:1px solid var(--dark3);
+  }
+  .ook-voor-label {
+    font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; flex-shrink:0;
+  }
+  .ook-voor-pill {
+    font-size:12px; letter-spacing:1px; color:var(--text); text-decoration:none;
+    border:1px solid rgba(255,255,255,0.15); padding:6px 14px; border-radius:20px;
+    transition: border-color .2s, color .2s;
+  }
+  .ook-voor-pill:hover { border-color:var(--orange); color:var(--orange); }
 
   /* ── HOE HET WERKT ── */
   .process { background:var(--dark2); text-align:center; }
@@ -573,41 +575,7 @@ export default function Homepage() {
       </a>
 
       {/* NAV */}
-      <nav>
-        <a href="/" className="nav-logo">
-          <svg width="36" height="34" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
-            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
-            <rect x="0" y="31" width="36" height="2" fill="#D4A857" opacity="0.2"/>
-          </svg>
-          <div>
-            <div className="nav-logo-text">GV PERFORMANCE</div>
-            <div className="nav-logo-sub">GUIDO VOLS</div>
-          </div>
-        </a>
-        <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: '1 1 auto', justifyContent: 'flex-end' }}>
-          <div className="nav-icons" style={{ minWidth: 0 }}>
-            {[
-              { href: '#over', label: 'Over Guido', icon: ICON.over },
-              { href: '#diensten', label: 'Diensten', icon: ICON.diensten },
-              { href: '/expertise', label: 'Expertise', icon: ICON.expertise },
-              { href: '/resultaten', label: 'Resultaten', icon: ICON.resultaten },
-              { href: '/testimonials', label: 'Reviews', icon: ICON.reviews },
-              { href: '/blog', label: 'Blog', icon: ICON.blog },
-              { href: '/faq', label: 'FAQ', icon: ICON.faq },
-              { href: '/pakketten', label: 'Pakketten', icon: ICON.pakketten },
-            ].map(l => (
-              <a key={l.href} href={l.href} className="nav-icon-item">
-                <span className="nav-icon-item-bg" aria-hidden="true" />
-                <span className="nav-icon-item-icon">{l.icon}</span>
-                <span className="nav-icon-item-label">{l.label}</span>
-              </a>
-            ))}
-          </div>
-          <a href="#contact" className="nav-cta nav-cta-desktop">Kennismaking</a>
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* HERO */}
       <section className="hero" style={{padding:0}}>
@@ -701,16 +669,13 @@ export default function Homepage() {
 
       {/* DIENSTEN */}
       <section className="diensten" id="diensten">
-        <div className="section-label fade-in">Wat ik aanbied</div>
-        <h2 className="section-title fade-in delay-1">DIENSTEN</h2>
+        <div className="section-label fade-in">Voor wie</div>
+        <h2 className="section-title fade-in delay-1">VOOR WIE</h2>
         <div className="diensten-grid">
           {[
-            { icon:'🎯', title:'1-OP-1 COACHING',      desc:'Persoonlijk traject op maat — van intake en doelstelling tot periodisering en uitvoering. Online, in-person of hybrid.',                                         tag:'Hybrid', photo:'/diensten-coaching.jpg' },
             { icon:'🪖', title:'TACTICAL ATHLETE',     desc:'Voorbereiding op Defensie, politie, brandweer of speciale eenheden. Fysiek én mentaal klaar voor selectie en opleiding.',                                       tag:'Defensie · Politie · Brandweer', photo:'/diensten-tactical.jpg' },
             { icon:'🏅', title:'TOPSPORT BEGELEIDING', desc:'Voor sporters met een specifiek doel en de gedrevenheid om het te halen. Periodisering, kracht, conditie en mentale weerbaarheid.',                              tag:'Seizoensvoorbereiding', photo:'/diensten-topsport.jpg' },
-            { icon:'⚡', title:'HYROX VOORBEREIDING',  desc:'Van nulmeting tot race day. Opbouw, tijdverbetering en volledige race-specifieke conditionering. Gebaseerd op eigen Hyrox prestaties.',                          tag:'Beginners · Tijdverbetering', photo:'/diensten-hyrox.jpg' },
-            { icon:'🏢', title:'TEAM & BEDRIJF',       desc:'Teamtrainingen, bootcamps en groepslessen voor bedrijven en sportclubs. Spinning, boxing en functionele training. Ook beschikbaar als externe instructeur.',  tag:'B2B · Sportscholen · Events', photo:'/diensten-team.jpg' },
-            { icon:'🏃', title:'LOOPCOACHING',         desc:'Techniek, opbouw en race-voorbereiding. Van beginners tot hardlopers met een tijdsdoel. KNAU gecertificeerd looptrainer niveau 3.',                              tag:'KNAU Gecertificeerd', photo:'/diensten-loopcoaching.png' },
+            { icon:'🎯', title:'SERIEUZE AMATEUR',      desc:'Persoonlijk 1-op-1 traject op maat — van intake en doelstelling tot periodisering en uitvoering. Online, in-person of hybrid.',                                 tag:'1-op-1 · Hybrid', photo:'/diensten-coaching.jpg' },
           ].map((d, i) => (
             <div key={d.title} className={`dienst-card fade-in delay-${(i % 3) + 1}`}>
               {d.photo && (
@@ -726,6 +691,12 @@ export default function Homepage() {
               </div>
             </div>
           ))}
+        </div>
+        <div className="ook-voor fade-in delay-3">
+          <span className="ook-voor-label">Ook voor:</span>
+          <a href="/pakketten" className="ook-voor-pill">⚡ Hyrox voorbereiding</a>
+          <a href="/pakketten" className="ook-voor-pill">🏃 Loopcoaching</a>
+          <a href="/pakketten" className="ook-voor-pill">🏢 Team &amp; bedrijf</a>
         </div>
       </section>
 
@@ -871,24 +842,7 @@ export default function Homepage() {
       </section>
 
       {/* FOOTER */}
-      <footer>
-        <div style={{display:'flex', alignItems:'center', gap:12}}>
-          <svg width="24" height="22" viewBox="0 0 36 34">
-            <polygon points="18,2 13,28 23,28" fill="#D4A857"/>
-            <polygon points="5,7 0,28 14,28" fill="#D4A857" opacity="0.5"/>
-            <polygon points="31,7 23,28 36,28" fill="#D4A857" opacity="0.5"/>
-          </svg>
-          <span style={{fontFamily:'Oswald, sans-serif', fontSize:16, letterSpacing:3, color:'#888'}}>GV PERFORMANCE</span>
-        </div>
-        <div className="footer-copy">© 2025 GV Performance — Guido Vols · Den Haag</div>
-        <div className="footer-links">
-          <a href="#">Instagram</a>
-          <a href="#">LinkedIn</a>
-          <a href="#contact">Contact</a>
-          <a href="#">Privacybeleid</a>
-          <a href="/login">Inloggen</a>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   )
 }

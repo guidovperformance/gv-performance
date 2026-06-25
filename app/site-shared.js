@@ -234,18 +234,17 @@ const ICON = {
   blog:      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>,
   faq:       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 1 1 5.83 1c0 2-2.93 2-2.93 4"/><line x1="12" y1="17" x2="12" y2="17"/></svg>,
   pakketten: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.6 12.6 12.6 20.6a2 2 0 0 1-2.8 0l-7.4-7.4a2 2 0 0 1 0-2.8L10.4 2.4a2 2 0 0 1 2.8 0l7.4 7.4a2 2 0 0 1 0 2.8z"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>,
+  methode:   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8.2 7.2 10 16M15.8 7.2 14 16"/></svg>,
 }
 
 export function SiteNav({ active }) {
   const links = [
-    { href: '/#over', label: 'Over Guido', icon: ICON.over },
-    { href: '/#diensten', label: 'Diensten', icon: ICON.diensten },
-    { href: '/expertise', label: 'Expertise', icon: ICON.expertise },
+    { href: '/#werkwijze', label: 'Methode', icon: ICON.methode },
+    { href: '/#diensten', label: 'Voor wie', icon: ICON.diensten },
     { href: '/resultaten', label: 'Resultaten', icon: ICON.resultaten },
-    { href: '/testimonials', label: 'Reviews', icon: ICON.reviews },
-    { href: '/blog', label: 'Blog', icon: ICON.blog },
-    { href: '/faq', label: 'FAQ', icon: ICON.faq },
+    { href: '/#over', label: 'Over Guido', icon: ICON.over },
     { href: '/pakketten', label: 'Pakketten', icon: ICON.pakketten },
+    { href: '/blog', label: 'Kennis', icon: ICON.blog },
   ]
 
   return (
@@ -272,7 +271,7 @@ export function SiteNav({ active }) {
             </a>
           ))}
         </div>
-        <a href="/#contact" className="nav-cta nav-cta-desktop">Kennismaking</a>
+        <a href="/#contact" className="nav-cta nav-cta-desktop">Aanvraag</a>
       </div>
     </nav>
   )
@@ -291,8 +290,7 @@ export function SiteFooter() {
       </div>
       <div className="footer-copy">© 2026 GV Performance — Guido Vols · Den Haag</div>
       <div className="footer-links">
-        <a href="#">Instagram</a>
-        <a href="#">LinkedIn</a>
+        <a href="https://nl.linkedin.com/in/guido-vols-99b317106" target="_blank" rel="noopener noreferrer">LinkedIn</a>
         <a href="/#contact">Contact</a>
         <a href="/privacy">Privacybeleid</a>
         <a href="/login">Inloggen</a>
