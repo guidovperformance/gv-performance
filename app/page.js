@@ -341,13 +341,40 @@ const CSS = `
   .stat-num { font-family:var(--display); font-size:clamp(32px,4vw,48px); color:var(--orange); letter-spacing:1px; line-height:1; margin-bottom:8px; }
   .stat-label { font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; }
   .dashboard-showcase { background:var(--dark); }
-  .showcase-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; border:2px solid var(--dark3); }
-  .showcase-placeholder {
-    aspect-ratio:9/16; background:var(--dark2); display:flex; align-items:center; justify-content:center;
-    flex-direction:column; gap:10px;
+  .showcase-bullets {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:32px;
+    max-width:780px; margin:0 auto 56px;
   }
-  .showcase-placeholder-icon { font-size:28px; opacity:0.3; }
-  .showcase-placeholder-text { font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center; }
+  .showcase-bullet { display:flex; align-items:flex-start; gap:10px; max-width:220px; }
+  .showcase-bullet-icon { color:var(--orange); font-size:15px; flex-shrink:0; line-height:1.4; }
+  .showcase-bullet-text { font-size:14px; color:#ccc; line-height:1.5; }
+  .showcase-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .showcase-grid > div { min-width:0; }
+  .showcase-frame {
+    aspect-ratio:9/19.5; background:var(--dark2); border:1px solid var(--dark4); border-radius:22px;
+    padding:14px 10px; position:relative; overflow:hidden;
+    transition: border-color .25s, transform .25s;
+  }
+  .showcase-frame:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .showcase-frame::before {
+    content:''; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    width:46px; height:5px; border-radius:3px; background:var(--dark4); z-index:2;
+  }
+  .showcase-frame-inner {
+    width:100%; height:100%; border-radius:14px; background:var(--dark3);
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;
+    position:relative; overflow:hidden;
+  }
+  .showcase-frame-inner img { object-fit:cover; }
+  .showcase-placeholder-icon { font-size:26px; opacity:0.3; }
+  .showcase-placeholder-text { font-size:12px; color:var(--muted2); letter-spacing:0.5px; font-style:italic; text-align:center; padding:0 14px; }
+  .showcase-frame-label {
+    font-size:11px; letter-spacing:1px; color:var(--muted); text-transform:uppercase;
+    text-align:center; margin-top:14px; overflow-wrap:break-word;
+  }
+  .showcase-footnote { text-align:center; margin-top:40px; }
+  .showcase-footnote a { color:var(--orange); text-decoration:none; border-bottom:1px solid var(--orange); padding-bottom:2px; }
+  .showcase-footnote a:hover { color:var(--text); border-color:var(--text); }
 
   /* ── PAKKETTEN TEASER ── */
   .pakketten-teaser { background:var(--dark2); text-align:center; }
@@ -569,7 +596,9 @@ const CSS = `
     .testimonials-grid { grid-template-columns:1fr; }
     .methode-grid { grid-template-columns:1fr; }
     .stats-strip { grid-template-columns:1fr 1fr; padding:32px 24px; }
-    .showcase-grid { grid-template-columns:1fr; }
+    .showcase-grid { grid-template-columns:repeat(3,1fr); gap:10px; }
+    .showcase-bullets { gap:20px; margin-bottom:36px; }
+    .showcase-bullet { max-width:none; flex:1 1 100%; }
     .pakket-teaser-grid { grid-template-columns:1fr; }
     .form-row { grid-template-columns:1fr; }
     .ribbon { padding:16px 24px; }
@@ -816,13 +845,46 @@ export default function Homepage() {
       <section className="dashboard-showcase">
         <div className="section-label fade-in" style={{justifyContent:'center'}}>Het platform</div>
         <h2 className="section-title fade-in delay-1" style={{textAlign:'center'}}>ZO ZIET JOUW TRAJECT ERUIT</h2>
-        <div className="showcase-grid">
-          {['Trainingsplan', 'Voortgang & data', 'Dagelijkse check-in'].map((label, i) => (
-            <div key={label} className={`showcase-placeholder fade-in delay-${i + 1}`}>
-              <div className="showcase-placeholder-icon">📱</div>
-              <div className="showcase-placeholder-text">Screenshot volgt — {label}</div>
+
+        <div className="showcase-bullets">
+          {[
+            ['📈', 'Voortgang inzichtelijk — 1RM, VO2max en HRV-trends in één overzicht.'],
+            ['📅', 'Periodisering per week zichtbaar — je weet altijd in welke fase je zit.'],
+            ['✅', 'Dagelijkse check-ins zonder gedoe — energie, slaap en herstel in een paar taps.'],
+          ].map(([icon, text], i) => (
+            <div key={text} className={`showcase-bullet fade-in delay-${i + 1}`}>
+              <span className="showcase-bullet-icon">{icon}</span>
+              <span className="showcase-bullet-text">{text}</span>
             </div>
           ))}
+        </div>
+
+        <div className="showcase-grid">
+          {[
+            { label: 'Periodiseringsplan', photo: null },
+            { label: 'Voortgangsgrafiek', photo: null },
+            { label: 'Sessie-view', photo: null },
+          ].map((s, i) => (
+            <div key={s.label} className={`fade-in delay-${i + 1}`}>
+              <div className="showcase-frame">
+                <div className="showcase-frame-inner">
+                  {s.photo ? (
+                    <Image src={s.photo} alt={s.label} fill sizes="(max-width: 768px) 33vw, 280px" style={{ objectFit: 'cover' }} />
+                  ) : (
+                    <>
+                      <div className="showcase-placeholder-icon">📱</div>
+                      <div className="showcase-placeholder-text">Screenshot volgt</div>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="showcase-frame-label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="showcase-footnote fade-in delay-3">
+          Inclusief bij elk pakket — <a href="/pakketten">Dashboard toegang &amp; voortgang →</a>
         </div>
       </section>
 
