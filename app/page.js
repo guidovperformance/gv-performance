@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
-import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton } from './site-shared'
+import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton, ExitIntentModal } from './site-shared'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -419,6 +419,37 @@ const CSS = `
   }
   .empty-state-icon { font-size:28px; opacity:0.3; }
   .empty-state-text { font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center; }
+
+  /* ── LEAD CAPTURE (gratis krachttest) ── */
+  .lead-form { display:flex; flex-direction:column; gap:14px; }
+  .lead-form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .lead-form-row > input, .lead-form-row-compact > input { min-width:0; }
+  .lead-form-row-compact { display:flex; flex-direction:column; gap:10px; }
+  .lead-error { color:#f87171; font-size:13px; padding:10px 14px; background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); }
+  .lead-success { text-align:center; padding:24px 0; }
+  .lead-success-title { font-family:var(--display); font-size:22px; letter-spacing:1px; color:var(--text); margin-bottom:8px; }
+  .lead-success-text { font-size:14px; color:var(--muted); margin-bottom:20px; }
+
+  .lead-modal-backdrop {
+    position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .lead-modal {
+    background:var(--dark2); border:1px solid rgba(212,168,87,0.25); max-width:420px; width:100%;
+    padding:36px 32px; position:relative;
+  }
+  .lead-modal-close {
+    position:absolute; top:14px; right:14px; background:none; border:none; color:var(--muted);
+    font-size:16px; cursor:pointer; padding:6px;
+  }
+  .lead-modal-close:hover { color:var(--text); }
+  .lead-modal-eyebrow { font-size:10px; letter-spacing:3px; color:var(--orange); text-transform:uppercase; margin-bottom:10px; }
+  .lead-modal-title { font-family:var(--display); font-size:24px; letter-spacing:1px; color:var(--text); margin-bottom:12px; line-height:1.1; }
+  .lead-modal-text { font-size:14px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+
+  @media (max-width: 480px) {
+    .lead-modal { padding:28px 22px; }
+  }
 
   /* ── CERTIFICATEN ── */
   .certs { background:var(--dark2); }
@@ -1062,6 +1093,8 @@ export default function Homepage() {
 
       {/* FOOTER */}
       <SiteFooter />
+
+      <ExitIntentModal source="home-exit-intent" />
     </>
   )
 }

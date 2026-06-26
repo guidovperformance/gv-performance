@@ -253,6 +253,37 @@ export const SITE_CSS = `
   }
   .empty-state-icon { font-size:28px; opacity:0.3; }
   .empty-state-text { font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center; }
+
+  /* ── LEAD CAPTURE (gratis krachttest) ── */
+  .lead-form { display:flex; flex-direction:column; gap:14px; }
+  .lead-form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .lead-form-row > input, .lead-form-row-compact > input { min-width:0; }
+  .lead-form-row-compact { display:flex; flex-direction:column; gap:10px; }
+  .lead-error { color:#f87171; font-size:13px; padding:10px 14px; background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); }
+  .lead-success { text-align:center; padding:24px 0; }
+  .lead-success-title { font-family:var(--display); font-size:22px; letter-spacing:1px; color:var(--text); margin-bottom:8px; }
+  .lead-success-text { font-size:14px; color:var(--muted); margin-bottom:20px; }
+
+  .lead-modal-backdrop {
+    position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .lead-modal {
+    background:var(--dark2); border:1px solid rgba(212,168,87,0.25); max-width:420px; width:100%;
+    padding:36px 32px; position:relative;
+  }
+  .lead-modal-close {
+    position:absolute; top:14px; right:14px; background:none; border:none; color:var(--muted);
+    font-size:16px; cursor:pointer; padding:6px;
+  }
+  .lead-modal-close:hover { color:var(--text); }
+  .lead-modal-eyebrow { font-size:10px; letter-spacing:3px; color:var(--orange); text-transform:uppercase; margin-bottom:10px; }
+  .lead-modal-title { font-family:var(--display); font-size:24px; letter-spacing:1px; color:var(--text); margin-bottom:12px; line-height:1.1; }
+  .lead-modal-text { font-size:14px; color:var(--muted); line-height:1.6; margin-bottom:24px; }
+
+  @media (max-width: 480px) {
+    .lead-modal { padding:28px 22px; }
+  }
 `
 
 const ICON = {
@@ -489,6 +520,108 @@ export function EmptyState({ icon = '💬', text }) {
     <div className="empty-state">
       <div className="empty-state-icon">{icon}</div>
       <div className="empty-state-text">{text}</div>
+    </div>
+  )
+}
+
+export const LEAD_MAGNET_PDF = '/GV-Performance-Pre-Selectie-Krachttest.pdf'
+
+/**
+ * Naam+e-mail formulier voor de gratis-krachttest lead magnet. Post naar
+ * /api/leads. Bij succes: directe downloadlink + (indien gegeven) callback.
+ */
+export function EmailCapture({ source = 'unknown', onSuccess, compact = false }) {
+  const [form, setForm] = React.useState({ name: '', email: '' })
+  const [status, setStatus] = React.useState('idle')
+  const [error, setError] = React.useState('')
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setStatus('loading'); setError('')
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, source }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || 'Er ging iets mis.'); setStatus('error'); return }
+      setStatus('success')
+      onSuccess?.()
+    } catch {
+      setError('Er ging iets mis. Probeer opnieuw.')
+      setStatus('error')
+    }
+  }
+
+  if (status === 'success') {
+    return (
+      <div className="lead-success">
+        <div style={{ fontSize: 32, marginBottom: 10 }}>✅</div>
+        <div className="lead-success-title">Check je mail!</div>
+        <p className="lead-success-text">We hebben de PDF naar {form.email} gestuurd. Kun je niet wachten?</p>
+        <a href={LEAD_MAGNET_PDF} className="btn-primary" download>Download direct</a>
+      </div>
+    )
+  }
+
+  return (
+    <form className="lead-form" onSubmit={handleSubmit}>
+      <div className={compact ? 'lead-form-row-compact' : 'lead-form-row'}>
+        <input type="text" placeholder="Jouw naam" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="form-input" required />
+        <input type="email" placeholder="jouw@email.nl" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="form-input" required />
+      </div>
+      {error && <div className="lead-error">{error}</div>}
+      <button type="submit" className="btn-primary" disabled={status === 'loading'} style={{ width: '100%', textAlign: 'center' }}>
+        {status === 'loading' ? 'VERSTUREN...' : 'GRATIS DOWNLOADEN'}
+      </button>
+    </form>
+  )
+}
+
+/**
+ * Exit-intent (muis verlaat bovenkant viewport) + scroll-trigger (60%
+ * gescrold) popup met de EmailCapture. Verschijnt max. 1x per sessie.
+ */
+export function ExitIntentModal({ source = 'exit-intent' }) {
+  const [show, setShow] = React.useState(false)
+  const triggeredRef = React.useRef(false)
+
+  React.useEffect(() => {
+    if (sessionStorage.getItem('leadmagnet_shown')) return
+
+    const trigger = () => {
+      if (triggeredRef.current) return
+      triggeredRef.current = true
+      sessionStorage.setItem('leadmagnet_shown', '1')
+      setShow(true)
+    }
+
+    const onMouseLeave = (e) => { if (e.clientY <= 0) trigger() }
+    const onScroll = () => {
+      const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight)
+      if (scrolled > 0.6) trigger()
+    }
+
+    document.addEventListener('mouseleave', onMouseLeave)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      document.removeEventListener('mouseleave', onMouseLeave)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
+  if (!show) return null
+
+  return (
+    <div className="lead-modal-backdrop" onClick={() => setShow(false)}>
+      <div className="lead-modal" onClick={e => e.stopPropagation()}>
+        <button className="lead-modal-close" onClick={() => setShow(false)} aria-label="Sluiten">✕</button>
+        <div className="lead-modal-eyebrow">Gratis download</div>
+        <h3 className="lead-modal-title">PRE-SELECTIE KRACHTTEST + NORMEN</h3>
+        <p className="lead-modal-text">Test waar je fysiek staat ten opzichte van de selectie-eisen — gratis PDF, direct in je mail.</p>
+        <EmailCapture source={source} onSuccess={() => {}} compact />
+      </div>
     </div>
   )
 }
