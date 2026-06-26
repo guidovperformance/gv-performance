@@ -1,7 +1,8 @@
 'use client'
 import React from 'react'
 import Image from 'next/image'
-import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton, ExitIntentModal } from './site-shared'
+import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton, ExitIntentModal, Analytics } from './site-shared'
+import { trackEvent } from '@/lib/analytics'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -420,6 +421,31 @@ const CSS = `
   .empty-state-icon { font-size:28px; opacity:0.3; }
   .empty-state-text { font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center; }
 
+  /* ── COOKIE CONSENT ── */
+  .cookie-banner {
+    position:fixed; left:0; right:0; bottom:0; z-index:1001;
+    background:var(--dark2); border-top:1px solid rgba(212,168,87,0.25);
+    padding:18px 24px; display:flex; align-items:center; justify-content:space-between;
+    gap:20px; flex-wrap:wrap;
+  }
+  .cookie-banner-text { font-size:13px; color:var(--muted); line-height:1.6; max-width:640px; }
+  .cookie-banner-text a { color:var(--orange); text-decoration:underline; }
+  .cookie-banner-actions { display:flex; gap:10px; flex-shrink:0; }
+  .cookie-banner-decline {
+    background:none; border:1px solid var(--muted2); color:var(--text);
+    font-family:var(--body); font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    padding:10px 18px; cursor:pointer;
+  }
+  .cookie-banner-accept {
+    background:var(--orange); border:none; color:#000;
+    font-family:var(--body); font-weight:700; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    padding:10px 18px; cursor:pointer;
+  }
+  @media (max-width: 600px) {
+    .cookie-banner { padding:16px; flex-direction:column; align-items:stretch; text-align:center; }
+    .cookie-banner-actions { justify-content:center; }
+  }
+
   /* ── LEAD CAPTURE (gratis krachttest) ── */
   .lead-form { display:flex; flex-direction:column; gap:14px; }
   .lead-form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
@@ -677,6 +703,13 @@ export default function Homepage() {
     return () => observer.disconnect()
   }, [])
 
+  const contactStartedRef = React.useRef(false)
+  const trackContactStart = () => {
+    if (contactStartedRef.current) return
+    contactStartedRef.current = true
+    trackEvent('form_start', { location: 'contact-form' })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setStatus('loading')
@@ -687,6 +720,7 @@ export default function Homepage() {
         body: JSON.stringify(form),
       })
       setStatus(res.ok ? 'success' : 'error')
+      if (res.ok) trackEvent('form_submit', { location: 'contact-form' })
     } catch { setStatus('error') }
   }
 
@@ -722,8 +756,8 @@ export default function Homepage() {
             Van topsporters tot tactische professionals in Den Haag en online — elk traject begint met een grondige analyse en eindigt met meetbaar resultaat. Geen generieke schema's. Alleen wat werkt voor jou.
           </p>
           <div className="hero-buttons">
-            <a href="#contact" className="btn-primary">Vraag je traject aan</a>
-            <a href="#diensten" className="btn-secondary">Bekijk diensten</a>
+            <a href="#contact" className="btn-primary" onClick={() => trackEvent('cta_click', { location: 'hero-primary' })}>Vraag je traject aan</a>
+            <a href="#diensten" className="btn-secondary" onClick={() => trackEvent('cta_click', { location: 'hero-secondary' })}>Bekijk diensten</a>
           </div>
         </div>
         <div className="hero-right">
@@ -1019,7 +1053,7 @@ export default function Homepage() {
           <p style={{fontSize:16, color:'#aaa', lineHeight:1.8, marginBottom:28}}>
             Plan direct een gratis kennismakingsgesprek van 30 minuten — geen wachttijd, kies zelf een moment dat past.
           </p>
-          <CalendlyButton style={{marginBottom:36}} />
+          <CalendlyButton style={{marginBottom:36}} location="home-contact" />
           {[
             { icon:'📍', label:'Locatie',     text:'Den Haag & omgeving · Online beschikbaar' },
             { icon:'⚡', label:'Reactietijd', text:'Binnen 24 uur op werkdagen' },
@@ -1050,7 +1084,7 @@ export default function Homepage() {
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Voornaam</label>
-                  <input type="text" className="form-input" placeholder="Jouw naam" value={form.voornaam} onChange={e => setForm(p => ({...p, voornaam: e.target.value}))} required />
+                  <input type="text" className="form-input" placeholder="Jouw naam" value={form.voornaam} onChange={e => setForm(p => ({...p, voornaam: e.target.value}))} onFocus={trackContactStart} required />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Achternaam</label>
@@ -1095,6 +1129,7 @@ export default function Homepage() {
       <SiteFooter />
 
       <ExitIntentModal source="home-exit-intent" />
+      <Analytics />
     </>
   )
 }

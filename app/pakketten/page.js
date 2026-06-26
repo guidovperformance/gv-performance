@@ -1,6 +1,7 @@
 'use client'
 import React from 'react'
-import { SiteNav, SiteFooter, CalendlyButton } from '../site-shared'
+import { SiteNav, SiteFooter, CalendlyButton, Analytics } from '../site-shared'
+import { trackEvent } from '@/lib/analytics'
 
 const CSS = `
   :root {
@@ -235,7 +236,7 @@ export default function Pakketten() {
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
       {/* Zwevende knop */}
-      <a href="/#contact" className="float-btn" ref={floatBtnRef}>
+      <a href="/#contact" className="float-btn" ref={floatBtnRef} onClick={() => trackEvent('cta_click', { location: 'float-btn' })}>
         <span className="float-btn-pulse" />
         Gratis intake
       </a>
@@ -297,7 +298,7 @@ export default function Pakketten() {
                   )
                 })}
               </div>
-              <a href="/#contact" style={{display:'block', textAlign:'center', marginTop:28, background: pkg.popular ? 'var(--orange)' : 'transparent', color: pkg.popular ? '#000' : 'var(--text)', border: pkg.popular ? 'none' : '1px solid var(--muted2)', fontFamily:'var(--body)', fontWeight:700, fontSize:13, letterSpacing:2, textTransform:'uppercase', padding:'16px', textDecoration:'none', transition:'background .2s, transform .15s'}}>
+              <a href="/#contact" onClick={() => trackEvent('cta_click', { location: `pakket-${pkg.name.toLowerCase()}` })} style={{display:'block', textAlign:'center', marginTop:28, background: pkg.popular ? 'var(--orange)' : 'transparent', color: pkg.popular ? '#000' : 'var(--text)', border: pkg.popular ? 'none' : '1px solid var(--muted2)', fontFamily:'var(--body)', fontWeight:700, fontSize:13, letterSpacing:2, textTransform:'uppercase', padding:'16px', textDecoration:'none', transition:'background .2s, transform .15s'}}>
                 {pkg.cta}
               </a>
             </div>
@@ -363,7 +364,7 @@ export default function Pakketten() {
         <p style={{fontFamily:'var(--body)', fontSize:16, color:'#aaa', maxWidth:480, margin:'0 auto 36px', lineHeight:1.7}}>
           Plan een gratis kennismakingsgesprek van 30 minuten. We kijken samen naar jouw situatie en doel, en kiezen het pakket dat het beste past.
         </p>
-        <CalendlyButton style={{padding:'18px 48px', fontSize:14}}>PLAN GRATIS KENNISMAKING</CalendlyButton>
+        <CalendlyButton style={{padding:'18px 48px', fontSize:14}} location="pakketten-cta">PLAN GRATIS KENNISMAKING</CalendlyButton>
         <div style={{fontFamily:'var(--body)', fontSize:12, color:'var(--muted)', marginTop:16, letterSpacing:1}}>Geen verplichtingen · Direct een moment kiezen</div>
         <div style={{marginTop:14}}>
           <a href="/#contact" style={{fontFamily:'var(--body)', fontSize:12, color:'var(--muted)', textDecoration:'underline'}}>Of stuur eerst een bericht</a>
@@ -372,6 +373,7 @@ export default function Pakketten() {
 
       {/* FOOTER */}
       <SiteFooter />
+      <Analytics />
     </>
   )
 }

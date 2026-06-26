@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton, TestimonialCard, EmptyState, usePublishedRows } from '../site-shared'
+import { SITE_CSS, SiteNav, SiteFooter, FloatButton, TestimonialCard, EmptyState, usePublishedRows , Analytics } from '../site-shared'
 
 const CSS = `
   ${SITE_CSS}
@@ -56,6 +56,7 @@ export default function TestimonialsPage() {
       </section>
 
       <SiteFooter />
+      <Analytics />
     </>
   )
 }

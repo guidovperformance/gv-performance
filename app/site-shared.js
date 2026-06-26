@@ -2,6 +2,7 @@
 import React from 'react'
 import Script from 'next/script'
 import { createClient } from '@/lib/supabase/client'
+import { GA_MEASUREMENT_ID, trackEvent, hasConsent, setConsent, getConsent } from '@/lib/analytics'
 
 export const CALENDLY_URL = 'https://calendly.com/guidovperformance/30min'
 
@@ -254,6 +255,31 @@ export const SITE_CSS = `
   .empty-state-icon { font-size:28px; opacity:0.3; }
   .empty-state-text { font-size:13px; color:var(--muted2); letter-spacing:1px; font-style:italic; text-align:center; }
 
+  /* ── COOKIE CONSENT ── */
+  .cookie-banner {
+    position:fixed; left:0; right:0; bottom:0; z-index:1001;
+    background:var(--dark2); border-top:1px solid rgba(212,168,87,0.25);
+    padding:18px 24px; display:flex; align-items:center; justify-content:space-between;
+    gap:20px; flex-wrap:wrap;
+  }
+  .cookie-banner-text { font-size:13px; color:var(--muted); line-height:1.6; max-width:640px; }
+  .cookie-banner-text a { color:var(--orange); text-decoration:underline; }
+  .cookie-banner-actions { display:flex; gap:10px; flex-shrink:0; }
+  .cookie-banner-decline {
+    background:none; border:1px solid var(--muted2); color:var(--text);
+    font-family:var(--body); font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    padding:10px 18px; cursor:pointer;
+  }
+  .cookie-banner-accept {
+    background:var(--orange); border:none; color:#000;
+    font-family:var(--body); font-weight:700; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    padding:10px 18px; cursor:pointer;
+  }
+  @media (max-width: 600px) {
+    .cookie-banner { padding:16px; flex-direction:column; align-items:stretch; text-align:center; }
+    .cookie-banner-actions { justify-content:center; }
+  }
+
   /* ── LEAD CAPTURE (gratis krachttest) ── */
   .lead-form { display:flex; flex-direction:column; gap:14px; }
   .lead-form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
@@ -332,7 +358,7 @@ export function SiteNav({ active }) {
             </a>
           ))}
         </div>
-        <a href="/#contact" className="nav-cta nav-cta-desktop">Aanvraag</a>
+        <a href="/#contact" className="nav-cta nav-cta-desktop" onClick={() => trackEvent('cta_click', { location: 'nav' })}>Aanvraag</a>
       </div>
     </nav>
   )
@@ -376,7 +402,7 @@ export function FloatButton() {
   }, [])
 
   return (
-    <a href="/#contact" className="float-btn" ref={ref}>
+    <a href="/#contact" className="float-btn" ref={ref} onClick={() => trackEvent('cta_click', { location: 'float-btn' })}>
       <span className="float-btn-pulse" />
       Gratis intake
     </a>
@@ -469,7 +495,7 @@ export const CascadeText = React.memo(function CascadeText({
  * npm-package, geen API-key: puur de publieke embed die Calendly zelf
  * documenteert.
  */
-export function CalendlyButton({ children = 'Plan direct je gratis kennismaking', className = 'btn-primary', style }) {
+export function CalendlyButton({ children = 'Plan direct je gratis kennismaking', className = 'btn-primary', style, location = 'unknown' }) {
   return (
     <>
       <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
@@ -477,8 +503,10 @@ export function CalendlyButton({ children = 'Plan direct je gratis kennismaking'
       <button
         type="button"
         onClick={() => {
+          trackEvent('cta_click', { location })
           if (typeof window !== 'undefined' && window.Calendly) {
             window.Calendly.initPopupWidget({ url: CALENDLY_URL })
+            trackEvent('booking_open', { location })
           }
         }}
         className={className}
@@ -534,6 +562,13 @@ export function EmailCapture({ source = 'unknown', onSuccess, compact = false })
   const [form, setForm] = React.useState({ name: '', email: '' })
   const [status, setStatus] = React.useState('idle')
   const [error, setError] = React.useState('')
+  const startedRef = React.useRef(false)
+
+  const trackStart = () => {
+    if (startedRef.current) return
+    startedRef.current = true
+    trackEvent('form_start', { location: source })
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -547,6 +582,7 @@ export function EmailCapture({ source = 'unknown', onSuccess, compact = false })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Er ging iets mis.'); setStatus('error'); return }
       setStatus('success')
+      trackEvent('lead_magnet_submit', { location: source })
       onSuccess?.()
     } catch {
       setError('Er ging iets mis. Probeer opnieuw.')
@@ -568,8 +604,8 @@ export function EmailCapture({ source = 'unknown', onSuccess, compact = false })
   return (
     <form className="lead-form" onSubmit={handleSubmit}>
       <div className={compact ? 'lead-form-row-compact' : 'lead-form-row'}>
-        <input type="text" placeholder="Jouw naam" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="form-input" required />
-        <input type="email" placeholder="jouw@email.nl" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className="form-input" required />
+        <input type="text" placeholder="Jouw naam" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} onFocus={trackStart} className="form-input" required />
+        <input type="email" placeholder="jouw@email.nl" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} onFocus={trackStart} className="form-input" required />
       </div>
       {error && <div className="lead-error">{error}</div>}
       <button type="submit" className="btn-primary" disabled={status === 'loading'} style={{ width: '100%', textAlign: 'center' }}>
@@ -623,6 +659,77 @@ export function ExitIntentModal({ source = 'exit-intent' }) {
         <EmailCapture source={source} onSuccess={() => {}} compact />
       </div>
     </div>
+  )
+}
+
+function CookieConsentBanner({ onChoice }) {
+  return (
+    <div className="cookie-banner">
+      <p className="cookie-banner-text">
+        We gebruiken alleen analytische cookies (Google Analytics) om te zien hoe de site gebruikt wordt — en alleen na jouw toestemming.{' '}
+        <a href="/privacy">Privacybeleid</a>
+      </p>
+      <div className="cookie-banner-actions">
+        <button className="cookie-banner-decline" onClick={() => onChoice('denied')}>Weigeren</button>
+        <button className="cookie-banner-accept" onClick={() => onChoice('granted')}>Accepteren</button>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Cookie-consent (AVG) + GA4-loader + automatische scroll-depth tracking.
+ * Plaats deze component op elke publieke marketingpagina (niet op
+ * dashboard/auth — die worden bewust niet getrackt).
+ */
+export function Analytics() {
+  const [consent, setConsentState] = React.useState(null)
+  const firedDepths = React.useRef(new Set())
+
+  React.useEffect(() => {
+    setConsentState(getConsent())
+  }, [])
+
+  React.useEffect(() => {
+    if (consent !== 'granted') return
+    const onScroll = () => {
+      const total = document.body.scrollHeight - window.innerHeight
+      if (total <= 0) return
+      const pct = (window.scrollY / total) * 100
+      for (const depth of [25, 50, 75, 100]) {
+        if (pct >= depth && !firedDepths.current.has(depth)) {
+          firedDepths.current.add(depth)
+          trackEvent('scroll_depth', { percent: depth, page: window.location.pathname })
+        }
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [consent])
+
+  const handleChoice = (value) => {
+    setConsent(value)
+    setConsentState(value)
+  }
+
+  return (
+    <>
+      {consent === 'granted' && (
+        <>
+          <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="afterInteractive" />
+          <Script id="ga4-init" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              window.gtag = gtag;
+              gtag('js', new Date());
+              gtag('config', '${GA_MEASUREMENT_ID}');
+            `}
+          </Script>
+        </>
+      )}
+      {consent === null && <CookieConsentBanner onChoice={handleChoice} />}
+    </>
   )
 }
 

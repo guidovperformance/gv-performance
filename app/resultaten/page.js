@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton, EmptyState, usePublishedRows, SEGMENT_LABELS } from '../site-shared'
+import { SITE_CSS, SiteNav, SiteFooter, FloatButton, EmptyState, usePublishedRows, SEGMENT_LABELS , Analytics } from '../site-shared'
 
 const CSS = `
   ${SITE_CSS}
@@ -100,6 +100,7 @@ export default function ResultatenPage() {
       </section>
 
       <SiteFooter />
+      <Analytics />
     </>
   )
 }

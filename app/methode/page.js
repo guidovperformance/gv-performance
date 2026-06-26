@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton, CalendlyButton } from '../site-shared'
+import { SITE_CSS, SiteNav, SiteFooter, FloatButton, CalendlyButton , Analytics } from '../site-shared'
 
 const CSS = `
   ${SITE_CSS}
@@ -113,12 +113,13 @@ export default function MethodePage() {
           Plan een gratis kennismakingsgesprek van 30 minuten, of bekijk eerst de pakketten.
         </p>
         <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <CalendlyButton className="btn-primary fade-in delay-2" />
+          <CalendlyButton className="btn-primary fade-in delay-2" location="methode-cta" />
           <a href="/pakketten" className="btn-secondary fade-in delay-2">Bekijk pakketten</a>
         </div>
       </section>
 
       <SiteFooter />
+      <Analytics />
     </>
   )
 }

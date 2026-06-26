@@ -1,5 +1,33 @@
+import { Analytics } from '../site-shared'
+
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
+
+const cookieBannerCSS = `
+  .cookie-banner {
+    position:fixed; left:0; right:0; bottom:0; z-index:1001;
+    background:var(--dark2); border-top:1px solid rgba(212,168,87,0.25);
+    padding:18px 24px; display:flex; align-items:center; justify-content:space-between;
+    gap:20px; flex-wrap:wrap;
+  }
+  .cookie-banner-text { font-size:13px; color:var(--muted2); line-height:1.6; max-width:640px; font-family:var(--font-barlow), sans-serif; }
+  .cookie-banner-text a { color:var(--orange); text-decoration:underline; }
+  .cookie-banner-actions { display:flex; gap:10px; flex-shrink:0; }
+  .cookie-banner-decline {
+    background:none; border:1px solid var(--muted2); color:var(--text);
+    font-family:var(--font-barlow), sans-serif; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    padding:10px 18px; cursor:pointer;
+  }
+  .cookie-banner-accept {
+    background:var(--orange); border:none; color:#000;
+    font-family:var(--font-barlow), sans-serif; font-weight:700; font-size:12px; letter-spacing:1px; text-transform:uppercase;
+    padding:10px 18px; cursor:pointer;
+  }
+  @media (max-width: 600px) {
+    .cookie-banner { padding:16px; flex-direction:column; align-items:stretch; text-align:center; }
+    .cookie-banner-actions { justify-content:center; }
+  }
+`
 
 export const metadata = {
   title: 'Privacybeleid — GV Performance',
@@ -57,7 +85,7 @@ export default function Privacy() {
           },
           {
             title: 'Cookies',
-            content: 'Deze website maakt gebruik van functionele cookies die noodzakelijk zijn voor het correct functioneren van de site. Er worden geen tracking- of marketingcookies geplaatst.',
+            content: 'Deze website maakt gebruik van functionele cookies die noodzakelijk zijn voor het correct functioneren van de site. Daarnaast gebruiken wij Google Analytics om te zien hoe de site gebruikt wordt — deze analytische cookies worden alleen geplaatst nadat je hier toestemming voor geeft via de cookiebanner. Je kunt je keuze altijd wijzigen door je browsergegevens voor deze site te wissen. Er worden geen marketingcookies geplaatst.',
           },
           {
             title: 'Klachten',
@@ -90,6 +118,8 @@ export default function Privacy() {
         <a href="/" style={{ ...B, fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--orange)', textDecoration: 'none' }}>← Terug naar home</a>
       </footer>
 
+      <style dangerouslySetInnerHTML={{ __html: cookieBannerCSS }} />
+      <Analytics />
     </div>
   )
 }

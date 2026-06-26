@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton, EmailCapture } from '../site-shared'
+import { SITE_CSS, SiteNav, SiteFooter, FloatButton, EmailCapture , Analytics } from '../site-shared'
 
 const CSS = `
   ${SITE_CSS}
@@ -74,6 +74,7 @@ export default function GratisKrachttestPage() {
       </section>
 
       <SiteFooter />
+      <Analytics />
     </>
   )
 }

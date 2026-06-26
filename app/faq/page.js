@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton } from '../site-shared'
+import { SITE_CSS, SiteNav, SiteFooter, FloatButton , Analytics } from '../site-shared'
 
 const CSS = `
   ${SITE_CSS}
@@ -81,6 +81,7 @@ export default function FaqPage() {
       </section>
 
       <SiteFooter />
+      <Analytics />
     </>
   )
 }

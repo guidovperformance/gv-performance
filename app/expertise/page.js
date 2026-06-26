@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton } from '../site-shared'
+import { SITE_CSS, SiteNav, SiteFooter, FloatButton , Analytics } from '../site-shared'
 
 const QUALIFICATIES = [
   'Instructeur Fysieke Training & Sport (Defensie)',
@@ -171,6 +171,7 @@ export default function ExpertisePage() {
       </section>
 
       <SiteFooter />
+      <Analytics />
     </>
   )
 }
