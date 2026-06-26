@@ -30,7 +30,7 @@ const cookieBannerCSS = `
 `
 
 export const metadata = {
-  title: 'Privacybeleid — GV Performance',
+  title: 'Privacybeleid',
 }
 
 export default function Privacy() {
