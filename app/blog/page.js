@@ -21,7 +21,7 @@ const CSS = `
 
   .blog-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; border:2px solid var(--dark3); }
   .blog-card { background:var(--dark2); padding:0; border:1px solid transparent; transition: border-color .25s, transform .25s; display:flex; flex-direction:column; text-decoration:none; }
-  .blog-card:hover { border-color: var(--orange); transform: translateY(-6px); }
+  .blog-card:hover { border-color: var(--warm-border); transform: translateY(-6px); }
   .blog-img { aspect-ratio:16/10; background:var(--dark3); display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--dark4); }
   .blog-img-label { font-size:11px; letter-spacing:2px; color:var(--muted2); text-transform:uppercase; }
   .blog-body { padding:26px 28px; flex:1; display:flex; flex-direction:column; }

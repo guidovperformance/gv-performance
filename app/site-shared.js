@@ -3,6 +3,7 @@ import React from 'react'
 import Script from 'next/script'
 import { createClient } from '@/lib/supabase/client'
 import { GA_MEASUREMENT_ID, trackEvent, hasConsent, setConsent, getConsent } from '@/lib/analytics'
+import { MessageCircle, CheckCircle2 } from 'lucide-react'
 
 export const CALENDLY_URL = 'https://calendly.com/guidovperformance/30min'
 
@@ -10,10 +11,11 @@ export const SITE_CSS = `
   :root {
     --orange: #D4A857;
     --orange-dim: rgba(212,168,87,0.15);
-    --dark:  #0A0A0A;
-    --dark2: #111;
-    --dark3: #181818;
-    --dark4: #222;
+    --dark:  #0E0E10;
+    --dark2: #161412;
+    --dark3: #1E1B18;
+    --dark4: #282420;
+    --warm-border: #3A352F;
     --text:  #F0EEE8;
     --muted: #888;
     --muted2: #555;
@@ -37,7 +39,7 @@ export const SITE_CSS = `
   nav {
     display: flex; align-items: center; justify-content: space-between;
     padding: 22px 60px; border-bottom: 1px solid rgba(212,168,87,0.12);
-    background: #0A0A0A; position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--dark); position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   }
   .nav-logo { display:flex; align-items:center; gap:14px; text-decoration:none; flex-shrink:0; }
   .nav-logo-text { font-family:var(--display); font-size:22px; letter-spacing:3px; color:var(--text); line-height:1; }
@@ -136,6 +138,9 @@ export const SITE_CSS = `
   }
   .page-hero-title span { color:var(--orange); }
   .page-hero-desc { font-size:16px; color:#aaa; max-width:560px; margin:0 auto; line-height:1.8; }
+
+  /* ── FOTOGRAFIE-GRADE: donker, contrastrijk, consistent over alle bronnen ── */
+  .photo-grade { filter: contrast(1.12) brightness(0.93) saturate(0.9); }
 
   .btn-primary {
     background:var(--orange); color:#000; font-family:var(--body);
@@ -236,7 +241,7 @@ export const SITE_CSS = `
     transition: border-color .25s, transform .25s;
     display:flex; flex-direction:column; justify-content:space-between; gap:24px;
   }
-  .testi-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .testi-card:hover { border-color:var(--warm-border); transform:translateY(-4px); }
   .testi-quote { font-size:15px; color:#ccc; line-height:1.7; }
   .testi-footer { display:flex; align-items:center; gap:14px; }
   .testi-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--dark3); }
@@ -543,10 +548,10 @@ export function usePublishedRows(table) {
   return { rows, loading }
 }
 
-export function EmptyState({ icon = '💬', text }) {
+export function EmptyState({ Icon = MessageCircle, text }) {
   return (
     <div className="empty-state">
-      <div className="empty-state-icon">{icon}</div>
+      <div className="empty-state-icon"><Icon size={28} strokeWidth={1.5} /></div>
       <div className="empty-state-text">{text}</div>
     </div>
   )
@@ -593,7 +598,7 @@ export function EmailCapture({ source = 'unknown', onSuccess, compact = false })
   if (status === 'success') {
     return (
       <div className="lead-success">
-        <div style={{ fontSize: 32, marginBottom: 10 }}>✅</div>
+        <div style={{ display:'flex', justifyContent:'center', color:'var(--orange)', marginBottom: 10 }}><CheckCircle2 size={32} strokeWidth={1.5} /></div>
         <div className="lead-success-title">Check je mail!</div>
         <p className="lead-success-text">We hebben de PDF naar {form.email} gestuurd. Kun je niet wachten?</p>
         <a href={LEAD_MAGNET_PDF} className="btn-primary" download>Download direct</a>

@@ -1,13 +1,14 @@
 'use client'
 import React from 'react'
 import { SITE_CSS, SiteNav, SiteFooter, FloatButton, EmptyState, usePublishedRows, SEGMENT_LABELS , Analytics } from '../site-shared'
+import { TrendingUp } from 'lucide-react'
 
 const CSS = `
   ${SITE_CSS}
 
   .transform-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; border:2px solid var(--dark3); }
   .transform-card { background:var(--dark2); transition: border-color .25s, transform .25s; border:1px solid transparent; padding:28px 26px; }
-  .transform-card:hover { border-color: var(--orange); transform: translateY(-6px); }
+  .transform-card:hover { border-color: var(--warm-border); transform: translateY(-6px); }
   .transform-name { font-family:var(--display); font-size:20px; letter-spacing:1px; color:var(--text); margin-bottom:6px; }
   .transform-goal { font-size:10px; letter-spacing:2px; color:var(--orange); text-transform:uppercase; margin-bottom:14px; }
   .transform-baseline-result { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
@@ -74,7 +75,7 @@ export default function ResultatenPage() {
         </p>
         <div className="transform-grid">
           {!loading && cases.length === 0 && (
-            <EmptyState icon="📈" text="Binnenkort delen we concrete trajecten en cijfers." />
+            <EmptyState Icon={TrendingUp} text="Binnenkort delen we concrete trajecten en cijfers." />
           )}
           {cases.map((c, i) => (
             <div key={c.id} className={`transform-card fade-in delay-${(i % 3) + 1}`}>

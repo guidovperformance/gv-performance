@@ -1,7 +1,9 @@
 'use client'
 import React from 'react'
 import Link from 'next/link'
+import { FileText } from 'lucide-react'
 import { CATEGORIES } from '@/lib/blog-categories'
+import { EmptyState } from '../site-shared'
 
 export default function BlogList({ posts }) {
   const [activeCat, setActiveCat] = React.useState('Alle')
@@ -32,10 +34,7 @@ export default function BlogList({ posts }) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">📝</div>
-          <div className="empty-state-text">Nog geen posts in deze categorie.</div>
-        </div>
+        <EmptyState Icon={FileText} text="Nog geen posts in deze categorie." />
       ) : (
         <div className="blog-grid">
           {filtered.map((p, i) => (

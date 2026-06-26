@@ -3,6 +3,7 @@ import React from 'react'
 import Image from 'next/image'
 import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton, ExitIntentModal, Analytics } from './site-shared'
 import { trackEvent } from '@/lib/analytics'
+import { Medal, Shield, Award, Target, Zap, Footprints, Building2, TrendingUp, Calendar, CheckCircle2, Smartphone, MapPin, MessageCircle } from 'lucide-react'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -44,10 +45,11 @@ const CSS = `
   :root {
     --orange: #D4A857;
     --orange-dim: rgba(212,168,87,0.15);
-    --dark:  #0A0A0A;
-    --dark2: #111;
-    --dark3: #181818;
-    --dark4: #222;
+    --dark:  #0E0E10;
+    --dark2: #161412;
+    --dark3: #1E1B18;
+    --dark4: #282420;
+    --warm-border: #3A352F;
     --text:  #F0EEE8;
     --muted: #888;
     --muted2: #555;
@@ -74,7 +76,7 @@ const CSS = `
     justify-content: space-between;
     padding: 22px 60px;
     border-bottom: 1px solid rgba(212,168,87,0.12);
-    background: #0A0A0A;
+    background: var(--dark);
     position: fixed;
     top: 0;
     left: 0;
@@ -241,6 +243,10 @@ const CSS = `
     display:flex; align-items:center; justify-content:center;
     flex-direction:column; gap:10px; border:1px dashed var(--muted2);
   }
+  /* ── FOTOGRAFIE-GRADE: donker, contrastrijk, consistent over alle bronnen ── */
+  .hero-right img, .about-photo img, .dienst-photo img {
+    filter: contrast(1.12) brightness(0.93) saturate(0.9);
+  }
   .about-photo-label { font-size:11px; letter-spacing:2px; color:var(--muted2); text-transform:uppercase; }
   .about-quote {
     font-family:var(--display); font-size:22px; letter-spacing:2px;
@@ -254,7 +260,7 @@ const CSS = `
     background:var(--dark3); padding:18px 20px;
     border-left:3px solid var(--orange-dim); transition:border-color .2s;
   }
-  .milestone:hover { border-color:var(--orange); }
+  .milestone:hover { border-color:var(--warm-border); }
   .milestone-year { font-family:var(--display); font-size:13px; letter-spacing:2px; color:var(--orange); margin-bottom:4px; }
   .milestone-text { font-size:13px; color:var(--muted); line-height:1.5; }
 
@@ -273,7 +279,7 @@ const CSS = `
   }
   .dienst-card:hover {
     background:var(--dark3);
-    border-color: var(--orange);
+    border-color: var(--warm-border);
     transform: translateY(-6px);
     box-shadow: 0 12px 32px rgba(212,168,87,0.12);
     position: relative;
@@ -289,7 +295,7 @@ const CSS = `
   }
   .dienst-card:hover .dienst-photo img { transform: scale(1.06); }
   .dienst-body  { padding:32px 32px 36px; }
-  .dienst-icon  { font-size:28px; margin-bottom:16px; }
+  .dienst-icon  { color:var(--orange); margin-bottom:16px; }
   .dienst-title { font-family:var(--display); font-size:24px; letter-spacing:2px; color:var(--text); margin-bottom:10px; line-height:1; }
   .dienst-desc  { font-size:14px; color:var(--muted); line-height:1.6; }
   .dienst-tag   {
@@ -304,11 +310,12 @@ const CSS = `
     font-size:11px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; flex-shrink:0;
   }
   .ook-voor-pill {
+    display:inline-flex; align-items:center; gap:6px;
     font-size:12px; letter-spacing:1px; color:var(--text); text-decoration:none;
     border:1px solid rgba(255,255,255,0.15); padding:6px 14px; border-radius:20px;
     transition: border-color .2s, color .2s;
   }
-  .ook-voor-pill:hover { border-color:var(--orange); color:var(--orange); }
+  .ook-voor-pill:hover { border-color:var(--warm-border); color:var(--orange); }
 
   /* ── HOE HET WERKT ── */
   .process { background:var(--dark2); text-align:center; }
@@ -331,7 +338,7 @@ const CSS = `
     background:var(--dark3); padding:44px 32px; transition: border-color .25s, transform .25s;
     border:1px solid transparent; display:block; text-decoration:none; cursor:pointer;
   }
-  .methode-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .methode-card:hover { border-color:var(--warm-border); transform:translateY(-4px); }
   .methode-num { font-family:var(--display); font-size:13px; letter-spacing:3px; color:var(--orange); margin-bottom:16px; }
   .methode-title { font-family:var(--display); font-size:26px; letter-spacing:1px; color:var(--text); margin-bottom:12px; }
   .methode-desc { font-size:14px; color:var(--muted); line-height:1.7; }
@@ -356,7 +363,7 @@ const CSS = `
     padding:14px 10px; position:relative; overflow:hidden;
     transition: border-color .25s, transform .25s;
   }
-  .showcase-frame:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .showcase-frame:hover { border-color:var(--warm-border); transform:translateY(-4px); }
   .showcase-frame::before {
     content:''; position:absolute; top:14px; left:50%; transform:translateX(-50%);
     width:46px; height:5px; border-radius:3px; background:var(--dark4); z-index:2;
@@ -381,8 +388,8 @@ const CSS = `
   .pakketten-teaser { background:var(--dark2); text-align:center; }
   .pakket-teaser-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; margin-top:60px; border:2px solid var(--dark3); }
   .pakket-teaser-card { background:var(--dark3); padding:36px 28px; transition: border-color .25s, transform .25s; border:1px solid transparent; }
-  .pakket-teaser-card:hover { border-color:var(--orange); transform:translateY(-4px); }
-  .pakket-teaser-card.popular { border-color:rgba(212,168,87,0.4); background:var(--orange-dim); }
+  .pakket-teaser-card:hover { border-color:var(--warm-border); transform:translateY(-4px); }
+  .pakket-teaser-card.popular { border-color:rgba(212,168,87,0.4); background:var(--dark4); }
   .pakket-teaser-name { font-family:var(--display); font-size:22px; letter-spacing:2px; color:var(--text); margin-bottom:8px; }
   .pakket-teaser-price { font-family:var(--display); font-size:32px; color:var(--orange); margin-bottom:4px; }
   .pakket-teaser-price span { font-size:13px; color:var(--muted); font-family:var(--body); }
@@ -402,7 +409,7 @@ const CSS = `
     transition: border-color .25s, transform .25s;
     display:flex; flex-direction:column; justify-content:space-between; gap:24px;
   }
-  .testi-card:hover { border-color:var(--orange); transform:translateY(-4px); }
+  .testi-card:hover { border-color:var(--warm-border); transform:translateY(-4px); }
   .testi-quote { font-size:15px; color:#ccc; line-height:1.7; }
   .testi-footer { display:flex; align-items:center; gap:14px; }
   .testi-avatar { width:48px; height:48px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--dark3); }
@@ -486,14 +493,14 @@ const CSS = `
     display:flex; align-items:center; gap:8px;
     transition:border-color .2s, color .2s;
   }
-  .cert-badge:hover { border-color:var(--orange); color:var(--text); }
-  .cert-badge.featured { border-color:rgba(212,168,87,0.4); color:var(--text); background:var(--orange-dim); }
+  .cert-badge:hover { border-color:var(--warm-border); color:var(--text); }
+  .cert-badge.featured { border-color:rgba(212,168,87,0.4); color:var(--text); background:var(--dark4); }
   .cert-dot { width:5px; height:5px; background:var(--orange); flex-shrink:0; }
 
   /* ── CONTACT ── */
   .contact { background:var(--dark3); display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start; }
   .contact-detail { display:flex; align-items:flex-start; gap:14px; margin-bottom:24px; }
-  .contact-detail-icon { width:36px; height:36px; background:var(--orange-dim); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .contact-detail-icon { width:36px; height:36px; background:var(--orange-dim); color:var(--orange); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .contact-detail-text  { font-size:14px; color:var(--muted); line-height:1.6; }
   .contact-detail-label { font-size:10px; letter-spacing:2px; color:var(--orange); text-transform:uppercase; margin-bottom:2px; }
   .form  { display:flex; flex-direction:column; gap:14px; }
@@ -776,7 +783,7 @@ export default function Homepage() {
       <div className="ribbon">
         {[
           'Korps Mariniers',
-          '🥇 Gouden Medaille Nederlands Team',
+          'Gouden Medaille Nederlands Team',
           'Defensie Sport Instructeur',
           'NBB Boxing Trainer KSS 3',
           'KNAU Looptrainer',
@@ -878,9 +885,9 @@ export default function Homepage() {
         <h2 className="section-title fade-in delay-1">VOOR WIE</h2>
         <div className="diensten-grid">
           {[
-            { icon:'🪖', title:'TACTICAL ATHLETE',     desc:'Voorbereiding op Defensie, politie, brandweer of speciale eenheden. Fysiek én mentaal klaar voor selectie en opleiding.',                                       tag:'Defensie · Politie · Brandweer', photo:'/diensten-tactical.jpg' },
-            { icon:'🏅', title:'TOPSPORT BEGELEIDING', desc:'Voor sporters met een specifiek doel en de gedrevenheid om het te halen. Periodisering, kracht, conditie en mentale weerbaarheid.',                              tag:'Seizoensvoorbereiding', photo:'/diensten-topsport.jpg' },
-            { icon:'🎯', title:'SERIEUZE AMATEUR',      desc:'Persoonlijk 1-op-1 traject op maat — van intake en doelstelling tot periodisering en uitvoering. Online, in-person of hybrid.',                                 tag:'1-op-1 · Hybrid', photo:'/diensten-coaching.jpg' },
+            { Icon: Shield, title:'TACTICAL ATHLETE',     desc:'Voorbereiding op Defensie, politie, brandweer of speciale eenheden. Fysiek én mentaal klaar voor selectie en opleiding.',                                       tag:'Defensie · Politie · Brandweer', photo:'/diensten-tactical.jpg' },
+            { Icon: Award, title:'TOPSPORT BEGELEIDING', desc:'Voor sporters met een specifiek doel en de gedrevenheid om het te halen. Periodisering, kracht, conditie en mentale weerbaarheid.',                              tag:'Seizoensvoorbereiding', photo:'/diensten-topsport.jpg' },
+            { Icon: Target, title:'SERIEUZE AMATEUR',      desc:'Persoonlijk 1-op-1 traject op maat — van intake en doelstelling tot periodisering en uitvoering. Online, in-person of hybrid.',                                 tag:'1-op-1 · Hybrid', photo:'/diensten-coaching.jpg' },
           ].map((d, i) => (
             <div key={d.title} className={`dienst-card fade-in delay-${(i % 3) + 1}`}>
               {d.photo && (
@@ -889,7 +896,7 @@ export default function Homepage() {
                 </div>
               )}
               <div className="dienst-body">
-                <div className="dienst-icon">{d.icon}</div>
+                <div className="dienst-icon"><d.Icon size={26} strokeWidth={1.75} /></div>
                 <div className="dienst-title">{d.title}</div>
                 <div className="dienst-desc">{d.desc}</div>
                 <div className="dienst-tag">{d.tag}</div>
@@ -900,9 +907,9 @@ export default function Homepage() {
         </div>
         <div className="ook-voor fade-in delay-3">
           <span className="ook-voor-label">Ook voor:</span>
-          <a href="/pakketten" className="ook-voor-pill">⚡ Hyrox voorbereiding</a>
-          <a href="/pakketten" className="ook-voor-pill">🏃 Loopcoaching</a>
-          <a href="/pakketten" className="ook-voor-pill">🏢 Team &amp; bedrijf</a>
+          <a href="/pakketten" className="ook-voor-pill"><Zap size={13} /> Hyrox voorbereiding</a>
+          <a href="/pakketten" className="ook-voor-pill"><Footprints size={13} /> Loopcoaching</a>
+          <a href="/pakketten" className="ook-voor-pill"><Building2 size={13} /> Team &amp; bedrijf</a>
         </div>
       </section>
 
@@ -913,12 +920,12 @@ export default function Homepage() {
 
         <div className="showcase-bullets">
           {[
-            ['📈', 'Voortgang inzichtelijk — 1RM, VO2max en HRV-trends in één overzicht.'],
-            ['📅', 'Periodisering per week zichtbaar — je weet altijd in welke fase je zit.'],
-            ['✅', 'Dagelijkse check-ins zonder gedoe — energie, slaap en herstel in een paar taps.'],
-          ].map(([icon, text], i) => (
+            [TrendingUp, 'Voortgang inzichtelijk — 1RM, VO2max en HRV-trends in één overzicht.'],
+            [Calendar, 'Periodisering per week zichtbaar — je weet altijd in welke fase je zit.'],
+            [CheckCircle2, 'Dagelijkse check-ins zonder gedoe — energie, slaap en herstel in een paar taps.'],
+          ].map(([Icon, text], i) => (
             <div key={text} className={`showcase-bullet fade-in delay-${i + 1}`}>
-              <span className="showcase-bullet-icon">{icon}</span>
+              <span className="showcase-bullet-icon"><Icon size={17} strokeWidth={1.75} /></span>
               <span className="showcase-bullet-text">{text}</span>
             </div>
           ))}
@@ -937,7 +944,7 @@ export default function Homepage() {
                     <Image src={s.photo} alt={s.label} fill sizes="(max-width: 768px) 33vw, 280px" style={{ objectFit: 'cover' }} />
                   ) : (
                     <>
-                      <div className="showcase-placeholder-icon">📱</div>
+                      <div className="showcase-placeholder-icon"><Smartphone size={26} strokeWidth={1.5} /></div>
                       <div className="showcase-placeholder-text">Screenshot volgt</div>
                     </>
                   )}
@@ -981,7 +988,7 @@ export default function Homepage() {
           <div className="milestones">
             {[
               ['17 JAAR','Hoogste IJshockeycompetitie Nederland'],
-              ['GOUD 🥇','Nederlands IJshockeyteam'],
+              ['GOUD','Nederlands IJshockeyteam'],
               ['MARINIERS','Korps Mariniers opleiding & dienst'],
               ['COMEBACK','Terug op topniveau na 10 jaar, eigen methode'],
             ].map(([jaar, tekst]) => (
@@ -1055,12 +1062,12 @@ export default function Homepage() {
           </p>
           <CalendlyButton style={{marginBottom:36}} location="home-contact" />
           {[
-            { icon:'📍', label:'Locatie',     text:'Den Haag & omgeving · Online beschikbaar' },
-            { icon:'⚡', label:'Reactietijd', text:'Binnen 24 uur op werkdagen' },
-            { icon:'🎯', label:'Eerste stap', text:'Gratis kennismakingsgesprek van 30 min' },
+            { Icon: MapPin, label:'Locatie',     text:'Den Haag & omgeving · Online beschikbaar' },
+            { Icon: Zap, label:'Reactietijd', text:'Binnen 24 uur op werkdagen' },
+            { Icon: Target, label:'Eerste stap', text:'Gratis kennismakingsgesprek van 30 min' },
           ].map(d => (
             <div key={d.label} className="contact-detail">
-              <div className="contact-detail-icon">{d.icon}</div>
+              <div className="contact-detail-icon"><d.Icon size={16} strokeWidth={1.75} /></div>
               <div>
                 <div className="contact-detail-label">{d.label}</div>
                 <div className="contact-detail-text">{d.text}</div>
@@ -1072,7 +1079,7 @@ export default function Homepage() {
         <div className="fade-in delay-1">
           {status === 'success' ? (
             <div style={{textAlign:'center', padding:'60px 0'}}>
-              <div style={{fontSize:48, marginBottom:16}}>✅</div>
+              <div style={{ display:'flex', justifyContent:'center', color:'var(--orange)', marginBottom:16 }}><CheckCircle2 size={48} strokeWidth={1.5} /></div>
               <div style={{fontFamily:'Oswald, sans-serif', fontSize:28, letterSpacing:2, marginBottom:8}}>BERICHT ONTVANGEN!</div>
               <div style={{fontSize:14, color:'#888'}}>Ik neem binnen 24 uur contact op.</div>
             </div>

@@ -6,7 +6,7 @@ import { trackEvent } from '@/lib/analytics'
 const CSS = `
   :root {
     --orange:#D4A857; --orange-dim:rgba(212,168,87,0.15); --gold-bright:#E8C77E;
-    --dark:#0A0A0A; --dark2:#111; --dark3:#181818; --dark4:#222;
+    --dark:#0E0E10; --dark2:#161412; --dark3:#1E1B18; --dark4:#282420; --warm-border:#3A352F;
     --text:#F0EEE8; --muted:#888; --muted2:#555;
     --display:var(--font-oswald),Impact,sans-serif; --body:var(--font-barlow),sans-serif;
   }
@@ -14,7 +14,7 @@ const CSS = `
   html{scroll-behavior:smooth;}
   body{background:var(--dark);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.65;overflow-x:hidden;overflow-y:visible;padding-top:78px;}
   /* position:fixed i.p.v. sticky — sticky bleek onbetrouwbaar in sommige browsers */
-  nav{display:flex;align-items:center;justify-content:space-between;padding:22px 60px;border-bottom:1px solid rgba(212,168,87,0.12);background:#0A0A0A;position:fixed;top:0;left:0;right:0;z-index:100;}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:22px 60px;border-bottom:1px solid rgba(212,168,87,0.12);background:var(--dark);position:fixed;top:0;left:0;right:0;z-index:100;}
   .nav-logo{display:flex;align-items:center;gap:14px;text-decoration:none;flex-shrink:0;}
   .nav-logo-text{font-family:var(--display);font-size:22px;letter-spacing:3px;color:var(--text);line-height:1;}
   .nav-logo-sub{font-family:var(--body);font-size:10px;letter-spacing:3px;color:var(--orange);margin-top:2px;}
@@ -54,7 +54,7 @@ const CSS = `
     transition:border-color .25s, transform .25s, box-shadow .25s, background .25s;
   }
   .pakket-card:hover{
-    border-color:var(--orange);
+    border-color:var(--warm-border);
     transform:translateY(-6px);
     box-shadow:0 12px 32px rgba(212,168,87,0.12);
     background:#0D0D0D;
@@ -83,7 +83,7 @@ const CSS = `
     transition:border-color .25s, transform .2s;
     border:1px solid transparent;
   }
-  .bedrijf-card:hover{border-color:var(--orange);transform:translateY(-4px);}
+  .bedrijf-card:hover{border-color:var(--warm-border);transform:translateY(-4px);}
 
   /* FLOAT BUTTON */
   .float-btn{position:fixed;bottom:32px;right:32px;background:var(--orange);color:#000;font-family:var(--body);font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:14px 24px;text-decoration:none;z-index:999;box-shadow:0 4px 24px rgba(212,168,87,0.4);transition:transform .2s,box-shadow .2s,background .2s,opacity .3s ease;display:flex;align-items:center;gap:8px;}
