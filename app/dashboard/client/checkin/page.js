@@ -44,7 +44,7 @@ export default function CheckIn() {
   const [cp, setCp] = React.useState(null)
   const [alreadyDone, setAlreadyDone] = React.useState(false)
   const [status, setStatus] = React.useState('idle')
-  const [form, setForm] = React.useState({ morning_weight: '', morning_pulse: '', sleep_quality: 0, energy_level: 0, mood: 0, soreness: 0, notes: '' })
+  const [form, setForm] = React.useState({ morning_weight: '', morning_pulse: '', hrv: '', sleep_quality: 0, energy_level: 0, mood: 0, soreness: 0, notes: '' })
   const router = useRouter()
   const supabase = createClient()
 
@@ -72,6 +72,7 @@ export default function CheckIn() {
       checkin_date: fmtDateStr(new Date()),
       morning_weight: form.morning_weight ? parseFloat(form.morning_weight) : null,
       morning_pulse: form.morning_pulse ? parseInt(form.morning_pulse) : null,
+      hrv: form.hrv ? parseFloat(form.hrv) : null,
       sleep_quality: form.sleep_quality > 0 ? form.sleep_quality : null,
       energy_level: form.energy_level > 0 ? form.energy_level : null,
       mood: form.mood > 0 ? form.mood : null,
@@ -121,6 +122,10 @@ export default function CheckIn() {
               <div>
                 <div style={{ ...B, fontSize: 10, color: 'var(--muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6, textAlign: 'center' }}>Polsslag (bpm)</div>
                 <input type="number" placeholder="—" value={form.morning_pulse} onChange={e => set('morning_pulse', e.target.value)} style={inp} />
+              </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <div style={{ ...B, fontSize: 10, color: 'var(--muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6, textAlign: 'center' }}>HRV (ms)</div>
+                <input type="number" step="0.1" placeholder="—" value={form.hrv} onChange={e => set('hrv', e.target.value)} style={inp} />
               </div>
             </div>
           </div>

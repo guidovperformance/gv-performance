@@ -36,7 +36,7 @@ export default function ClientDashboard() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.push('/login'); return }
     const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).single()
-    const { data: cp } = await supabase.from('client_profiles').select('id').eq('user_id', user.id).single()
+    const { data: cp } = await supabase.from('client_profiles').select('id, hrv_baseline').eq('user_id', user.id).single()
     if (!cp) { setLoading(false); return }
     const today = fmtDateStr(new Date())
     const [todaySess, todayCI, recentCI, weekSess, feedback] = await Promise.all([
@@ -46,7 +46,7 @@ export default function ClientDashboard() {
       supabase.from('training_sessions').select('*, session_exercises(*)').eq('client_id', cp.id).gte('session_date', getWeekStart()).lte('session_date', getWeekEnd()).order('day_of_week'),
       supabase.from('coach_feedback').select('*').eq('client_id', cp.id).order('created_at', { ascending: false }).limit(3),
     ])
-    setData({ naam: profile?.full_name?.split(' ')[0] || 'Atleet', clientId: cp.id, todaySess: todaySess.data, todayCI: todayCI.data, recentCI: recentCI.data || [], weekSess: weekSess.data || [], feedback: feedback.data || [] })
+    setData({ naam: profile?.full_name?.split(' ')[0] || 'Atleet', clientId: cp.id, hrvBaseline: cp.hrv_baseline, todaySess: todaySess.data, todayCI: todayCI.data, recentCI: recentCI.data || [], weekSess: weekSess.data || [], feedback: feedback.data || [] })
     setLoading(false)
   }
 
@@ -84,6 +84,9 @@ export default function ClientDashboard() {
             <div style={{ background: '#D4A857', borderRadius: 8, padding: '8px 14px', ...B, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, fontFamily: "var(--font-barlow), sans-serif" }}>Invullen</div>
           </Link>
         )}
+
+        {/* HRV-readiness */}
+        <HrvReadinessBanner hrv={data?.todayCI?.hrv} baseline={data?.hrvBaseline} />
 
         {/* Training vandaag */}
         <SectionLabel>Training vandaag</SectionLabel>
@@ -166,6 +169,32 @@ export default function ClientDashboard() {
         )}
       </main>
       <BottomNav active="home" />
+    </div>
+  )
+}
+
+function HrvReadinessBanner({ hrv, baseline }) {
+  if (!baseline) return null
+  if (hrv == null) {
+    return (
+      <div style={{ background: '#1e1e1e', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)', padding: '12px 16px', marginBottom: 16, ...B, fontSize: 12, color: '#666' }}>
+        Vul je HRV in bij de check-in voor je trainingsadvies van vandaag.
+      </div>
+    )
+  }
+  const ratio = hrv / baseline
+  const status = ratio >= 0.95 ? 'green' : ratio >= 0.85 ? 'yellow' : 'red'
+  const CONFIG = {
+    green:  { color: '#4ade80', label: '🟢 Goed herstel', advice: 'Ga voor je geplande training.' },
+    yellow: { color: '#ffe066', label: '🟡 Matig herstel', advice: '-20% volume vandaag.' },
+    red:    { color: '#f87171', label: '🔴 Laag herstel', advice: 'Mobiliteit of LSD vandaag — geen zware training.' },
+  }
+  const c = CONFIG[status]
+  return (
+    <div style={{ background: '#1e1e1e', borderRadius: 14, border: `1px solid ${c.color}44`, padding: '14px 16px', marginBottom: 16 }}>
+      <div style={{ ...D, fontSize: 14, fontWeight: 700, color: c.color, letterSpacing: 0.5, marginBottom: 4 }}>{c.label}</div>
+      <div style={{ ...B, fontSize: 13, color: '#f0ede8' }}>{c.advice}</div>
+      <div style={{ ...B, fontSize: 11, color: '#666', marginTop: 4 }}>HRV {hrv}ms · baseline {baseline}ms</div>
     </div>
   )
 }

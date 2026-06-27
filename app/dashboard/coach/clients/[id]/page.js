@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
+import HrvBaselinePanel from './HrvBaselinePanel'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -125,6 +126,7 @@ export default async function ClientDetail({ params }) {
                 <div style={{ ...B, fontSize: 13, color: '#aaa', lineHeight: 1.6, fontStyle: 'italic' }}>{client.notes}</div>
               </div>
             )}
+            <HrvBaselinePanel clientId={id} initialBaseline={client.hrv_baseline} />
           </div>
 
           {/* Huidig plan */}
