@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton, Analytics } from '../../site-shared'
+import { SiteNav, SiteFooter, FloatButton, Analytics } from '../../site-shared'
+import { SITE_CSS } from '../../site-css'
 import { getPostBySlug, getPostSlugs } from '@/lib/blog'
 
 export function generateStaticParams() {

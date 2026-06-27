@@ -1,4 +1,5 @@
-import { SITE_CSS, SiteNav, SiteFooter, FloatButton, Analytics } from '../site-shared'
+import { SiteNav, SiteFooter, FloatButton, Analytics } from '../site-shared'
+import { SITE_CSS } from '../site-css'
 import { getAllPosts } from '@/lib/blog'
 import BlogList from './BlogList'
 
