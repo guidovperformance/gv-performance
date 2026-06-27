@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { BottomNav, TopBar } from '@/app/dashboard/client/components'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { getLevel, LevelBadge, TEST_RESULT_NORM_FIELDS, NORMS } from '@/lib/gbrs-norms'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -43,6 +44,12 @@ export default function HistoryPage() {
   const vo2Data = testResults
     .filter(t => t.vo2max)
     .map(t => ({ date: dateLabel(t.test_date), VO2max: t.vo2max }))
+  const latestTest = testResults.length > 0 ? testResults[testResults.length - 1] : null
+  const normRows = latestTest
+    ? TEST_RESULT_NORM_FIELDS
+        .map(({ field, normKey }) => ({ normKey, value: latestTest[field], level: getLevel(normKey, latestTest[field]) }))
+        .filter(r => r.value || r.value === 0)
+    : []
 
   const latestWeight = checkIns.find(c => c.morning_weight)?.morning_weight
   const minWeight = checkIns.filter(c => c.morning_weight).length ? Math.min(...checkIns.filter(c => c.morning_weight).map(c => parseFloat(c.morning_weight))) : null
@@ -149,7 +156,25 @@ export default function HistoryPage() {
                 </div>
               )}
 
-              {strengthData.length === 0 && vo2Data.length === 0 && (
+              {normRows.length > 0 && (
+                <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: '18px 14px' }}>
+                  <div style={{ ...D, fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Waar sta je t.o.v. de norm</div>
+                  <div style={{ ...B, fontSize: 11, color: 'var(--muted)', marginBottom: 14 }}>Laatste meting · GBRS-standaarden</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {normRows.map(({ normKey, value, level }) => (
+                      <div key={normKey} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 10, borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <div>
+                          <div style={{ ...B, fontSize: 13, color: 'var(--text)' }}>{NORMS[normKey].label}</div>
+                          <div style={{ ...D, fontSize: 15, fontWeight: 700, color: 'var(--orange)' }}>{value}{NORMS[normKey].unit}</div>
+                        </div>
+                        <LevelBadge level={level} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {strengthData.length === 0 && vo2Data.length === 0 && normRows.length === 0 && (
                 <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: 32, textAlign: 'center' }}>
                   <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>Nog geen 1RM- of VO2max-data in je testresultaten.</div>
                 </div>

@@ -4,56 +4,10 @@ import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { todayStr } from '@/lib/date-utils'
+import { NORMS, getLevel, LevelBadge } from '@/lib/gbrs-norms'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
-
-const NORMS = {
-  mobility:      { standard: 5,    good: 7,    elite: 8,    pro: 10,   higher: true  },
-  broad_jump:    { standard: 190,  good: 210,  elite: 230,  pro: 250,  higher: true  },
-  deadlift_1rm:  { standard: 120,  good: 150,  elite: 180,  pro: 200,  higher: true  },
-  bench_1rm:     { standard: 70,   good: 90,   elite: 110,  pro: 130,  higher: true  },
-  illinois:      { standard: 17.0, good: 16.0, elite: 15.0, pro: 14.5, higher: false },
-  pullup_max:    { standard: 8,    good: 12,   elite: 16,   pro: 20,   higher: true  },
-  bp_bw_reps:    { standard: 10,   good: 15,   elite: 18,   pro: 20,   higher: true  },
-  dead_hang_sec: { standard: 30,   good: 60,   elite: 90,   pro: 120,  higher: true  },
-  plank_sec:     { standard: 60,   good: 120,  elite: 180,  pro: 300,  higher: true  },
-  sprint_400m:   { standard: 75,   good: 65,   elite: 58,   pro: 52,   higher: false },
-  loop_1500m:    { standard: 360,  good: 330,  elite: 300,  pro: 270,  higher: false },
-  farmers_carry: { standard: 50,   good: 100,  elite: 200,  pro: 400,  higher: true  },
-}
-
-function getLevel(key, value) {
-  if (!value && value !== 0) return null
-  const n = NORMS[key]
-  if (!n) return null
-  const v = parseFloat(value)
-  if (n.higher) {
-    if (v >= n.pro) return 'PRO'
-    if (v >= n.elite) return 'ELITE'
-    if (v >= n.good) return 'GOOD'
-    if (v >= n.standard) return 'STANDARD'
-    return 'BELOW'
-  } else {
-    if (v <= n.pro) return 'PRO'
-    if (v <= n.elite) return 'ELITE'
-    if (v <= n.good) return 'GOOD'
-    if (v <= n.standard) return 'STANDARD'
-    return 'BELOW'
-  }
-}
-
-const LEVEL_COLORS = { PRO: '#a855f7', ELITE: '#f87171', GOOD: '#fb923c', STANDARD: '#4ade80', BELOW: '#6b7280' }
-const LEVEL_LABELS = { PRO: 'PRO', ELITE: 'ELITE', GOOD: 'GOOD', STANDARD: 'STANDARD', BELOW: 'BELOW' }
-
-function LevelBadge({ level }) {
-  if (!level) return null
-  return (
-    <span style={{ background: LEVEL_COLORS[level] + '22', color: LEVEL_COLORS[level], border: `1px solid ${LEVEL_COLORS[level]}44`, fontFamily: 'var(--font-barlow), sans-serif', fontSize: 10, fontWeight: 700, letterSpacing: 2, padding: '3px 10px', textTransform: 'uppercase' }}>
-      {LEVEL_LABELS[level]}
-    </span>
-  )
-}
 
 function estimate1RM(kg, reps) {
   if (!kg || !reps || reps <= 0) return null
