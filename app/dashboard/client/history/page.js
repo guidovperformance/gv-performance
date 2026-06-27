@@ -3,6 +3,7 @@ import React from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { BottomNav, TopBar } from '@/app/dashboard/client/components'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 const D = { fontFamily: 'var(--font-oswald), Impact, sans-serif' }
 const B = { fontFamily: 'var(--font-barlow), sans-serif' }
@@ -14,6 +15,7 @@ function safeAvg(arr, key) {
 
 export default function HistoryPage() {
   const [checkIns, setCheckIns] = React.useState([])
+  const [testResults, setTestResults] = React.useState([])
   const [loading, setLoading] = React.useState(true)
   const [tab, setTab] = React.useState('checkins')
   const router = useRouter()
@@ -27,10 +29,20 @@ export default function HistoryPage() {
       if (!cp) { setLoading(false); return }
       const { data } = await supabase.from('daily_checkins').select('*').eq('client_id', cp.id).order('checkin_date', { ascending: false }).limit(60)
       setCheckIns(data || [])
+      const { data: tests } = await supabase.from('test_results').select('*').eq('client_id', cp.id).order('test_date', { ascending: true })
+      setTestResults(tests || [])
       setLoading(false)
     }
     load()
   }, [])
+
+  const dateLabel = (d) => new Date(d).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
+  const strengthData = testResults
+    .filter(t => t.deadlift_1rm || t.bench_1rm || t.squat_1rm)
+    .map(t => ({ date: dateLabel(t.test_date), Deadlift: t.deadlift_1rm || null, Bench: t.bench_1rm || null, Squat: t.squat_1rm || null }))
+  const vo2Data = testResults
+    .filter(t => t.vo2max)
+    .map(t => ({ date: dateLabel(t.test_date), VO2max: t.vo2max }))
 
   const latestWeight = checkIns.find(c => c.morning_weight)?.morning_weight
   const minWeight = checkIns.filter(c => c.morning_weight).length ? Math.min(...checkIns.filter(c => c.morning_weight).map(c => parseFloat(c.morning_weight))) : null
@@ -55,7 +67,7 @@ export default function HistoryPage() {
 
         {/* Tabs */}
         <div style={{ display: 'flex', gap: 4, marginBottom: 20, background: 'var(--card)', borderRadius: 'var(--r-btn)', padding: 4, border: '1px solid var(--border)' }}>
-          {[['checkins','📊 Check-ins'],['stats','📈 Stats']].map(([k,l]) => (
+          {[['checkins','📊 Check-ins'],['stats','📈 Stats'],['tests','🏋️ Kracht & conditie']].map(([k,l]) => (
             <button key={k} onClick={() => setTab(k)}
               style={{ flex: 1, background: tab===k ? 'var(--orange)' : 'transparent', borderRadius: 8, border: 'none', padding: '10px', ...B, fontSize: 12, fontWeight: 700, letterSpacing: 1, color: tab===k ? '#000' : 'var(--muted)', cursor: 'pointer' }}>
               {l}
@@ -90,6 +102,58 @@ export default function HistoryPage() {
                   {c.notes && <div style={{ ...B, fontSize: 12, color: 'var(--muted)', fontStyle: 'italic', marginTop: 10, padding: '8px 12px', background: 'var(--dark2)', borderRadius: 8 }}>&ldquo;{c.notes}&rdquo;</div>}
                 </div>
               ))}
+            </div>
+          )
+        ) : tab === 'tests' ? (
+          /* Kracht & conditie */
+          testResults.length === 0 ? (
+            <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: 40, textAlign: 'center' }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>🏋️</div>
+              <div style={{ ...D, fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Nog geen testresultaten</div>
+              <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>Je coach voegt deze toe na een meting — daarna zie je hier je voortgang.</div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {strengthData.length > 0 && (
+                <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: '18px 14px 8px' }}>
+                  <div style={{ ...D, fontSize: 14, fontWeight: 700, marginBottom: 4 }}>1RM-progressie</div>
+                  <div style={{ ...B, fontSize: 11, color: 'var(--muted)', marginBottom: 12 }}>Deadlift · Bench · Squat (kg)</div>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <LineChart data={strengthData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="date" stroke="var(--muted)" fontSize={11} />
+                      <YAxis stroke="var(--muted)" fontSize={11} />
+                      <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
+                      <Line type="monotone" dataKey="Deadlift" stroke="#D4A857" strokeWidth={2} connectNulls dot={{ r: 3 }} />
+                      <Line type="monotone" dataKey="Bench" stroke="#38e8e8" strokeWidth={2} connectNulls dot={{ r: 3 }} />
+                      <Line type="monotone" dataKey="Squat" stroke="#a78bfa" strokeWidth={2} connectNulls dot={{ r: 3 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {vo2Data.length > 0 && (
+                <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: '18px 14px 8px' }}>
+                  <div style={{ ...D, fontSize: 14, fontWeight: 700, marginBottom: 4 }}>VO2max-trend</div>
+                  <div style={{ ...B, fontSize: 11, color: 'var(--muted)', marginBottom: 12 }}>ml/kg/min</div>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <LineChart data={vo2Data} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="date" stroke="var(--muted)" fontSize={11} />
+                      <YAxis stroke="var(--muted)" fontSize={11} domain={['auto', 'auto']} />
+                      <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} />
+                      <Line type="monotone" dataKey="VO2max" stroke="#4ade80" strokeWidth={2} dot={{ r: 3 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              {strengthData.length === 0 && vo2Data.length === 0 && (
+                <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: 32, textAlign: 'center' }}>
+                  <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>Nog geen 1RM- of VO2max-data in je testresultaten.</div>
+                </div>
+              )}
             </div>
           )
         ) : (

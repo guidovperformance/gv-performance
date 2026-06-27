@@ -196,6 +196,7 @@ export default function TestProtocol({ params }) {
         run_5km_sec: run5km_total || null,
         run_10km_sec: run10km_total || null,
         mas: mas ? parseFloat(mas) : null,
+        vo2max: cooper_vo2max ? parseFloat(cooper_vo2max) : null,
         farmers_carry_m: f.farmers_carry_m ? parseFloat(f.farmers_carry_m) : null,
         notes: f.notes || null,
       })
