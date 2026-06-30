@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton, ExitIntentModal, Analytics } from '../site-shared'
 import { trackEvent } from '@/lib/analytics'
 import { Medal, Shield, Award, Target, Zap, Footprints, Building2, TrendingUp, Calendar, CheckCircle2, Smartphone, MapPin, MessageCircle } from 'lucide-react'
-import SmoothScrollHero from '@/app/components/smooth-scroll-hero'
+import HeroVideoReveal from '@/app/components/hero-video-reveal'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -198,6 +198,11 @@ const CSS = `
   .btn-secondary:hover { border-color:var(--text); }
 
   .hero-right { position:relative; overflow:hidden; }
+  .hero-bg-video-mobile { display:none; }
+  @media (max-width: 768px) {
+    .hero-bg-video-desktop { display:none; }
+    .hero-bg-video-mobile { display:block; }
+  }
   .hero-photo {
     width:100%; height:100%; background:var(--dark3);
     display:flex; align-items:center; justify-content:center;
@@ -747,14 +752,9 @@ export default function Homepage() {
       {/* NAV */}
       <SiteNav />
 
-      {/* HERO — testvariant met smooth-scroll video-reveal i.p.v. statische foto */}
-      <SmoothScrollHero
-        scrollHeight={1200}
-        desktopVideo="/GV-Performance-Reveal-loop.mp4"
-        mobileVideo="/GV-Performance-Reveal-vertical-loop.mp4"
-      />
-      <section className="hero" style={{padding:0, minHeight:'auto', display:'block'}}>
-        <div className="hero-left" style={{padding:'80px 60px'}}>
+      {/* HERO — testvariant: video op de plek/grootte van de bestaande hero-foto */}
+      <section className="hero" style={{padding:0}}>
+        <div className="hero-left">
           {/* F: Locatie keywords subtiel toegevoegd aan eyebrow */}
           <div className="hero-eyebrow">Coaching · Training · Tactical · Den Haag & Online</div>
           <h1 className="hero-headline">
@@ -772,6 +772,13 @@ export default function Homepage() {
             <a href="#contact" className="btn-primary" onClick={() => trackEvent('cta_click', { location: 'hero-primary' })}>Vraag je traject aan</a>
             <a href="#diensten" className="btn-secondary" onClick={() => trackEvent('cta_click', { location: 'hero-secondary' })}>Bekijk diensten</a>
           </div>
+        </div>
+        <div className="hero-right">
+          <HeroVideoReveal
+            desktopSrc="/GV-Performance-Reveal-square-loop.mp4"
+            mobileSrc="/GV-Performance-Reveal-vertical-loop.mp4"
+            alt="Guido Vols — GV Performance coach"
+          />
         </div>
       </section>
 
