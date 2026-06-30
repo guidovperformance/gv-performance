@@ -1,54 +1,48 @@
 'use client'
 import * as React from 'react'
-import { useScroll, useMotionValueEvent } from 'framer-motion'
+import Image from 'next/image'
 
 /**
- * Vervangt een statische hero-foto door een video, exact op de plek en grootte
- * van die foto. De video speelt NIET vanzelf af — de afspeelpositie wordt
- * direct gekoppeld aan de scrollpositie: naar beneden scrollen speelt de video
- * vooruit, naar boven scrollen speelt 'm terug, niet scrollen = stilstaand beeld.
- *
- * `scrollTargetRef` (optioneel): de buitenste "pin-wrapper" met extra scrollhoogte
- * waarbinnen de hero sticky gezet wordt. De scrub-voortgang loopt over de hele
- * hoogte van die wrapper, zodat er genoeg scrollruimte is om het effect echt te
- * zien terwijl de hero vastzit — zonder die ref valt de component terug op zijn
- * eigen (kortere) hoogte.
+ * Speelt een video één keer automatisch af (geen loop, geen scroll-koppeling)
+ * op de plek en grootte van de hero-foto. Zodra de video is afgelopen, wisselt
+ * de component naar een statische foto die daar blijft staan — gewoon normaal
+ * scrollgedrag, geen pinning/sticky.
  */
-export default function HeroVideoReveal({ desktopSrc, mobileSrc, alt, scrollTargetRef }) {
-  const localRef = React.useRef(null)
-  const targetRef = scrollTargetRef || localRef
-  const desktopVideoRef = React.useRef(null)
-  const mobileVideoRef = React.useRef(null)
+export default function HeroVideoReveal({ desktopSrc, mobileSrc, fallbackImage, alt }) {
+  const [ended, setEnded] = React.useState(false)
 
-  const { scrollYProgress } = useScroll({ target: targetRef, offset: ['start start', 'end end'] })
-
-  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
-    const p = Math.min(Math.max(progress, 0), 1)
-    ;[desktopVideoRef.current, mobileVideoRef.current].forEach((v) => {
-      if (v && v.duration) v.currentTime = p * v.duration
-    })
-  })
+  if (ended) {
+    return (
+      <Image
+        src={fallbackImage}
+        alt={alt}
+        fill
+        sizes="(max-width: 768px) 100vw, 50vw"
+        style={{ objectFit: 'cover', objectPosition: 'left bottom' }}
+      />
+    )
+  }
 
   return (
-    <div ref={scrollTargetRef ? undefined : localRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
       <video
-        ref={desktopVideoRef}
         className="hero-bg-video hero-bg-video-desktop"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
         src={desktopSrc}
+        autoPlay
         muted
         playsInline
-        preload="auto"
+        onEnded={() => setEnded(true)}
         aria-label={alt}
       />
       <video
-        ref={mobileVideoRef}
         className="hero-bg-video hero-bg-video-mobile"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
         src={mobileSrc}
+        autoPlay
         muted
         playsInline
-        preload="auto"
+        onEnded={() => setEnded(true)}
         aria-label={alt}
       />
     </div>

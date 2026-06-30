@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton, ExitIntentModal, Analytics } from './site-shared'
 import { trackEvent } from '@/lib/analytics'
 import { Medal, Shield, Award, Target, Zap, Footprints, Building2, TrendingUp, Calendar, CheckCircle2, Smartphone, MapPin, MessageCircle } from 'lucide-react'
+import HeroVideoReveal from '@/app/components/hero-video-reveal'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -146,7 +147,7 @@ const CSS = `
   }
   /* ── HERO ── */
   .hero {
-    min-height:92vh; display:grid; grid-template-columns:1fr 1fr;
+    height:calc(100vh - 78px); display:grid; grid-template-columns:1fr 1fr;
     position:relative; overflow:hidden;
   }
   .hero::before {
@@ -179,6 +180,23 @@ const CSS = `
   .hero-desc { font-size:16px; color:#aaa; max-width:420px; line-height:1.7; margin-bottom:44px; }
   .hero-buttons { display:flex; gap:16px; flex-wrap:wrap; }
 
+  /* Hero past nu exact in het beginscherm (height i.p.v. min-height) — op kortere
+     vensters (laptop-browser zonder volledig scherm e.d.) comprimeren we de hero-tekst
+     zodat de knoppen nooit onder de rand verdwijnen. */
+  @media (min-width: 769px) and (max-height: 860px) {
+    .hero-left { padding: 32px 60px; }
+    .hero-eyebrow { margin-bottom: 12px; }
+    .hero-headline { font-size: clamp(44px, 5.5vw, 72px); margin-bottom: 4px; }
+    .hero-tagline { font-size: clamp(20px, 2.2vw, 30px); margin-bottom: 16px; }
+    .hero-proof { margin-bottom: 10px; }
+    .hero-desc { margin-bottom: 20px; }
+  }
+  @media (min-width: 769px) and (max-height: 740px) {
+    .hero-left { padding: 24px 60px; }
+    .hero-headline { font-size: clamp(36px, 4.5vw, 56px); }
+    .hero-desc { font-size: 13px; line-height: 1.4; margin-bottom: 12px; }
+  }
+
   .btn-primary {
     background:var(--orange); color:#000; font-family:var(--body);
     font-weight:700; font-size:13px; letter-spacing:2px; text-transform:uppercase;
@@ -197,6 +215,11 @@ const CSS = `
   .btn-secondary:hover { border-color:var(--text); }
 
   .hero-right { position:relative; overflow:hidden; }
+  .hero-bg-video-mobile { display:none; }
+  @media (max-width: 768px) {
+    .hero-bg-video-desktop { display:none; }
+    .hero-bg-video-mobile { display:block; }
+  }
   .hero-photo {
     width:100%; height:100%; background:var(--dark3);
     display:flex; align-items:center; justify-content:center;
@@ -630,6 +653,7 @@ const CSS = `
        app-achtige compositie — foto vult het scherm, tekst zweeft eroverheen. */
     .hero {
       grid-template-columns: 1fr;
+      height: auto;
       min-height: auto;
       position: relative;
       padding: 0;
@@ -768,13 +792,11 @@ export default function Homepage() {
           </div>
         </div>
         <div className="hero-right">
-          <Image
-            src="/hero.jpg"
+          <HeroVideoReveal
+            desktopSrc="/GV-Performance-Reveal-square.mp4"
+            mobileSrc="/GV-Performance-Reveal-vertical.mp4"
+            fallbackImage="/hero.jpg"
             alt="Guido Vols — GV Performance coach"
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-            style={{ objectFit:'cover', objectPosition:'left bottom' }}
           />
         </div>
       </section>
