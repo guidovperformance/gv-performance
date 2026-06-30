@@ -5,6 +5,7 @@ import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePubli
 import { trackEvent } from '@/lib/analytics'
 import { Medal, Shield, Award, Target, Zap, Footprints, Building2, TrendingUp, Calendar, CheckCircle2, Smartphone, MapPin, MessageCircle } from 'lucide-react'
 import HeroVideoReveal from '@/app/components/hero-video-reveal'
+import { useScroll } from 'framer-motion'
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -691,7 +692,47 @@ export default function Homepage() {
   const [form, setForm] = React.useState({ voornaam:'', achternaam:'', email:'', dienst:'', bericht:'' })
   const [status, setStatus] = React.useState('idle')
   const floatBtnRef = React.useRef(null)
+  const heroPinWrapperRef = React.useRef(null)
+  const heroRef = React.useRef(null)
+  const [heroPinStyle, setHeroPinStyle] = React.useState({ position: 'absolute', top: 0, left: 0, right: 0 })
+  const { scrollY } = useScroll()
   const { rows: testimonials, loading: testimonialsLoading } = usePublishedRows('testimonials')
+
+  // C: Hero-pin tijdens scroll (handmatig fixed/absolute i.p.v. position:sticky —
+  // sticky bleek hier onbetrouwbaar, vermoedelijk door body { overflow-x:hidden }
+  // die overflow-y impliciet op 'auto' zet. Zelfde patroon als de nav-fix.)
+  React.useEffect(() => {
+    const NAV_OFFSET = 78
+    let wrapperTop = 0, wrapperHeight = 0, heroHeight = 0
+
+    const measure = () => {
+      if (!heroPinWrapperRef.current || !heroRef.current) return
+      wrapperTop = heroPinWrapperRef.current.offsetTop
+      wrapperHeight = heroPinWrapperRef.current.offsetHeight
+      heroHeight = heroRef.current.offsetHeight
+    }
+    measure()
+
+    const update = (y) => {
+      if (!wrapperHeight) return
+      const pinStart = wrapperTop - NAV_OFFSET
+      const pinEnd = wrapperTop + wrapperHeight - NAV_OFFSET - heroHeight
+      if (y < pinStart) {
+        setHeroPinStyle({ position: 'absolute', top: 0, left: 0, right: 0 })
+      } else if (y <= pinEnd) {
+        setHeroPinStyle({ position: 'fixed', top: NAV_OFFSET, left: 0, right: 0 })
+      } else {
+        setHeroPinStyle({ position: 'absolute', top: wrapperHeight - heroHeight, left: 0, right: 0 })
+      }
+    }
+
+    const unsubscribe = scrollY.on('change', update)
+    update(scrollY.get())
+
+    const onResize = () => { measure(); update(scrollY.get()) }
+    window.addEventListener('resize', onResize)
+    return () => { unsubscribe(); window.removeEventListener('resize', onResize) }
+  }, [])
 
   // D: Fade-in observer
   React.useEffect(() => {
@@ -752,35 +793,39 @@ export default function Homepage() {
       {/* NAV */}
       <SiteNav />
 
-      {/* HERO — testvariant: video op de plek/grootte van de bestaande hero-foto */}
-      <section className="hero" style={{padding:0}}>
-        <div className="hero-left">
-          {/* F: Locatie keywords subtiel toegevoegd aan eyebrow */}
-          <div className="hero-eyebrow">Coaching · Training · Tactical · Den Haag & Online</div>
-          <h1 className="hero-headline">
-            <CascadeText text="JOUW" fontSize="inherit" color="inherit" hoverColor="var(--orange)" /><br/>
-            <CascadeText text="DOEL," fontSize="inherit" color="inherit" hoverColor="var(--orange)" /><br/>
-            <span><CascadeText text="ONS PLAN" fontSize="inherit" color="var(--orange)" hoverColor="var(--text)" /></span>
-          </h1>
-          <div className="hero-tagline">GV PERFORMANCE</div>
-          <div className="hero-proof">Sporters begeleid van blessureherstel tot het podium.</div>
-          {/* F: "Den Haag en online" verwerkt in bestaande tekst */}
-          <p className="hero-desc">
-            Van topsporters tot tactische professionals in Den Haag en online — elk traject begint met een grondige analyse en eindigt met meetbaar resultaat. Geen generieke schema's. Alleen wat werkt voor jou.
-          </p>
-          <div className="hero-buttons">
-            <a href="#contact" className="btn-primary" onClick={() => trackEvent('cta_click', { location: 'hero-primary' })}>Vraag je traject aan</a>
-            <a href="#diensten" className="btn-secondary" onClick={() => trackEvent('cta_click', { location: 'hero-secondary' })}>Bekijk diensten</a>
+      {/* HERO — testvariant: video op de plek/grootte van de bestaande hero-foto,
+          tijdelijk vastgezet (sticky) tijdens het scrollen zodat de scrub zichtbaar is */}
+      <div ref={heroPinWrapperRef} style={{ position: 'relative', height: 'calc(100vh + 1500px)' }}>
+        <section ref={heroRef} className="hero" style={{ padding: 0, overflow: 'hidden', ...heroPinStyle }}>
+          <div className="hero-left">
+            {/* F: Locatie keywords subtiel toegevoegd aan eyebrow */}
+            <div className="hero-eyebrow">Coaching · Training · Tactical · Den Haag & Online</div>
+            <h1 className="hero-headline">
+              <CascadeText text="JOUW" fontSize="inherit" color="inherit" hoverColor="var(--orange)" /><br/>
+              <CascadeText text="DOEL," fontSize="inherit" color="inherit" hoverColor="var(--orange)" /><br/>
+              <span><CascadeText text="ONS PLAN" fontSize="inherit" color="var(--orange)" hoverColor="var(--text)" /></span>
+            </h1>
+            <div className="hero-tagline">GV PERFORMANCE</div>
+            <div className="hero-proof">Sporters begeleid van blessureherstel tot het podium.</div>
+            {/* F: "Den Haag en online" verwerkt in bestaande tekst */}
+            <p className="hero-desc">
+              Van topsporters tot tactische professionals in Den Haag en online — elk traject begint met een grondige analyse en eindigt met meetbaar resultaat. Geen generieke schema's. Alleen wat werkt voor jou.
+            </p>
+            <div className="hero-buttons">
+              <a href="#contact" className="btn-primary" onClick={() => trackEvent('cta_click', { location: 'hero-primary' })}>Vraag je traject aan</a>
+              <a href="#diensten" className="btn-secondary" onClick={() => trackEvent('cta_click', { location: 'hero-secondary' })}>Bekijk diensten</a>
+            </div>
           </div>
-        </div>
-        <div className="hero-right">
-          <HeroVideoReveal
-            desktopSrc="/GV-Performance-Reveal-square-loop.mp4"
-            mobileSrc="/GV-Performance-Reveal-vertical-loop.mp4"
-            alt="Guido Vols — GV Performance coach"
-          />
-        </div>
-      </section>
+          <div className="hero-right">
+            <HeroVideoReveal
+              desktopSrc="/GV-Performance-Reveal-square-loop.mp4"
+              mobileSrc="/GV-Performance-Reveal-vertical-loop.mp4"
+              alt="Guido Vols — GV Performance coach"
+              scrollTargetRef={heroPinWrapperRef}
+            />
+          </div>
+        </section>
+      </div>
 
       {/* RIBBON */}
       <div className="ribbon">
