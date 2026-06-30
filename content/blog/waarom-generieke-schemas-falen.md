@@ -8,7 +8,7 @@ date: "2026-06-25"
 readingTime: "7 min"
 metaTitle: "Waarom generieke trainingsschema's falen — GV Performance"
 metaDescription: "Generieke schema's stagneren na een paar weken. Ontdek waarom periodisering, autoregulatie en een nulmeting het verschil maken tussen vastlopen en blijven groeien."
-ogImage: "/blog/periodisering-og.jpg"
+ogImage: "/hero.jpg"
 published: true
 ---
 

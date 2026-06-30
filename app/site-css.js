@@ -162,9 +162,9 @@ export const SITE_CSS = `
     padding:40px 60px; display:flex; align-items:center;
     justify-content:space-between; flex-wrap:wrap; gap:16px;
   }
-  .footer-copy  { font-size:12px; color:var(--muted2); letter-spacing:1px; }
+  .footer-copy  { font-size:12px; color:var(--muted); letter-spacing:1px; }
   .footer-links { display:flex; gap:24px; }
-  .footer-links a { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted2); text-decoration:none; transition:color .2s; }
+  .footer-links a { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .2s; }
   .footer-links a:hover { color:var(--orange); }
 
   .fade-in {

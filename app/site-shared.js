@@ -331,17 +331,35 @@ export function ExitIntentModal({ source = 'exit-intent' }) {
       setShow(true)
     }
 
-    const onMouseLeave = (e) => { if (e.clientY <= 0) trigger() }
+    // Niet triggeren als het contactformulier al in beeld is — anders blokkeert
+    // de popup de "verstuur"-knop precies op het moment dat iemand een aanvraag doet.
+    const contactInView = () => {
+      const el = document.getElementById('contact')
+      if (!el) return false
+      const rect = el.getBoundingClientRect()
+      return rect.top < window.innerHeight && rect.bottom > 0
+    }
+
+    const onMouseLeave = (e) => { if (e.clientY <= 0 && !contactInView()) trigger() }
     const onScroll = () => {
       const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight)
-      if (scrolled > 0.6) trigger()
+      if (scrolled > 0.6 && !contactInView()) trigger()
+    }
+
+    // Extra vangnet: als de popup al getriggerd was vlak vóórdat het
+    // contactformulier in beeld kwam (bv. tijdens een snelle scrollbeweging),
+    // sluit 'm dan alsnog automatisch zodra het formulier zichtbaar wordt.
+    const onScrollCloseIfContactVisible = () => {
+      if (triggeredRef.current && contactInView()) setShow(false)
     }
 
     document.addEventListener('mouseleave', onMouseLeave)
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('scroll', onScrollCloseIfContactVisible, { passive: true })
     return () => {
       document.removeEventListener('mouseleave', onMouseLeave)
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll', onScrollCloseIfContactVisible)
     }
   }, [])
 

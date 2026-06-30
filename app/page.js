@@ -544,9 +544,9 @@ const CSS = `
     padding:40px 60px; display:flex; align-items:center;
     justify-content:space-between; flex-wrap:wrap; gap:16px;
   }
-  .footer-copy  { font-size:12px; color:var(--muted2); letter-spacing:1px; }
+  .footer-copy  { font-size:12px; color:var(--muted); letter-spacing:1px; }
   .footer-links { display:flex; gap:24px; }
-  .footer-links a { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted2); text-decoration:none; transition:color .2s; }
+  .footer-links a { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .2s; }
   .footer-links a:hover { color:var(--orange); }
 
   /* ── D: FADE-IN ANIMATIE ── */
@@ -659,7 +659,7 @@ const CSS = `
       padding: 0;
     }
     .hero-right {
-      position: relative; inset: auto; height: 34vh; min-height: 220px; z-index: 0;
+      position: relative; inset: auto; height: 24vh; min-height: 170px; z-index: 0;
       order: -1;
     }
     .hero-right::after {
@@ -671,10 +671,15 @@ const CSS = `
       position: relative; z-index: 2;
       min-height: auto;
       justify-content: flex-start;
-      padding: 28px 24px calc(env(safe-area-inset-bottom, 0px) + 32px);
+      padding: 16px 24px calc(env(safe-area-inset-bottom, 0px) + 20px);
     }
-    .hero-buttons { flex-direction: column; }
-    .hero-buttons a { text-align: center; width: 100%; }
+    .hero-eyebrow { margin-bottom: 10px; }
+    .hero-headline { margin-bottom: 2px; }
+    .hero-tagline { margin-bottom: 14px; }
+    .hero-proof { margin-bottom: 8px; }
+    .hero-desc { font-size: 14px; line-height: 1.5; margin-bottom: 18px; }
+    .hero-buttons { flex-direction: column; gap: 10px; }
+    .hero-buttons a { text-align: center; width: 100%; padding: 13px 28px; }
 
     .about, .contact { grid-template-columns:1fr; gap:40px; }
     .about-photo { aspect-ratio: 4/3; max-height: 320px; }
@@ -700,8 +705,8 @@ const CSS = `
   }
 
   @media (max-width: 768px) and (max-height: 700px) {
-    .hero-desc { display: none; }
-    .hero-right { height: 28vh; min-height: 180px; }
+    .hero-right { height: 20vh; min-height: 140px; }
+    .hero-desc { font-size: 13px; margin-bottom: 12px; }
   }
 `
 
@@ -1112,21 +1117,21 @@ export default function Homepage() {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label className="form-label">Voornaam</label>
-                  <input type="text" className="form-input" placeholder="Jouw naam" value={form.voornaam} onChange={e => setForm(p => ({...p, voornaam: e.target.value}))} onFocus={trackContactStart} required />
+                  <label className="form-label" htmlFor="contact-voornaam">Voornaam</label>
+                  <input id="contact-voornaam" type="text" className="form-input" placeholder="Jouw naam" value={form.voornaam} onChange={e => setForm(p => ({...p, voornaam: e.target.value}))} onFocus={trackContactStart} required />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Achternaam</label>
-                  <input type="text" className="form-input" placeholder="Achternaam" value={form.achternaam} onChange={e => setForm(p => ({...p, achternaam: e.target.value}))} />
+                  <label className="form-label" htmlFor="contact-achternaam">Achternaam</label>
+                  <input id="contact-achternaam" type="text" className="form-input" placeholder="Achternaam" value={form.achternaam} onChange={e => setForm(p => ({...p, achternaam: e.target.value}))} />
                 </div>
               </div>
               <div className="form-group">
-                <label className="form-label">E-mailadres</label>
-                <input type="email" className="form-input" placeholder="jouw@email.nl" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} required />
+                <label className="form-label" htmlFor="contact-email">E-mailadres</label>
+                <input id="contact-email" type="email" className="form-input" placeholder="jouw@email.nl" value={form.email} onChange={e => setForm(p => ({...p, email: e.target.value}))} required />
               </div>
               <div className="form-group">
-                <label className="form-label">Interesse in</label>
-                <select className="form-select" value={form.dienst} onChange={e => setForm(p => ({...p, dienst: e.target.value}))}>
+                <label className="form-label" htmlFor="contact-dienst">Interesse in</label>
+                <select id="contact-dienst" className="form-select" value={form.dienst} onChange={e => setForm(p => ({...p, dienst: e.target.value}))}>
                   <option value="">Selecteer een dienst...</option>
                   <option>1-op-1 Personal Coaching</option>
                   <option>Tactical Athlete Voorbereiding</option>
@@ -1138,8 +1143,8 @@ export default function Homepage() {
                 </select>
               </div>
               <div className="form-group">
-                <label className="form-label">Jouw bericht</label>
-                <textarea className="form-textarea" placeholder="Vertel kort over je doel of situatie..." value={form.bericht} onChange={e => setForm(p => ({...p, bericht: e.target.value}))} required />
+                <label className="form-label" htmlFor="contact-bericht">Jouw bericht</label>
+                <textarea id="contact-bericht" className="form-textarea" placeholder="Vertel kort over je doel of situatie..." value={form.bericht} onChange={e => setForm(p => ({...p, bericht: e.target.value}))} required />
               </div>
               {status === 'error' && (
                 <div style={{color:'#f87171', fontSize:13, padding:'10px 14px', background:'rgba(248,113,113,0.1)', border:'1px solid rgba(248,113,113,0.3)'}}>
