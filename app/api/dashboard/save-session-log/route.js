@@ -1,6 +1,12 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
+/**
+ * Rondt een training af: upsert (op session_id) i.p.v. blind insert, zodat
+ * hervatten van een 'in_uitvoering' sessie dezelfde rij bijwerkt in plaats
+ * van een duplicaat aan te maken. Zet status op 'voltooid' op zowel
+ * session_logs als training_sessions.
+ */
 export async function POST(request) {
   try {
     const supabase = await createClient()
@@ -11,7 +17,6 @@ export async function POST(request) {
     const { session_id, rpe, notes, sets } = body
     if (!session_id) return Response.json({ error: 'session_id ontbreekt' }, { status: 400 })
 
-    // Eigendom verifiëren: dit moet de client zijn van wie de sessie is
     const { data: clientProfile } = await supabaseAdmin
       .from('client_profiles')
       .select('id')
@@ -32,18 +37,20 @@ export async function POST(request) {
 
     const { data: sessionLog, error: logError } = await supabaseAdmin
       .from('session_logs')
-      .insert({
+      .upsert({
         client_id: clientProfile.id,
         session_id,
         logged_at: new Date().toISOString(),
         rpe: rpe || null,
         notes: notes || null,
-      })
+        status: 'voltooid',
+        current_exercise_id: null,
+      }, { onConflict: 'session_id' })
       .select()
       .single()
 
     if (logError) {
-      console.error('session_logs insert error:', logError)
+      console.error('session_logs upsert error:', logError)
       return Response.json({ error: logError.message }, { status: 400 })
     }
 
@@ -54,13 +61,17 @@ export async function POST(request) {
         set_number: s.set_number,
         reps_performed: s.reps_performed ?? null,
         weight_kg: s.weight_kg ?? null,
+        completed: s.completed ?? true,
       }))
-      const { error: exError } = await supabaseAdmin.from('exercise_logs').insert(rows)
+      const { error: exError } = await supabaseAdmin
+        .from('exercise_logs')
+        .upsert(rows, { onConflict: 'session_log_id,session_exercise_id,set_number' })
       if (exError) {
-        console.error('exercise_logs insert error:', exError)
-        // sessie-log staat al vast; oefeningdetails mislukt — toch succes melden maar loggen
+        console.error('exercise_logs upsert error:', exError)
       }
     }
+
+    await supabaseAdmin.from('training_sessions').update({ status: 'voltooid' }).eq('id', session_id)
 
     return Response.json({ success: true, id: sessionLog.id })
   } catch (e) {

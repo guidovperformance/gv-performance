@@ -140,7 +140,9 @@ export default function WeekPage() {
                     <div style={{ ...D, fontSize: 20, fontWeight: 700, letterSpacing: 0.5 }}>{session.session_name}</div>
                     <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{session.session_exercises?.length || 0} oefeningen</div>
                   </div>
-                  <a href={`/dashboard/client/session/${session.id}`} style={{ background: 'var(--orange)', borderRadius: 'var(--r-btn)', padding: '10px 16px', ...B, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: 1, textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none' }}>Start →</a>
+                  <a href={`/dashboard/client/session/${session.id}`} style={{ background: session.status === 'voltooid' ? 'var(--dark3)' : 'var(--orange)', border: session.status === 'voltooid' ? '1px solid var(--border)' : 'none', borderRadius: 'var(--r-btn)', padding: '10px 16px', ...B, fontSize: 11, fontWeight: 700, color: session.status === 'voltooid' ? 'var(--text)' : '#000', letterSpacing: 1, textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none' }}>
+                    {session.status === 'voltooid' ? '✓ Bekijk' : session.status === 'in_uitvoering' ? 'Hervat →' : 'Start →'}
+                  </a>
                 </div>
                 {session.session_exercises?.slice(0,5).map((ex, i) => (
                   <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderTop: '1px solid var(--border)' }}>

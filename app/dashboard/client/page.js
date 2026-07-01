@@ -98,7 +98,9 @@ export default function ClientDashboard() {
                 <div style={{ ...D, fontSize: 22, fontWeight: 700, color: '#f0ede8', marginTop: 4 }}>{data.todaySess.session_name}</div>
                 <div style={{ ...B, fontSize: 12, color: '#666', marginTop: 2 }}>{data.todaySess.session_exercises?.length || 0} oefeningen</div>
               </div>
-              <Link href={`/dashboard/client/session/${data.todaySess.id}`} style={{ background: '#D4A857', borderRadius: 10, padding: '10px 18px', ...B, fontSize: 12, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none', fontFamily: "var(--font-barlow), sans-serif" }}>Start →</Link>
+              <Link href={`/dashboard/client/session/${data.todaySess.id}`} style={{ background: data.todaySess.status === 'voltooid' ? '#2a2a2a' : '#D4A857', border: data.todaySess.status === 'voltooid' ? '1px solid rgba(255,255,255,0.1)' : 'none', borderRadius: 10, padding: '10px 18px', ...B, fontSize: 12, fontWeight: 700, color: data.todaySess.status === 'voltooid' ? '#f0ede8' : '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none', fontFamily: "var(--font-barlow), sans-serif" }}>
+                {data.todaySess.status === 'voltooid' ? '✓ Bekijk' : data.todaySess.status === 'in_uitvoering' ? 'Hervat →' : 'Start →'}
+              </Link>
             </div>
             {data.todaySess.session_exercises?.slice(0,4).map((ex, i) => (
               <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
