@@ -29,6 +29,11 @@ const CSS = `
 
 export default function ResultatenPage() {
   const { rows: cases, loading } = usePublishedRows('case_results')
+  // Zolang er nog geen echte case_results zijn, tonen we de bestaande
+  // testimonial-cijfers hier ook als mini-case — beter dan een lege pagina
+  // op een sectie die letterlijk "Echte Transformaties" heet.
+  const { rows: testimonials, loading: testimonialsLoading } = usePublishedRows('testimonials')
+  const showTestimonialFallback = !loading && cases.length === 0 && !testimonialsLoading && testimonials.length > 0
 
   React.useEffect(() => {
     const observer = new IntersectionObserver(
@@ -37,7 +42,7 @@ export default function ResultatenPage() {
     )
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el))
     return () => observer.disconnect()
-  }, [cases])
+  }, [cases, testimonials])
 
   return (
     <>
@@ -74,9 +79,20 @@ export default function ResultatenPage() {
           Onderstaande trajecten geven een beeld van de aanpak. Foto-/videomateriaal en concrete cijfers worden per cliënt toegevoegd zodra toestemming is verleend.
         </p>
         <div className="transform-grid">
-          {!loading && cases.length === 0 && (
+          {!loading && cases.length === 0 && !showTestimonialFallback && (
             <EmptyState Icon={TrendingUp} text="Binnenkort delen we concrete trajecten en cijfers." />
           )}
+          {showTestimonialFallback && testimonials.map((t, i) => (
+            <div key={t.id} className={`transform-card fade-in delay-${(i % 3) + 1}`}>
+              <div className="transform-name">{t.name}</div>
+              <div className="transform-goal">{t.segment ? SEGMENT_LABELS[t.segment] : ''}{t.segment && t.role ? ' · ' : ''}{t.role}</div>
+              {t.result_metric && (
+                <div className="transform-baseline-result">
+                  <span className="transform-result">{t.result_metric}</span>
+                </div>
+              )}
+            </div>
+          ))}
           {cases.map((c, i) => (
             <div key={c.id} className={`transform-card fade-in delay-${(i % 3) + 1}`}>
               <div className="transform-name">{c.client_label}</div>

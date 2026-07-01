@@ -18,6 +18,34 @@ const QUALIFICATIES = [
   'Interne Voedingscursus',
 ]
 
+const QUAL_CLUSTERS = [
+  {
+    title: 'Tactical & fysieke training',
+    items: ['Instructeur Fysieke Training & Sport (Defensie)', 'MBO 4 Trainer / Coach', 'Overload A & B (TOP methode)'],
+    text: 'De basis voor tactical athlete-trajecten: dezelfde opleiding en methodiek die binnen Defensie wordt gebruikt om militairen fysiek selectie-klaar te krijgen, toegepast op jouw traject.',
+  },
+  {
+    title: 'Kracht, mobiliteit & bewegingskwaliteit',
+    items: ['Athletic Skills Model (ASM)', 'Totaal Coach XXL (incl. mentaal)', 'Xavier FIT A'],
+    text: 'Zorgt dat kracht en power op een technisch verantwoorde manier worden opgebouwd — minder blessurerisico, betere overdracht naar jouw sport.',
+  },
+  {
+    title: 'Conditie & duurvermogen',
+    items: ['Basis Looptrainer 3 — Atletiek Unie', 'Power Cycling A + B — Always Fit', 'Atletiek Baan Assistent 2 — Atletiek Unie'],
+    text: 'Specifieke looptrainer- en cycling-certificeringen, gebruikt voor het opbouwen van VO2max en duurvermogen — essentieel bij tactical selecties en Hyrox.',
+  },
+  {
+    title: 'Combat & mentale weerbaarheid',
+    items: ['KSS 3 — Nederlandse Boks Bond'],
+    text: 'Erkend bokstrainer-niveau — niet alleen techniek, maar ook de mentale weerbaarheid die onder druk presteren vereist.',
+  },
+  {
+    title: 'Veiligheid & voeding',
+    items: ['EHBO (actueel)', 'Lifeguard (actueel)', 'Interne Voedingscursus'],
+    text: 'Altijd actueel gehouden, zodat trainingen veilig verlopen en voedingsadvies een onderbouwd onderdeel van je traject is — geen losse tips.',
+  },
+]
+
 const CSS = `
   ${SITE_CSS}
 
@@ -133,6 +161,19 @@ const CSS = `
   @media (max-width: 768px) {
     .pixel-hero { padding: 90px 16px 40px; gap: 24px; }
   }
+
+  /* ── KWALIFICATIES UITGEDIEPT ── */
+  .quals-detail { background: var(--dark2); padding: 80px 60px; }
+  .quals-detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; margin-top: 48px; border: 2px solid var(--dark3); }
+  .quals-detail-card { background: var(--dark); padding: 28px 26px; }
+  .quals-detail-title { font-family: var(--display); font-size: 17px; letter-spacing: 1px; color: var(--orange); margin-bottom: 12px; }
+  .quals-detail-text { font-size: 14px; color: #aaa; line-height: 1.7; margin-bottom: 14px; }
+  .quals-detail-items { display: flex; flex-wrap: wrap; gap: 6px; }
+  .quals-detail-item { font-size: 11px; letter-spacing: 0.5px; color: var(--muted); background: var(--dark3); padding: 5px 10px; border-radius: 999px; }
+  @media (max-width: 768px) {
+    .quals-detail { padding: 56px 24px; }
+    .quals-detail-grid { grid-template-columns: 1fr; }
+  }
 `
 
 export default function ExpertisePage() {
@@ -167,6 +208,22 @@ export default function ExpertisePage() {
               <span key={i} className="qual-badge">{q}</span>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="quals-detail">
+        <div className="section-label" style={{ justifyContent: 'center' }}>Wat het voor jou betekent</div>
+        <h2 className="section-title" style={{ textAlign: 'center' }}>DERTIEN CERTIFICERINGEN, ÉÉN DOEL</h2>
+        <div className="quals-detail-grid">
+          {QUAL_CLUSTERS.map(c => (
+            <div key={c.title} className="quals-detail-card">
+              <div className="quals-detail-title">{c.title}</div>
+              <p className="quals-detail-text">{c.text}</p>
+              <div className="quals-detail-items">
+                {c.items.map(i => <span key={i} className="quals-detail-item">{i}</span>)}
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

@@ -343,7 +343,10 @@ export function ExitIntentModal({ source = 'exit-intent' }) {
     const onMouseLeave = (e) => { if (e.clientY <= 0 && !contactInView()) trigger() }
     const onScroll = () => {
       const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight)
-      if (scrolled > 0.6 && !contactInView()) trigger()
+      // 80% i.p.v. 60% — bij 60% viel de trigger middenin het founder-verhaal
+      // op de homepage, wat de leesflow onderbrak vlak vóórdat het vertrouwen
+      // wordt opgebouwd.
+      if (scrolled > 0.8 && !contactInView()) trigger()
     }
 
     // Extra vangnet: als de popup al getriggerd was vlak vóórdat het

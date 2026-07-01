@@ -3,7 +3,7 @@ import React from 'react'
 import Image from 'next/image'
 import { CascadeText, SiteNav, SiteFooter, TestimonialCard, EmptyState, usePublishedRows, CalendlyButton, ExitIntentModal, Analytics } from './site-shared'
 import { trackEvent } from '@/lib/analytics'
-import { Medal, Shield, Award, Target, Zap, Footprints, Building2, TrendingUp, Calendar, CheckCircle2, Smartphone, MapPin, MessageCircle } from 'lucide-react'
+import { Medal, Shield, Award, Target, Zap, Footprints, Building2, TrendingUp, Calendar, CheckCircle2, Smartphone, MapPin, MessageCircle, X, Check } from 'lucide-react'
 import HeroVideoReveal from '@/app/components/hero-video-reveal'
 
 const jsonLd = {
@@ -353,6 +353,17 @@ const CSS = `
   .probleem { background:var(--dark); text-align:center; }
   .probleem-text { font-size:17px; color:#aaa; line-height:1.8; max-width:680px; margin:0 auto 20px; }
   .probleem-text strong { color:var(--text); font-weight:700; }
+
+  /* ── SCHEMA VS. COACHING ── */
+  .compare { max-width:820px; margin:48px auto 0; display:grid; grid-template-columns:1fr 1fr; gap:2px; border:2px solid var(--dark3); text-align:left; }
+  .compare-col { background:var(--dark2); padding:32px; }
+  .compare-col.win { background:var(--orange-dim); }
+  .compare-col-title { font-family:var(--display); font-size:15px; letter-spacing:2px; text-transform:uppercase; margin-bottom:18px; color:var(--muted); }
+  .compare-col.win .compare-col-title { color:var(--orange); }
+  .compare-row { display:flex; align-items:flex-start; gap:10px; font-size:14px; color:#aaa; line-height:1.6; margin-bottom:12px; }
+  .compare-col.win .compare-row { color:var(--text); }
+  .compare-row-icon { flex-shrink:0; margin-top:2px; }
+  @media (max-width: 600px) { .compare { grid-template-columns:1fr; } }
 
   /* ── METHODE ── */
   .methode { background:var(--dark2); }
@@ -833,6 +844,31 @@ export default function Homepage() {
         <p className="probleem-text fade-in delay-2">
           Daarom begin ik met een grondige nulmeting en bouw ik een traject dat <strong>meegroeit met jouw voortgang</strong> — geperiodiseerd, meetbaar, en bijgestuurd waar nodig.
         </p>
+
+        <div className="compare fade-in delay-3">
+          <div className="compare-col">
+            <div className="compare-col-title">Schema van het internet</div>
+            {[
+              'Zelfde schema voor iedereen — geen rekening met jouw startpunt of herstel',
+              'Geen nulmeting, geen data — je weet niet écht waar je staat',
+              'Niemand stuurt bij als het niet werkt of je vastloopt',
+              'Geen mentale begeleiding als het zwaar wordt',
+            ].map(t => (
+              <div key={t} className="compare-row"><span className="compare-row-icon"><X size={15} color="#666" /></span>{t}</div>
+            ))}
+          </div>
+          <div className="compare-col win">
+            <div className="compare-col-title">GV Performance</div>
+            {[
+              'Traject gebouwd rond jouw doel, startpunt en herstelvermogen',
+              'Nulmeting + doorlopende data — beslissingen op basis van wat werkt',
+              'Vaste check-ins en bijsturing zodra dat nodig is',
+              'Mentale coaching als vast onderdeel, niet als extra',
+            ].map(t => (
+              <div key={t} className="compare-row"><span className="compare-row-icon"><Check size={15} color="var(--orange)" /></span>{t}</div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* METHODE */}
@@ -960,15 +996,16 @@ export default function Homepage() {
 
         <div className="showcase-grid">
           {[
-            { label: 'Periodiseringsplan', photo: null },
-            { label: 'Voortgangsgrafiek', photo: null },
-            { label: 'Sessie-view', photo: null },
+            { label: 'Periodiseringsplan', photo: '/showcase-periodisering.jpg' },
+            { label: 'Voortgangsgrafiek', photo: '/showcase-voortgang.jpg' },
+            { label: 'Sessie-view', photo: '/showcase-sessie.jpg' },
           ].map((s, i) => (
             <div key={s.label} className={`fade-in delay-${i + 1}`}>
               <div className="showcase-frame">
                 <div className="showcase-frame-inner">
                   {s.photo ? (
-                    <Image src={s.photo} alt={s.label} fill sizes="(max-width: 768px) 33vw, 280px" style={{ objectFit: 'cover' }} />
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={s.photo} alt={s.label} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     <>
                       <div className="showcase-placeholder-icon"><Smartphone size={26} strokeWidth={1.5} /></div>
