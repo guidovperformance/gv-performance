@@ -27,7 +27,7 @@ export default function HeroVideoReveal({ desktopSrc, mobileSrc, fallbackImage, 
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
       <video
         className="hero-bg-video hero-bg-video-desktop"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         src={desktopSrc}
         autoPlay
         muted
@@ -37,7 +37,7 @@ export default function HeroVideoReveal({ desktopSrc, mobileSrc, fallbackImage, 
       />
       <video
         className="hero-bg-video hero-bg-video-mobile"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top' }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         src={mobileSrc}
         autoPlay
         muted

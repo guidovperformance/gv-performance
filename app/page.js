@@ -215,7 +215,8 @@ const CSS = `
   .btn-secondary:hover { border-color:var(--text); }
 
   .hero-right { position:relative; overflow:hidden; }
-  .hero-bg-video-mobile { display:none; }
+  .hero-bg-video-desktop { object-position: center top; }
+  .hero-bg-video-mobile { display:none; object-position: center center; }
   @media (max-width: 768px) {
     .hero-bg-video-desktop { display:none; }
     .hero-bg-video-mobile { display:block; }
@@ -715,7 +716,7 @@ const CSS = `
     .section-title { font-size: clamp(32px, 9vw, 68px); }
   }
 
-  @media (max-width: 768px) and (max-height: 700px) {
+  @media (max-width: 768px) and (max-height: 760px) {
     .hero-right { height: 20vh; min-height: 140px; }
     .hero-desc { font-size: 13px; margin-bottom: 12px; }
   }
@@ -810,7 +811,7 @@ export default function Homepage() {
         <div className="hero-right">
           <HeroVideoReveal
             desktopSrc="/GV-Performance-Reveal-square.mp4"
-            mobileSrc="/GV-Performance-Reveal-vertical.mp4"
+            mobileSrc="/GV-Performance-Reveal-square.mp4"
             fallbackImage="/hero.jpg"
             alt="Guido Vols — GV Performance coach"
           />
