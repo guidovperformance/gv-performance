@@ -20,6 +20,17 @@ const MODE_CONFIG = {
 
 const AUTOSAVE_DEBOUNCE_MS = 900
 
+// Conditie-oefeningen zonder afstand/tijd-doel worden als 1 geheel afgevinkt
+// (één instructieblok i.p.v. losse sets), niet als ex.sets losse sets.
+function effectiveSetCount(ex) {
+  const meta = parseNotes(ex.notes)
+  if ((meta._mode || 'kracht') === 'conditie') {
+    const hasTarget = meta._metric === 'afstand' ? !!meta.distance_m : !!meta.duration
+    if (!hasTarget) return 1
+  }
+  return ex.sets || 3
+}
+
 export default function SessionPage({ params }) {
   const resolvedParams = React.use(params)
   const sessionId = resolvedParams?.id
@@ -183,29 +194,33 @@ export default function SessionPage({ params }) {
     }
   }, [flushAutosave])
 
+  // Refs worden hier SYNCHROON (buiten de setState-updater) bijgewerkt —
+  // React garandeert niet dat een updater-functie al is uitgevoerd tegen de
+  // tijd dat de code na setState() verdergaat, waardoor een direct volgende
+  // flushAutosave() anders soms een stale ref-waarde las (race condition,
+  // reproduceerbaar via geautomatiseerde snelle klikken).
   const updateLog = (exId, setIdx, field, val) => {
-    setLogs(prev => {
-      const next = { ...prev, [exId]: prev[exId].map((s, i) => i === setIdx ? { ...s, [field]: val } : s) }
-      logsRef.current = next
-      return next
-    })
+    const next = { ...logsRef.current, [exId]: logsRef.current[exId].map((s, i) => i === setIdx ? { ...s, [field]: val } : s) }
+    logsRef.current = next
+    setLogs(next)
     scheduleAutosave()
   }
 
   const toggleSetDone = (exId, setIdx) => {
-    setCompletedSets(prev => {
-      const key = `${exId}-${setIdx}`
-      const next = { ...prev, [key]: !prev[key] }
-      completedSetsRef.current = next
-      const ex = session.session_exercises.find(e => e.id === exId)
-      const allDone = Array.from({ length: ex.sets || 3 }, (_, j) => next[`${exId}-${j}`]).every(Boolean)
-      if (allDone && !prev[key]) {
-        const idx = session.session_exercises.findIndex(e => e.id === exId)
-        const nextEx = session.session_exercises[idx + 1]
-        if (nextEx) setTimeout(() => setActiveExerciseAndSave(nextEx.id), 400)
-      }
-      return next
-    })
+    const key = `${exId}-${setIdx}`
+    const wasDone = !!completedSetsRef.current[key]
+    const next = { ...completedSetsRef.current, [key]: !wasDone }
+    completedSetsRef.current = next
+    setCompletedSets(next)
+
+    const ex = session.session_exercises.find(e => e.id === exId)
+    const allDone = Array.from({ length: effectiveSetCount(ex) }, (_, j) => next[`${exId}-${j}`]).every(Boolean)
+    if (allDone && !wasDone) {
+      const idx = session.session_exercises.findIndex(e => e.id === exId)
+      const nextEx = session.session_exercises[idx + 1]
+      if (nextEx) setTimeout(() => setActiveExerciseAndSave(nextEx.id), 400)
+    }
+
     flushAutosave()
   }
 
@@ -258,7 +273,7 @@ export default function SessionPage({ params }) {
     }
   }
 
-  const totalSets = session?.session_exercises?.reduce((a, ex) => a + (ex.sets || 0), 0) || 0
+  const totalSets = session?.session_exercises?.reduce((a, ex) => a + effectiveSetCount(ex), 0) || 0
   const doneSets = Object.values(completedSets).filter(Boolean).length
   const progress = totalSets > 0 ? Math.round((doneSets / totalSets) * 100) : 0
 
@@ -339,9 +354,12 @@ export default function SessionPage({ params }) {
               const name = ex.exercise_name || ex.exercises?.name || `Oefening ${i + 1}`
               const isActive = activeExercise === ex.id
               const setsArr = logs[ex.id] || []
-              const doneCount = setsArr.filter((_, j) => completedSets[`${ex.id}-${j}`]).length
-              const allDone = doneCount === setsArr.length && setsArr.length > 0
+              const effSets = effectiveSetCount(ex)
+              const doneCount = Array.from({ length: effSets }, (_, j) => completedSets[`${ex.id}-${j}`]).filter(Boolean).length
+              const allDone = doneCount === effSets
               const prevForEx = previous[name]
+
+              const conditieHasTarget = meta._metric === 'afstand' ? !!meta.distance_m : !!meta.duration
 
               const sub = []
               if (ex.sets) sub.push(`${ex.sets} sets`)
@@ -349,8 +367,12 @@ export default function SessionPage({ params }) {
                 if (ex.reps) sub.push(`${ex.reps} reps`)
                 if (ex.weight_kg) sub.push(`${ex.weight_kg}kg`)
               } else if (mode === 'conditie') {
-                if (meta._metric === 'afstand' && meta.distance_m) sub.push(`${meta.distance_m}m`)
-                if (meta._metric === 'tijd' && meta.duration) sub.push(meta.duration)
+                if (conditieHasTarget) {
+                  if (meta._metric === 'afstand' && meta.distance_m) sub.push(`${meta.distance_m}m`)
+                  if (meta._metric === 'tijd' && meta.duration) sub.push(meta.duration)
+                } else if (meta.instructie) {
+                  sub.push(meta.instructie)
+                }
                 if (meta._zone) sub.push(meta._zone)
               } else if (mode === 'mobiliteit') {
                 if (meta.hold_sec) sub.push(`${meta.hold_sec}s`)
@@ -378,8 +400,8 @@ export default function SessionPage({ params }) {
 
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3, flexShrink: 0 }}>
                       <span style={{ ...B, fontSize: 9, fontWeight: 700, letterSpacing: 1, padding: '2px 6px', borderRadius: 3, background: cfg.bg, color: cfg.color }}>{cfg.label}</span>
-                      {!allDone && setsArr.length > 0 && (
-                        <span style={{ ...B, fontSize: 10, color: 'var(--muted)' }}>{doneCount}/{setsArr.length}</span>
+                      {!allDone && effSets > 0 && (
+                        <span style={{ ...B, fontSize: 10, color: 'var(--muted)' }}>{doneCount}/{effSets}</span>
                       )}
                     </div>
 
@@ -425,7 +447,28 @@ export default function SessionPage({ params }) {
                         </>
                       )}
 
-                      {mode === 'conditie' && (
+                      {mode === 'conditie' && !conditieHasTarget && (
+                        <>
+                          <div style={{ paddingTop: 8, marginBottom: 8 }}>
+                            <div style={{ background: 'var(--dark3)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px', ...B, fontSize: 14, color: 'var(--text)', lineHeight: 1.5 }}>
+                              {meta.instructie || 'Geen vaste afstand of tijd — voer uit op gevoel.'}
+                            </div>
+                          </div>
+                          {meta._zone && (
+                            <div style={{ marginBottom: 8 }}>
+                              <span style={{ ...B, fontSize: 11, padding: '3px 10px', borderRadius: 4, background: 'rgba(74,222,128,0.12)', color: '#4ade80' }}>🎯 {meta._zone}</span>
+                            </div>
+                          )}
+                          {viewMode === 'active' && (
+                            <button onClick={() => toggleSetDone(ex.id, 0)}
+                              style={{ width: '100%', background: completedSets[`${ex.id}-0`] ? 'rgba(74,222,128,0.2)' : 'var(--dark3)', border: `1px solid ${completedSets[`${ex.id}-0`] ? 'rgba(74,222,128,0.4)' : 'var(--border)'}`, borderRadius: 8, color: completedSets[`${ex.id}-0`] ? '#4ade80' : 'var(--muted)', ...B, fontSize: 13, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', padding: '10px', cursor: 'pointer' }}>
+                              {completedSets[`${ex.id}-0`] ? '✓ Voltooid' : 'Markeer als voltooid'}
+                            </button>
+                          )}
+                        </>
+                      )}
+
+                      {mode === 'conditie' && conditieHasTarget && (
                         <>
                           <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 36px', gap: 6, marginBottom: 6, paddingTop: 8 }}>
                             {['SET', meta._metric === 'afstand' ? 'AFSTAND' : 'TIJD', ''].map(h => (
@@ -434,7 +477,7 @@ export default function SessionPage({ params }) {
                           </div>
                           {setsArr.map((_, j) => {
                             const done = completedSets[`${ex.id}-${j}`]
-                            const placeholder = meta._metric === 'afstand' ? (meta.distance_m ? `${meta.distance_m}m` : '—') : (meta.duration || '—')
+                            const placeholder = meta._metric === 'afstand' ? `${meta.distance_m}m` : meta.duration
                             return (
                               <div key={j} style={{ display: 'grid', gridTemplateColumns: '28px 1fr 36px', gap: 6, marginBottom: 6, opacity: done ? 0.5 : 1 }}>
                                 <div style={{ ...D, fontSize: 13, fontWeight: 700, color: '#4ade80', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{j+1}</div>

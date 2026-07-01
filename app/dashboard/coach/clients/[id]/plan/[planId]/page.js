@@ -105,7 +105,7 @@ export default function PlanView({ params }) {
       let reps = null, weight_kg = null, notes = null
       if (mode === 'conditie') {
         const spd = calcSpeed(ex._tempo || d?.tempo || '')
-        notes = JSON.stringify({ _mode:'conditie', _metric:metric, _zone:ex._zone??d?._zone??null, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
+        notes = JSON.stringify({ _mode:'conditie', _metric:metric, _zone:ex._zone??d?._zone??null, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null, instructie: ex._notes ?? d?.instructie ?? null })
       } else if (mode === 'mobiliteit') {
         notes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex._hold||d?.hold_s)||30, hold_type:ex._htype||d?.hold_type||'statisch', rest_s:parseInt(ex.rest_seconds||d?.rest_s)||30 })
       } else {
@@ -228,7 +228,7 @@ export default function PlanView({ params }) {
     if (mode==='conditie') {
       const metric = ex._metric ?? d?._metric ?? 'afstand'
       const spd = calcSpeed(ex._tempo||d?.tempo||'')
-      notes = JSON.stringify({ _mode:'conditie', _metric:metric, _zone:ex._zone??d?._zone??null, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null })
+      notes = JSON.stringify({ _mode:'conditie', _metric:metric, _zone:ex._zone??d?._zone??null, distance_m: metric!=='tijd'?(parseInt(ex._dist||d?.distance_m)||null):null, duration: metric==='tijd'?(ex._duration||d?.duration||null):null, rest_s:parseInt(ex.rest_seconds||d?.rest_s)||180, tempo:ex._tempo||d?.tempo||null, speed_kmh:spd?parseFloat(spd):null, instructie: ex._notes ?? d?.instructie ?? null })
     } else if (mode==='mobiliteit') {
       notes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex._hold||d?.hold_s)||30, hold_type:ex._htype||d?.hold_type||'statisch', rest_s:parseInt(ex.rest_seconds||d?.rest_s)||30 })
     } else {
@@ -590,6 +590,13 @@ export default function PlanView({ params }) {
                                   onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)}
                                   style={{...inp,textAlign:'center'}} />
                               </div>
+                            </div>
+                            <div style={{marginBottom:6}}>
+                              <label style={lbl}>Notitie / opdracht (i.p.v. afstand of tijd)</label>
+                              <input value={ex._notes??d?.instructie??''}
+                                onChange={e=>updEx(s.id,ex.id,'_notes',e.target.value)}
+                                onBlur={()=>saveEx({...ex,_mode:'conditie'},s.session_type)}
+                                style={inp} placeholder="Bijv. Loop maximaal tot je boven zone 3 komt" />
                             </div>
                             {spd && <div style={{background:'rgba(56,232,232,0.08)',border:'1px solid rgba(56,232,232,0.2)',padding:'6px 12px',display:'flex',gap:16}}>
                               <span style={{...B,fontSize:12,color:'#38e8e8'}}>⚡ <strong>{spd} km/h</strong></span>

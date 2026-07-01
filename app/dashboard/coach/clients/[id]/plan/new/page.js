@@ -135,7 +135,11 @@ export default function NewPlan({ params }) {
     const defaults = {
       name: '', sets: 3, reps: '8-10', weight: '', rest: 90, notes: '',
       ex_mode: 'kracht',
-      distance: '400', tempo: '5:00', hold_s: '30', hold_type: 'statisch',
+      // Geen forced distance/tempo-default meer: conditie-oefeningen starten
+      // leeg zodat een coach bewust ZONDER afstand/tijd kan plannen (opdracht
+      // komt dan uit de notitie). "400"/"5:00" blijven wel als grijze
+      // placeholder-hint in de velden staan.
+      distance: '', tempo: '', hold_s: '30', hold_type: 'statisch',
     }
     setSessions(prev => ({
       ...prev,
@@ -203,6 +207,7 @@ export default function NewPlan({ params }) {
                   rest_s: parseInt(ex.rest)||180,
                   tempo: ex.tempo||null,
                   speed_kmh: speed ? parseFloat(speed) : null,
+                  instructie: ex.notes || null,
                 })
               } else if (mode === 'mobiliteit') {
                 exNotes = JSON.stringify({ _mode:'mobiliteit', hold_s:parseInt(ex.hold_s)||30, hold_type:ex.hold_type||'statisch', rest_s:parseInt(ex.rest)||30 })
@@ -531,6 +536,10 @@ export default function NewPlan({ params }) {
                                         <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Rust (s)</div>
                                         <input type="number" value={ex.rest||180} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'rest', e.target.value)} style={{...exInp, textAlign:'center'}} placeholder="180" />
                                       </div>
+                                    </div>
+                                    <div style={{ marginBottom: 6 }}>
+                                      <div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 3 }}>Notitie / opdracht (i.p.v. afstand of tijd)</div>
+                                      <input type="text" value={ex.notes||''} onChange={e => setExercise(selectedMeso, sIdx, eIdx, 'notes', e.target.value)} style={exInp} placeholder="Bijv. Loop maximaal tot je boven zone 3 komt" />
                                     </div>
                                     {speed && (
                                       <div style={{ background: 'rgba(56,232,232,0.08)', border: '1px solid rgba(56,232,232,0.2)', padding: '7px 12px', display: 'flex', gap: 16 }}>
