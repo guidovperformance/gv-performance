@@ -18,7 +18,8 @@ export default function HeroVideoReveal({ desktopSrc, mobileSrc, fallbackImage, 
         alt={alt}
         fill
         sizes="(max-width: 768px) 100vw, 50vw"
-        style={{ objectFit: 'cover', objectPosition: 'left bottom' }}
+        className="hero-fallback-photo"
+        style={{ objectFit: 'cover' }}
       />
     )
   }

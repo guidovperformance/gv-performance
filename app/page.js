@@ -217,9 +217,11 @@ const CSS = `
   .hero-right { position:relative; overflow:hidden; }
   .hero-bg-video-desktop { object-position: center top; }
   .hero-bg-video-mobile { display:none; object-position: center center; }
+  .hero-fallback-photo { object-position: left bottom; }
   @media (max-width: 768px) {
     .hero-bg-video-desktop { display:none; }
     .hero-bg-video-mobile { display:block; }
+    .hero-fallback-photo { object-position: center 68%; }
   }
   .hero-photo {
     width:100%; height:100%; background:var(--dark3);
