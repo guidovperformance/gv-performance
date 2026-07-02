@@ -48,6 +48,7 @@ export default function SessionPage({ params }) {
   const [viewMode, setViewMode] = React.useState('active') // 'active' | 'readonly'
   const [editing, setEditing] = React.useState(false)
   const [autosaveState, setAutosaveState] = React.useState('idle') // 'idle' | 'saving' | 'saved'
+  const [saveFlashKey, setSaveFlashKey] = React.useState(0)
   const router = useRouter()
   const supabase = createClient()
 
@@ -170,6 +171,7 @@ export default function SessionPage({ params }) {
         }),
       })
       setAutosaveState('saved')
+      setSaveFlashKey(k => k + 1)
     } catch {
       setAutosaveState('idle')
     }
@@ -308,7 +310,7 @@ export default function SessionPage({ params }) {
               <span className="badge badge-orange" style={{ marginBottom: 6 }}>{session.session_type}</span>
               <div style={{ ...D, fontSize: 26, fontWeight: 700, letterSpacing: 0.5, marginBottom: 2 }}>{session.session_name}</div>
               <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginBottom: 14 }}>
-                {session.session_exercises?.length} oefeningen · {totalSets} sets totaal
+                {session.session_exercises?.length === 1 ? '1 oefening' : `${session.session_exercises?.length} oefeningen`} · {totalSets} sets totaal
               </div>
             </div>
             {viewMode === 'readonly' && (
@@ -322,16 +324,21 @@ export default function SessionPage({ params }) {
             </div>
           )}
 
-          {isReadonly ? (
+          {isReadonly ? (<>
+            <div style={{ display: 'flex', justifyContent: 'space-between', ...B, fontSize: 10, color: 'var(--muted)', letterSpacing: 1, marginBottom: 10 }}>
+              <span>SAMENVATTING</span>
+              <span>{doneSets}/{totalSets} SETS VOLTOOID</span>
+            </div>
             <button onClick={() => setEditing(true)}
               style={{ background: 'var(--card)', border: '1px solid var(--border-orange)', borderRadius: 'var(--r-btn)', padding: '10px 16px', ...B, fontSize: 12, fontWeight: 700, color: 'var(--orange)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 16, cursor: 'pointer', width: '100%' }}>
               ✎ Waarden bewerken
             </button>
-          ) : viewMode === 'active' ? (
+          </>) : viewMode === 'active' ? (
             <div style={{ display: 'flex', justifyContent: 'space-between', ...B, fontSize: 10, color: 'var(--muted)', letterSpacing: 1, marginBottom: 6 }}>
               <span>VOORTGANG</span>
               <span>
-                {autosaveState === 'saving' ? '● Opslaan...' : autosaveState === 'saved' ? '✓ Opgeslagen' : ''}
+                {autosaveState === 'saving' && '● Opslaan...'}
+                {autosaveState === 'saved' && <span key={saveFlashKey} className="autosave-flash" style={{ color: '#4ade80', fontWeight: 700 }}>✓ Opgeslagen</span>}
                 {'  '}{doneSets}/{totalSets} SETS
               </span>
             </div>

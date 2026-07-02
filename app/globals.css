@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes autosave-flash {
+  0% { opacity: 0.3; transform: scale(0.92); }
+  40% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.autosave-flash {
+  animation: autosave-flash 0.4s ease;
+}
+
 :root {
   /* ── Achtergrond palette (lichter dan voorheen) ── */
   --dark:    #141414;    /* pagina achtergrond */

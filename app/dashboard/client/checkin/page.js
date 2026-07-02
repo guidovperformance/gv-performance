@@ -44,6 +44,7 @@ export default function CheckIn() {
   const [cp, setCp] = React.useState(null)
   const [alreadyDone, setAlreadyDone] = React.useState(false)
   const [status, setStatus] = React.useState('idle')
+  const [lastCheckin, setLastCheckin] = React.useState(null)
   const [form, setForm] = React.useState({ morning_weight: '', morning_pulse: '', hrv: '', sleep_quality: 0, energy_level: 0, mood: 0, soreness: 0, notes: '' })
   const router = useRouter()
   const supabase = createClient()
@@ -58,6 +59,8 @@ export default function CheckIn() {
       const today = fmtDateStr(new Date())
       const { data: ex } = await supabase.from('daily_checkins').select('id').eq('client_id', data.id).eq('checkin_date', today).single()
       if (ex) setAlreadyDone(true)
+      const { data: last } = await supabase.from('daily_checkins').select('morning_weight, morning_pulse, hrv').eq('client_id', data.id).order('checkin_date', { ascending: false }).limit(1).maybeSingle()
+      setLastCheckin(last)
     }
     load()
   }, [])
@@ -118,14 +121,18 @@ export default function CheckIn() {
               <div>
                 <div style={{ ...B, fontSize: 10, color: 'var(--muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6, textAlign: 'center' }}>Gewicht (kg)</div>
                 <input type="number" step="0.1" placeholder="—" value={form.morning_weight} onChange={e => set('morning_weight', e.target.value)} style={inp} />
+                {lastCheckin?.morning_weight != null && <div style={{ ...B, fontSize: 11, color: 'var(--muted2)', textAlign: 'center', marginTop: 6 }}>Vorige keer: {lastCheckin.morning_weight}kg</div>}
               </div>
               <div>
                 <div style={{ ...B, fontSize: 10, color: 'var(--muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6, textAlign: 'center' }}>Polsslag (bpm)</div>
                 <input type="number" placeholder="—" value={form.morning_pulse} onChange={e => set('morning_pulse', e.target.value)} style={inp} />
+                {lastCheckin?.morning_pulse != null && <div style={{ ...B, fontSize: 11, color: 'var(--muted2)', textAlign: 'center', marginTop: 6 }}>Vorige keer: {lastCheckin.morning_pulse} bpm</div>}
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
                 <div style={{ ...B, fontSize: 10, color: 'var(--muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6, textAlign: 'center' }}>HRV (ms)</div>
                 <input type="number" step="0.1" placeholder="—" value={form.hrv} onChange={e => set('hrv', e.target.value)} style={inp} />
+                {lastCheckin?.hrv != null && <div style={{ ...B, fontSize: 11, color: 'var(--muted2)', textAlign: 'center', marginTop: 6 }}>Vorige keer: {lastCheckin.hrv}ms</div>}
+                <div style={{ ...B, fontSize: 11, color: 'var(--muted)', textAlign: 'center', marginTop: 6 }}>Ochtend-HRV uit je Garmin/Whoop/Oura — bepaalt je trainingsadvies van vandaag.</div>
               </div>
             </div>
           </div>

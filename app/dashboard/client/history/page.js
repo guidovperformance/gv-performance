@@ -44,6 +44,10 @@ export default function HistoryPage() {
   const vo2Data = testResults
     .filter(t => t.vo2max)
     .map(t => ({ date: dateLabel(t.test_date), VO2max: t.vo2max }))
+  const hrvData = checkIns
+    .filter(c => c.hrv)
+    .slice().reverse()
+    .map(c => ({ date: dateLabel(c.checkin_date), HRV: c.hrv }))
   const latestTest = testResults.length > 0 ? testResults[testResults.length - 1] : null
   const normRows = latestTest
     ? TEST_RESULT_NORM_FIELDS
@@ -98,7 +102,10 @@ export default function HistoryPage() {
                 <div key={c.id} style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: '16px 18px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <div style={{ ...D, fontSize: 14, fontWeight: 700 }}>{new Date(c.checkin_date).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' })}</div>
-                    {c.morning_weight && <div style={{ ...D, fontSize: 18, fontWeight: 700, color: 'var(--orange)' }}>{c.morning_weight} kg</div>}
+                    <div style={{ textAlign: 'right' }}>
+                      {c.morning_weight && <div style={{ ...D, fontSize: 18, fontWeight: 700, color: 'var(--orange)' }}>{c.morning_weight} kg</div>}
+                      {c.hrv && <div style={{ ...B, fontSize: 11, color: '#f87171' }}>💓 {c.hrv}ms</div>}
+                    </div>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     <div><div style={{ ...B, fontSize: 9, color: 'var(--muted)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 }}>Energie</div><ScoreBar value={c.energy_level} color="#38e8e8" /></div>
@@ -113,7 +120,7 @@ export default function HistoryPage() {
           )
         ) : tab === 'tests' ? (
           /* Kracht & conditie */
-          testResults.length === 0 ? (
+          testResults.length === 0 && hrvData.length === 0 ? (
             <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: 40, textAlign: 'center' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🏋️</div>
               <div style={{ ...D, fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Nog geen testresultaten</div>
@@ -156,6 +163,22 @@ export default function HistoryPage() {
                 </div>
               )}
 
+              {hrvData.length > 0 && (
+                <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: '18px 14px 8px' }}>
+                  <div style={{ ...D, fontSize: 14, fontWeight: 700, marginBottom: 4 }}>HRV-trend</div>
+                  <div style={{ ...B, fontSize: 11, color: 'var(--muted)', marginBottom: 12 }}>Ochtend-HRV (ms)</div>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <LineChart data={hrvData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="date" stroke="var(--muted)" fontSize={11} />
+                      <YAxis stroke="var(--muted)" fontSize={11} domain={['auto', 'auto']} />
+                      <Tooltip contentStyle={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }} />
+                      <Line type="monotone" dataKey="HRV" stroke="#f87171" strokeWidth={2} dot={{ r: 3 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
               {normRows.length > 0 && (
                 <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: '18px 14px' }}>
                   <div style={{ ...D, fontSize: 14, fontWeight: 700, marginBottom: 4 }}>Waar sta je t.o.v. de norm</div>
@@ -174,7 +197,7 @@ export default function HistoryPage() {
                 </div>
               )}
 
-              {strengthData.length === 0 && vo2Data.length === 0 && normRows.length === 0 && (
+              {strengthData.length === 0 && vo2Data.length === 0 && normRows.length === 0 && hrvData.length === 0 && (
                 <div style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: 32, textAlign: 'center' }}>
                   <div style={{ ...B, fontSize: 13, color: 'var(--muted)' }}>Nog geen 1RM- of VO2max-data in je testresultaten.</div>
                 </div>
@@ -192,6 +215,7 @@ export default function HistoryPage() {
                 ['Gem. energie', safeAvg(checkIns,'energy_level'), '⚡', '#38e8e8'],
                 ['Gem. gevoel', safeAvg(checkIns,'mood'), '😊', '#a78bfa'],
                 ['Gem. slaap', safeAvg(checkIns,'sleep_quality'), '💤', '#60a5fa'],
+                ['Gem. HRV', safeAvg(checkIns,'hrv') !== '—' ? `${safeAvg(checkIns,'hrv')} ms` : '—', '💓', '#f87171'],
               ].map(([label, value, icon, color]) => (
                 <div key={label} style={{ background: 'var(--card)', borderRadius: 'var(--r-card)', border: '1px solid var(--border)', padding: '18px 14px' }}>
                   <div style={{ fontSize: 24, marginBottom: 8 }}>{icon}</div>

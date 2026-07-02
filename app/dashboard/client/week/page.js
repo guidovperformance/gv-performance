@@ -138,7 +138,7 @@ export default function WeekPage() {
                   <div>
                     <span className="badge" style={{ background: typeColor(session.session_type)+'18', color: typeColor(session.session_type), marginBottom: 6 }}>{session.session_type}</span>
                     <div style={{ ...D, fontSize: 20, fontWeight: 700, letterSpacing: 0.5 }}>{session.session_name}</div>
-                    <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{session.session_exercises?.length || 0} oefeningen</div>
+                    <div style={{ ...B, fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{session.session_exercises?.length === 1 ? '1 oefening' : `${session.session_exercises?.length || 0} oefeningen`}</div>
                   </div>
                   <a href={`/dashboard/client/session/${session.id}`} style={{ background: session.status === 'voltooid' ? 'var(--dark3)' : 'var(--orange)', border: session.status === 'voltooid' ? '1px solid var(--border)' : 'none', borderRadius: 'var(--r-btn)', padding: '10px 16px', ...B, fontSize: 11, fontWeight: 700, color: session.status === 'voltooid' ? 'var(--text)' : '#000', letterSpacing: 1, textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none' }}>
                     {session.status === 'voltooid' ? '✓ Bekijk' : session.status === 'in_uitvoering' ? 'Hervat →' : 'Start →'}
@@ -147,7 +147,7 @@ export default function WeekPage() {
                 {session.session_exercises?.slice(0,5).map((ex, i) => (
                   <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderTop: '1px solid var(--border)' }}>
                     <span style={{ ...D, fontSize: 12, color: 'var(--orange)', fontWeight: 700, minWidth: 18 }}>{i+1}</span>
-                    <span style={{ ...B, fontSize: 13, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.exercises?.name}</span>
+                    <span style={{ ...B, fontSize: 13, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.exercise_name || ex.exercises?.name}</span>
                     <span style={{ ...B, fontSize: 11, color: 'var(--muted)', flexShrink: 0 }}>{ex.sets}×{ex.reps}{ex.weight_kg ? ` @ ${ex.weight_kg}kg` : ''}</span>
                   </div>
                 ))}

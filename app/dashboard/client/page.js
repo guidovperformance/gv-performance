@@ -39,14 +39,15 @@ export default function ClientDashboard() {
     const { data: cp } = await supabase.from('client_profiles').select('id, hrv_baseline').eq('user_id', user.id).single()
     if (!cp) { setLoading(false); return }
     const today = fmtDateStr(new Date())
-    const [todaySess, todayCI, recentCI, weekSess, feedback] = await Promise.all([
+    const [todaySess, todayCI, recentCI, weekSess, feedback, pendingSess] = await Promise.all([
       supabase.from('training_sessions').select('*, session_exercises(*, exercises(*))').eq('client_id', cp.id).eq('session_date', today).maybeSingle(),
       supabase.from('daily_checkins').select('*').eq('client_id', cp.id).eq('checkin_date', today).maybeSingle(),
       supabase.from('daily_checkins').select('*').eq('client_id', cp.id).order('checkin_date', { ascending: false }).limit(5),
       supabase.from('training_sessions').select('*, session_exercises(*)').eq('client_id', cp.id).gte('session_date', getWeekStart()).lte('session_date', getWeekEnd()).order('day_of_week'),
       supabase.from('coach_feedback').select('*').eq('client_id', cp.id).order('created_at', { ascending: false }).limit(3),
+      supabase.from('training_sessions').select('id, session_name, session_date').eq('client_id', cp.id).eq('status', 'in_uitvoering').lt('session_date', today).order('session_date', { ascending: false }).limit(1).maybeSingle(),
     ])
-    setData({ naam: profile?.full_name?.split(' ')[0] || 'Atleet', clientId: cp.id, hrvBaseline: cp.hrv_baseline, todaySess: todaySess.data, todayCI: todayCI.data, recentCI: recentCI.data || [], weekSess: weekSess.data || [], feedback: feedback.data || [] })
+    setData({ naam: profile?.full_name?.split(' ')[0] || 'Atleet', clientId: cp.id, hrvBaseline: cp.hrv_baseline, todaySess: todaySess.data, todayCI: todayCI.data, recentCI: recentCI.data || [], weekSess: weekSess.data || [], feedback: feedback.data || [], pendingSess: pendingSess.data })
     setLoading(false)
   }
 
@@ -85,6 +86,17 @@ export default function ClientDashboard() {
           </Link>
         )}
 
+        {/* Openstaande training van eerdere dag */}
+        {data?.pendingSess && (
+          <Link href={`/dashboard/client/session/${data.pendingSess.id}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 14, padding: '14px 16px', marginBottom: 16, textDecoration: 'none' }}>
+            <div>
+              <div style={{ ...D, fontSize: 14, fontWeight: 700, color: '#f87171', letterSpacing: '0.5px' }}>Nog een openstaande training</div>
+              <div style={{ ...B, fontSize: 12, color: '#666' }}>{data.pendingSess.session_name} · {new Date(data.pendingSess.session_date).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
+            </div>
+            <div style={{ background: '#f87171', borderRadius: 8, padding: '8px 14px', ...B, fontSize: 11, fontWeight: 700, color: '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, fontFamily: "var(--font-barlow), sans-serif" }}>Hervat →</div>
+          </Link>
+        )}
+
         {/* HRV-readiness */}
         <HrvReadinessBanner hrv={data?.todayCI?.hrv} baseline={data?.hrvBaseline} />
 
@@ -96,7 +108,7 @@ export default function ClientDashboard() {
               <div>
                 <TypeBadge type={data.todaySess.session_type} />
                 <div style={{ ...D, fontSize: 22, fontWeight: 700, color: '#f0ede8', marginTop: 4 }}>{data.todaySess.session_name}</div>
-                <div style={{ ...B, fontSize: 12, color: '#666', marginTop: 2 }}>{data.todaySess.session_exercises?.length || 0} oefeningen</div>
+                <div style={{ ...B, fontSize: 12, color: '#666', marginTop: 2 }}>{data.todaySess.session_exercises?.length === 1 ? '1 oefening' : `${data.todaySess.session_exercises?.length || 0} oefeningen`}</div>
               </div>
               <Link href={`/dashboard/client/session/${data.todaySess.id}`} style={{ background: data.todaySess.status === 'voltooid' ? '#2a2a2a' : '#D4A857', border: data.todaySess.status === 'voltooid' ? '1px solid rgba(255,255,255,0.1)' : 'none', borderRadius: 10, padding: '10px 18px', ...B, fontSize: 12, fontWeight: 700, color: data.todaySess.status === 'voltooid' ? '#f0ede8' : '#000', letterSpacing: '1px', textTransform: 'uppercase', flexShrink: 0, textDecoration: 'none', fontFamily: "var(--font-barlow), sans-serif" }}>
                 {data.todaySess.status === 'voltooid' ? '✓ Bekijk' : data.todaySess.status === 'in_uitvoering' ? 'Hervat →' : 'Start →'}
@@ -105,7 +117,7 @@ export default function ClientDashboard() {
             {data.todaySess.session_exercises?.slice(0,4).map((ex, i) => (
               <div key={ex.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                 <span style={{ ...D, fontSize: 12, color: '#D4A857', fontWeight: 700, minWidth: 18 }}>{i+1}</span>
-                <span style={{ ...B, fontSize: 13, flex: 1, minWidth: 0, color: '#f0ede8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.exercises?.name}</span>
+                <span style={{ ...B, fontSize: 13, flex: 1, minWidth: 0, color: '#f0ede8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.exercise_name || ex.exercises?.name}</span>
                 <span style={{ ...B, fontSize: 11, color: '#555', flexShrink: 0 }}>{ex.sets}×{ex.reps}{ex.weight_kg ? ` @ ${ex.weight_kg}kg` : ''}</span>
               </div>
             ))}
